@@ -1,63 +1,303 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { cn } from '../../lib/utils';
+'use client';
+
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from 'motion/react';
+import * as React from 'react';
+import { clamp, getTextContent, lerp } from './utils/text-utils';
 import { ThemeColors } from '../../types';
 
-interface ElasticTextProps {
+export type ElasticTextMode = 'auto' | 'hover';
+
+export type ElasticTextProps = React.HTMLAttributes<HTMLSpanElement> & {
+  children?: React.ReactNode;
   text?: string;
+  mode?: ElasticTextMode;
+  minWeight?: number;
+  maxWeight?: number;
+  duration?: number;
+  loop?: boolean;
+  startOnView?: boolean;
+  radius?: number;
   theme: ThemeColors;
   fontSize?: 'md' | 'lg' | 'xl';
-  className?: string;
-}
+};
 
-export const ElasticText: React.FC<ElasticTextProps> = ({
-  text = 'ELASTIC TYPOGRAPHY',
-  theme,
-  fontSize = 'xl',
-  className,
-}) => {
-  const letters = text.split('');
+const SPRING = { stiffness: 150, damping: 18, mass: 1 } as const;
+const AUTO_SPREAD = 2.5;
+const VIEW_THRESHOLD = 0.3;
 
-  const sizeClasses = {
-    md: 'text-2xl sm:text-3xl font-extrabold',
-    lg: 'text-3xl sm:text-5xl font-black',
-    xl: 'text-4xl sm:text-6xl font-black',
-  };
+const CONTAINER_CLASS =
+  "inline-block font-sans leading-[1.1] text-inherit [font-optical-sizing:auto] [font-variation-settings:'wght'_400]";
+const SEGMENT_CLASS =
+  "inline-block whitespace-pre [font-variation-settings:'wght'_var(--et-wght,400)] [will-change:font-variation-settings] motion-reduce:[will-change:auto]";
+
+type SegmentProps = {
+  segment: string;
+  index: number;
+  minWeight: number;
+  maxWeight: number;
+  reducedMotion: boolean;
+  mode: ElasticTextMode;
+  spotlight: ReturnType<typeof useMotionValue<number>>;
+  pointerX: ReturnType<typeof useMotionValue<number>>;
+  pointerActive: ReturnType<typeof useMotionValue<number>>;
+  getCenter: (index: number) => number;
+  radius: number;
+};
+
+function Segment({
+  segment,
+  index,
+  minWeight,
+  maxWeight,
+  reducedMotion,
+  mode,
+  spotlight,
+  pointerX,
+  pointerActive,
+  getCenter,
+  radius,
+}: SegmentProps) {
+  const autoWeight = useTransform(spotlight, (position) => {
+    const distance = Math.abs(index - position);
+    const influence = clamp(1 - distance / AUTO_SPREAD, 0, 1);
+    return lerp(minWeight, maxWeight, influence);
+  });
+
+  const hoverWeight = useTransform([pointerX, pointerActive], (latest) => {
+    const [x, active] = latest as [number, number];
+    if (!active) {
+      return minWeight;
+    }
+    const distance = Math.abs(x - getCenter(index));
+    const influence = clamp(1 - distance / radius, 0, 1);
+    return lerp(minWeight, maxWeight, influence);
+  });
+
+  const rawWeight = mode === 'hover' ? hoverWeight : autoWeight;
+  const weight = useSpring(rawWeight, SPRING);
+
+  if (reducedMotion) {
+    return (
+      <span
+        className={SEGMENT_CLASS}
+        data-elastic-segment=""
+        style={{ '--et-wght': minWeight } as React.CSSProperties}
+      >
+        {segment}
+      </span>
+    );
+  }
 
   return (
-    <div className={cn("inline-flex flex-wrap justify-center select-none py-4 px-2", className)}>
-      {letters.map((char, index) => {
-        if (char === ' ') {
-          return <span key={index} className="inline-block w-3" />;
-        }
-
-        return (
-          <motion.span
-            key={index}
-            whileHover={{
-              scale: 1.4,
-              y: -12,
-              color: theme.primary,
-              transition: { type: 'spring', stiffness: 500, damping: 10 },
-            }}
-            whileTap={{
-              scale: 0.85,
-              y: 6,
-              transition: { type: 'spring', stiffness: 600, damping: 14 },
-            }}
-            transition={{ type: 'spring', stiffness: 350, damping: 15 }}
-            className={cn(
-              "inline-block cursor-pointer transition-colors text-white tracking-wider",
-              sizeClasses[fontSize]
-            )}
-            style={{
-              textShadow: `0 0 20px rgba(0,0,0,0.8)`,
-            }}
-          >
-            {char}
-          </motion.span>
-        );
-      })}
-    </div>
+    <motion.span
+      className={SEGMENT_CLASS}
+      data-elastic-segment=""
+      style={{ '--et-wght': weight } as React.CSSProperties}
+      aria-hidden={segment.trim() === '' ? true : undefined}
+    >
+      {segment}
+    </motion.span>
   );
-};
+}
+
+const ElasticText = React.forwardRef<HTMLSpanElement, ElasticTextProps>(
+  (
+    {
+      children,
+      text,
+      className,
+      mode = 'auto',
+      minWeight = 300,
+      maxWeight = 900,
+      duration = 2,
+      loop = true,
+      startOnView = true,
+      radius = 120,
+      theme,
+      fontSize = 'xl',
+      ...props
+    },
+    ref,
+  ) => {
+    const reducedMotion = useReducedMotion() ?? false;
+    const containerRef = React.useRef<HTMLSpanElement>(null);
+    const mergedRef = React.useCallback(
+      (node: HTMLSpanElement | null) => {
+        containerRef.current = node;
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref],
+    );
+
+    const displayText = text || (typeof children === 'string' ? children : 'ELASTIC TEXT');
+    const textContent = getTextContent(children) || displayText;
+    const segments = React.useMemo(
+      () => (textContent ? [...textContent] : null),
+      [textContent],
+    );
+
+    const spotlight = useMotionValue(-AUTO_SPREAD);
+    const pointerX = useMotionValue(0);
+    const pointerActive = useMotionValue(0);
+    const centersRef = React.useRef<number[]>([]);
+    const getCenter = React.useCallback(
+      (index: number) => centersRef.current[index] ?? 0,
+      [],
+    );
+
+    React.useEffect(() => {
+      if (reducedMotion || mode !== 'auto' || !segments) {
+        return;
+      }
+      const last = Math.max(segments.length - 1, 1);
+      spotlight.set(-AUTO_SPREAD);
+
+      const start = () =>
+        loop
+          ? animate(spotlight, [0, last], {
+              duration,
+              repeat: Number.POSITIVE_INFINITY,
+              repeatType: 'mirror',
+              ease: 'easeInOut',
+            })
+          : animate(spotlight, [-AUTO_SPREAD, last + AUTO_SPREAD], {
+              duration,
+              ease: 'easeInOut',
+            });
+
+      const node = containerRef.current;
+      if (
+        !startOnView ||
+        !node ||
+        typeof IntersectionObserver === 'undefined'
+      ) {
+        const controls = start();
+        return () => controls.stop();
+      }
+
+      let controls: ReturnType<typeof animate> | undefined;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              controls = start();
+              observer.disconnect();
+              break;
+            }
+          }
+        },
+        { threshold: VIEW_THRESHOLD },
+      );
+      observer.observe(node);
+      return () => {
+        observer.disconnect();
+        controls?.stop();
+      };
+    }, [duration, loop, mode, reducedMotion, segments, spotlight, startOnView]);
+
+    const updateCenters = React.useCallback(() => {
+      const container = containerRef.current;
+      if (!container) {
+        return;
+      }
+      const spans = container.querySelectorAll('[data-elastic-segment]');
+      centersRef.current = Array.from(spans).map((span) => {
+        const rect = span.getBoundingClientRect();
+        return rect.left + rect.width / 2;
+      });
+    }, []);
+
+    React.useLayoutEffect(() => {
+      if (mode !== 'hover') {
+        return;
+      }
+      updateCenters();
+      if (typeof window === 'undefined') {
+        return;
+      }
+      window.addEventListener('resize', updateCenters);
+      return () => window.removeEventListener('resize', updateCenters);
+    }, [mode, updateCenters]);
+
+    const handleMouseMove = React.useCallback(
+      (event: React.MouseEvent<HTMLSpanElement>) => {
+        if (mode !== 'hover') {
+          return;
+        }
+        pointerX.set(event.clientX);
+        updateCenters();
+      },
+      [mode, pointerX, updateCenters],
+    );
+
+    const interactionProps =
+      mode === 'hover' && !reducedMotion
+        ? {
+            onMouseEnter: () => pointerActive.set(1),
+            onMouseLeave: () => pointerActive.set(0),
+            onMouseMove: handleMouseMove,
+          }
+        : undefined;
+
+    const sizeClasses = {
+      md: 'text-2xl sm:text-3xl font-extrabold',
+      lg: 'text-3xl sm:text-5xl font-black',
+      xl: 'text-4xl sm:text-6xl font-black',
+    };
+
+    if (!segments) {
+      return (
+        <span
+          ref={mergedRef}
+          data-slot="elastic-text"
+          className={`${CONTAINER_CLASS} ${sizeClasses[fontSize]} ${className ?? ''}`}
+          style={{ '--et-wght': minWeight } as React.CSSProperties}
+          {...props}
+        >
+          {displayText}
+        </span>
+      );
+    }
+
+    return (
+      <span
+        ref={mergedRef}
+        data-slot="elastic-text"
+        className={`${CONTAINER_CLASS} ${sizeClasses[fontSize]} ${className ?? ''}`}
+        {...interactionProps}
+        {...props}
+      >
+        {segments.map((segment, index) => (
+          <Segment
+            key={index}
+            segment={segment}
+            index={index}
+            minWeight={minWeight}
+            maxWeight={maxWeight}
+            reducedMotion={reducedMotion}
+            mode={mode}
+            spotlight={spotlight}
+            pointerX={pointerX}
+            pointerActive={pointerActive}
+            getCenter={getCenter}
+            radius={radius}
+          />
+        ))}
+      </span>
+    );
+  },
+);
+ElasticText.displayName = 'ElasticText';
+
+export { ElasticText };

@@ -1,6 +1,7 @@
 import { ThemePalette } from '../types';
 
 export type GodUIComponentType =
+  // Core Components
   | 'dynamic-island'
   | 'godui-dock'
   | 'floating-toolbar'
@@ -17,7 +18,6 @@ export type GodUIComponentType =
   | 'glass-footer'
   | 'blueprint-grid'
   | 'interactive-3d-mesh'
-  // New GodUI Components
   | 'jelly-button'
   | 'magic-button'
   | 'mask-button'
@@ -27,7 +27,110 @@ export type GodUIComponentType =
   | 'number-ticker'
   | 'scroll-text-reveal'
   | 'lamp'
-  | 'ascii-dither';
+  | 'ascii-dither'
+  | 'inset-glass-card'
+  | 'scroll-glow-container'
+  // Buttons
+  | 'progress-fold-button'
+  | 'slide-confirm-button'
+  // Inputs
+  | 'otp-input'
+  // Navigation
+  | 'breadcrumbs'
+  | 'combobox'
+  | 'context-menu'
+  | 'dropdown-menu'
+  | 'filter-bar'
+  | 'magic-tab'
+  | 'mega-menu'
+  | 'resizable-header'
+  | 'segmented-control'
+  | 'tab-bar'
+  // Overlays
+  | 'animated-tooltip'
+  | 'command-palette'
+  | 'drawer'
+  | 'morphing-dialog'
+  | 'toast'
+  // Layout
+  | 'accordion'
+  | 'animated-testimonials'
+  | 'app-showcase'
+  | 'avatar-group'
+  | 'card-swap'
+  | 'container-scroll'
+  | 'cover-flow'
+  | 'gooey-stack'
+  | 'hero-parallax'
+  | 'image-accordion'
+  | 'image-compare'
+  | 'inertia-gallery'
+  | 'morph-gallery'
+  | 'orbit-carousel'
+  | 'progressive-card-reveal'
+  | 'reorder-list'
+  | 'scroll-stack'
+  | 'spin-viewer'
+  | 'split-flap-display'
+  | 'stepper'
+  | 'sticky-scroll'
+  | 'stack-badge'
+  | 'store-badge'
+  | 'swipe-deck'
+  | 'three-d-marquee'
+  | 'holographic-card'
+  // Text
+  | 'text-animate'
+  | 'text-scramble'
+  | 'highlighter'
+  // AI
+  | 'agent-flow'
+  | 'agent-timeline'
+  | 'conversation-thread'
+  | 'prompt-composer'
+  | 'prompt-suggestions'
+  | 'source-citations'
+  // Collaboration
+  | 'comment-pin'
+  | 'live-cursors'
+  | 'notification-inbox'
+  | 'presence-facepile'
+  // Visualizations
+  | 'animated-beam'
+  | 'globe'
+  | 'gravity'
+  | 'orbiting-circles'
+  | 'scroll-timeline'
+  | 'world-map'
+  // Effects
+  | 'beam-draw'
+  | 'border-beam'
+  | 'confetti'
+  | 'encrypted-card'
+  | 'fluid-cursor'
+  | 'image-trail'
+  | 'liquid-image'
+  | 'marquee'
+  | 'particle-dissolve'
+  | 'scroll-progress'
+  | 'scroll-reveal'
+  | 'spotlight-reveal'
+  | 'terminal'
+  // Backgrounds
+  | 'flow-field'
+  | 'light-rays'
+  | 'liquid-metaballs'
+  | 'pixel-grid'
+  | 'topographic-drift'
+  | 'warp-starfield'
+  // Glass
+  | 'liquid-glass-card'
+  | 'liquid-glass-lens'
+  // Static Effects
+  | 'decorative-background'
+  | 'effect-background'
+  | 'geometric-background'
+  | 'gradient-background';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'
@@ -36,7 +139,11 @@ export type ComponentCategory =
   | 'Typography & AI'
   | 'Footers & Backgrounds'
   | 'Inputs & Forms'
-  | 'Creative & Shaders';
+  | 'Creative & Shaders'
+  | 'AI & Collaboration'
+  | 'Visualizations'
+  | 'Effects & Backgrounds'
+  | 'Glass & Static';
 
 // Animation Types for Components
 export type EntranceAnimationType =

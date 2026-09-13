@@ -90,6 +90,8 @@ import { NumberTicker } from '../godui/NumberTicker';
 import { ScrollTextReveal } from '../godui/ScrollTextReveal';
 import { Lamp } from '../godui/Lamp';
 import { AsciiDither } from '../godui/AsciiDither';
+import { InsetGlassCard } from '../godui/InsetGlassCard';
+import { ScrollGlowContainer } from '../godui/ScrollGlowContainer';
 import { FusionTargetSlot } from '../../types/builder';
 
 interface ComponentRendererProps {
@@ -405,7 +407,13 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             <MagicInput
               label={props.label || 'AI Query or Command'}
               placeholder={props.placeholder || 'Type prompt or search...'}
-              enableRainbowEdge={props.enableRainbowEdge ?? true}
+              variant={props.variant || 'primary'}
+              size={props.size || 'md'}
+              depth={props.depth || 'focus'}
+              rainbow={props.rainbow ?? true}
+              submitButton={props.submitButton ?? false}
+              status={props.status || 'idle'}
+              progress={props.progress}
               theme={theme}
             />
           </div>
@@ -416,6 +424,13 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           <div className="flex justify-center my-4">
             <ElasticText
               text={props.text || 'ELASTIC TYPOGRAPHY'}
+              mode={props.mode || 'auto'}
+              minWeight={props.minWeight || 300}
+              maxWeight={props.maxWeight || 900}
+              duration={props.duration || 2}
+              loop={props.loop ?? true}
+              startOnView={props.startOnView ?? true}
+              radius={props.radius || 120}
               fontSize={props.fontSize || 'xl'}
               theme={theme}
             />
@@ -464,6 +479,38 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
               interactive={props.interactive ?? true}
               theme={theme}
             />
+          </div>
+        );
+
+      case 'inset-glass-card':
+        return (
+          <div className="max-w-xl mx-auto my-6">
+            <InsetGlassCard
+              title={props.title || 'Ultra-Deep Inset Surface'}
+              subtitle={props.subtitle}
+              description={props.description}
+              badge={props.badge}
+              insetDepth={props.insetDepth || 'deep'}
+              specularHighlight={props.specularHighlight ?? true}
+              borderGlow={props.borderGlow ?? true}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'scroll-glow-container':
+        return (
+          <div className="my-4">
+            <ScrollGlowContainer
+              scrollProgress={props.scrollProgress || 0.5}
+              intensity={props.intensity || 0.8}
+              syncWithMouse={props.syncWithMouse ?? true}
+              theme={theme}
+            >
+              <div className="p-8 text-center text-zinc-400 text-sm">
+                Conteúdo do container com brilho reativo ao scroll
+              </div>
+            </ScrollGlowContainer>
           </div>
         );
 
