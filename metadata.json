@@ -1,0 +1,6 @@
+{
+  "name": "GodUI Component Composer",
+  "description": "Website Builder em tempo real com componentes do godui.design, Motor de Fusão e Mescla de Efeitos (ex: Liquid Glass e Gooey em toolbars/docks), 100% responsivo para mobile e exportação de código.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
