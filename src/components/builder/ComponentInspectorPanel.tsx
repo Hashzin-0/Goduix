@@ -13,13 +13,17 @@ import {
   Zap,
   Droplets,
   Plus,
-  Power
+  Power,
+  Play,
+  SkipBack,
+  Wand2
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
 import { THEMES } from '../../data/themes';
 import { FUSION_DONORS, FUSION_PRESETS } from '../../data/fusionCatalog';
 import { ThemePalette } from '../../types';
+import { EntranceAnimationType, ExitAnimationType, LoopingAnimationType } from '../../types/builder';
 import { cn } from '../../lib/utils';
 
 export const ComponentInspectorPanel: React.FC = () => {
@@ -249,6 +253,93 @@ export const ComponentInspectorPanel: React.FC = () => {
             </div>
           );
         })}
+
+        {/* ANIMATIONS SECTION */}
+        <div className="pt-4 border-t border-white/10 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-amber-400 font-bold">
+              <Wand2 className="w-3.5 h-3.5" />
+              <span>Animações</span>
+            </div>
+            {selectedComponent.animations?.entrance && selectedComponent.animations.entrance !== 'none' && (
+              <button
+                onClick={() => store.replayComponentAnimation(selectedComponent.id, 'entrance')}
+                className="p-1 rounded-lg text-cyan-400 hover:bg-cyan-500/20 cursor-pointer transition-colors"
+                title="Replay Entrada"
+              >
+                <Play className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+
+          {/* Entrance Animation */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-300">Animação de Entrada</label>
+            <select
+              value={selectedComponent.animations?.entrance || 'none'}
+              onChange={(e) => {
+                const val = e.target.value as EntranceAnimationType;
+                store.setComponentAnimations(selectedComponent.id, {
+                  ...selectedComponent.animations,
+                  entrance: val,
+                });
+              }}
+              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500/50 cursor-pointer"
+            >
+              <option value="none">Nenhuma</option>
+              <option value="fade-spring">Fade Spring (Suave)</option>
+              <option value="blur-scale-up">Blur + Scale Up (Dramático)</option>
+              <option value="slide-up">Slide Up (Vertical)</option>
+              <option value="slide-down">Slide Down (Vertical)</option>
+            </select>
+          </div>
+
+          {/* Exit Animation */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-300">Animação de Saída</label>
+            <select
+              value={selectedComponent.animations?.exit || 'none'}
+              onChange={(e) => {
+                const val = e.target.value as ExitAnimationType;
+                store.setComponentAnimations(selectedComponent.id, {
+                  ...selectedComponent.animations,
+                  exit: val,
+                });
+              }}
+              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500/50 cursor-pointer"
+            >
+              <option value="none">Nenhuma</option>
+              <option value="fade-out">Fade Out (Suave)</option>
+              <option value="scale-down">Scale Down (Diminuir)</option>
+              <option value="slide-up-exit">Slide Up (Vertical)</option>
+            </select>
+          </div>
+
+          {/* Looping Animation */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-300">Animação em Loop</label>
+            <select
+              value={selectedComponent.animations?.looping || 'none'}
+              onChange={(e) => {
+                const val = e.target.value as LoopingAnimationType;
+                store.setComponentAnimations(selectedComponent.id, {
+                  ...selectedComponent.animations,
+                  looping: val,
+                });
+              }}
+              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500/50 cursor-pointer"
+            >
+              <option value="none">Nenhuma</option>
+              <option value="gentle-float">Float Suave (Flutuação)</option>
+              <option value="pulse-glow">Pulse Glow (Brilho Pulsante)</option>
+              <option value="subtle-orbit">Orbit Sutil (Rotação)</option>
+            </select>
+          </div>
+
+          <p className="text-[10px] text-zinc-500 leading-relaxed">
+            Configure animações de entrada, saída e loop. Use os botões de replay na navbar para visualizar.
+          </p>
+        </div>
 
         {/* FUSION ENGINE SECTION */}
         <div className="pt-4 border-t border-white/10 space-y-3">

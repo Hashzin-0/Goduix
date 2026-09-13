@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { motion } from 'motion/react';
-import { Sparkles, Sliders } from 'lucide-react';
+import React from 'react';
+import { motion, useInView } from 'motion/react';
+import { useRef } from 'react';
+import { Sparkles } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { ThemeColors } from '../../types';
 
@@ -15,56 +16,40 @@ export const ScrollTextReveal: React.FC<ScrollTextRevealProps> = ({
   theme,
   className,
 }) => {
-  const [revealProgress, setRevealProgress] = useState(0.65);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { amount: 0.3, once: false });
   const words = text.split(' ');
 
   return (
-    <div className={cn("max-w-2xl mx-auto p-6 rounded-3xl bg-zinc-950/60 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-5", className)}>
+    <div ref={containerRef} className={cn("max-w-2xl mx-auto p-6 rounded-3xl bg-zinc-950/60 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-5", className)}>
       <div className="flex items-center justify-between text-xs text-zinc-400 pb-3 border-b border-white/5">
         <div className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-cyan-400">
           <Sparkles className="w-3.5 h-3.5" />
           <span>Scroll Text Reveal</span>
         </div>
         
-        {/* Interactive Scrub Slider to test reveal progress */}
         <div className="flex items-center gap-2">
-          <Sliders className="w-3 h-3 text-zinc-500" />
-          <span className="text-[10px] text-zinc-500">Progresso:</span>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={revealProgress}
-            onChange={(e) => setRevealProgress(parseFloat(e.target.value))}
-            className="w-24 accent-cyan-400 h-1 bg-zinc-800 rounded-lg cursor-pointer"
-          />
-          <span className="text-[10px] font-mono text-cyan-400 w-8 text-right">
-            {Math.round(revealProgress * 100)}%
+          <span className="text-[10px] text-zinc-500 font-mono">
+            {isInView ? '🟢 Em vista' : '⚫ Fora de vista'}
           </span>
         </div>
       </div>
 
-      {/* Word-by-word reveal */}
+      {/* Word-by-word reveal using whileInView */}
       <p className="text-xl sm:text-2xl md:text-3xl font-bold leading-relaxed tracking-tight select-none">
         {words.map((word, index) => {
-          const wordProgress = index / (words.length - 1);
-          const isRevealed = wordProgress <= revealProgress;
-          const isCurrent = Math.abs(wordProgress - revealProgress) < 0.08;
+          const delay = index * 0.03;
 
           return (
             <motion.span
               key={index}
-              animate={{
-                opacity: isRevealed ? 1 : 0.2,
-                y: isRevealed ? 0 : 3,
-                filter: isRevealed ? 'blur(0px)' : 'blur(2px)',
-              }}
-              transition={{ duration: 0.2 }}
-              className="inline-block mr-2 transition-colors"
+              initial={{ opacity: 0.15, y: 6, filter: 'blur(4px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              viewport={{ amount: 0.3, once: false }}
+              transition={{ duration: 0.35, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="inline-block mr-2"
               style={{
-                color: isCurrent ? theme.primary : isRevealed ? '#ffffff' : '#52525b',
-                textShadow: isCurrent ? `0 0 20px ${theme.glow}` : undefined,
+                color: isInView ? '#ffffff' : '#52525b',
               }}
             >
               {word}
@@ -74,7 +59,7 @@ export const ScrollTextReveal: React.FC<ScrollTextRevealProps> = ({
       </p>
 
       <div className="text-[11px] text-zinc-500 font-mono text-center pt-2">
-        Arraste a barra ou role a página para ativar o desfoque cinético
+        Role a página para ativar o desfoque cinético palavra por palavra
       </div>
     </div>
   );

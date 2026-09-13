@@ -13,7 +13,9 @@ import {
   Palette,
   Layers,
   ChevronDown,
-  LayoutTemplate
+  LayoutTemplate,
+  Play,
+  SkipBack
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { ViewportMode, ViewMode } from '../../types/builder';
@@ -74,6 +76,37 @@ export const BuilderNavbar: React.FC<BuilderNavbarProps> = ({ onOpenExportModal 
             <Redo2 className="w-3.5 h-3.5" />
           </button>
         </div>
+
+        {/* Animation Replay Controls */}
+        {store.selectedId && (() => {
+          const selectedComp = store.components.find(c => c.id === store.selectedId);
+          if (!selectedComp) return null;
+          const hasEntrance = selectedComp.animations?.entrance && selectedComp.animations.entrance !== 'none';
+          const hasExit = selectedComp.animations?.exit && selectedComp.animations.exit !== 'none';
+          if (!hasEntrance && !hasExit) return null;
+          return (
+            <div className="flex items-center gap-0.5 ml-2 pl-2 border-l border-white/10">
+              {hasEntrance && (
+                <button
+                  onClick={() => store.replayComponentAnimation(store.selectedId!, 'entrance')}
+                  title="Replay Animação de Entrada"
+                  className="p-1.5 rounded-lg text-cyan-400 hover:text-white hover:bg-cyan-500/20 transition-colors cursor-pointer"
+                >
+                  <Play className="w-3.5 h-3.5" />
+                </button>
+              )}
+              {hasExit && (
+                <button
+                  onClick={() => store.replayComponentAnimation(store.selectedId!, 'exit')}
+                  title="Replay Animação de Saída"
+                  className="p-1.5 rounded-lg text-amber-400 hover:text-white hover:bg-amber-500/20 transition-colors cursor-pointer"
+                >
+                  <SkipBack className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Viewport switchers & Mode switchers (Center) */}

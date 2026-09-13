@@ -33,12 +33,27 @@ export const InsetGlassCard: React.FC<InsetGlassCardProps> = ({
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMove = (clientX: number, clientY: number) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
     setMousePos({ x, y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    handleMove(e.clientX, e.clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    handleMove(touch.clientX, touch.clientY);
+  };
+
+  const handleTouchEnd = () => {
+    setMousePos({ x: 50, y: 50 });
+    setIsHovered(false);
   };
 
   // Depth shadow configurations
@@ -53,11 +68,13 @@ export const InsetGlassCard: React.FC<InsetGlassCardProps> = ({
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => { setIsHovered(false); setMousePos({ x: 50, y: 50 }); }}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       whileHover={{ y: -3 }}
       transition={{ type: "spring", stiffness: 350, damping: 25 }}
       className={cn(
-        "group relative rounded-2xl overflow-hidden p-6 md:p-8",
+        "group relative rounded-2xl overflow-hidden p-6 md:p-8 touch-none",
         "bg-zinc-950/80 border border-white/10 backdrop-blur-xl",
         "transition-all duration-300",
         depthStyles,

@@ -133,10 +133,11 @@ export const RealtimeCanvas: React.FC = () => {
       {/* Frame wrapper based on viewport */}
       <div
         className={cn(
-          "transition-all duration-300 relative my-auto",
+          "transition-all duration-300 relative",
           viewportWidths[store.viewport],
-          store.viewport === 'mobile' && "rounded-[48px] border-[10px] border-zinc-900 shadow-2xl overflow-hidden min-h-[820px] bg-zinc-950 px-2 py-4",
-          store.viewport === 'tablet' && "rounded-[32px] border-[8px] border-zinc-900 shadow-2xl overflow-hidden min-h-[900px] bg-zinc-950 px-4 py-6"
+          store.viewport === 'mobile' && "rounded-[48px] border-[10px] border-zinc-900 shadow-2xl overflow-hidden min-h-[820px] bg-zinc-950 px-2 py-4 mt-4 mb-24",
+          store.viewport === 'tablet' && "rounded-[32px] border-[8px] border-zinc-900 shadow-2xl overflow-hidden min-h-[900px] bg-zinc-950 px-4 py-6 mt-4 mb-24",
+          store.viewport === 'desktop' && "mt-4 mb-24"
         )}
       >
         {/* Mobile Dynamic Island Hardware Simulation */}

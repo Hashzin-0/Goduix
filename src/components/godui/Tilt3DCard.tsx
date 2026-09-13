@@ -27,29 +27,36 @@ export const Tilt3DCard: React.FC<Tilt3DCardProps> = ({
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50, opacity: 0 });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMove = (clientX: number, clientY: number) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
     
-    // Mouse position relative to center: -1 to +1
-    const mouseX = (e.clientX - rect.left - width / 2) / (width / 2);
-    const mouseY = (e.clientY - rect.top - height / 2) / (height / 2);
+    const mouseX = (clientX - rect.left - width / 2) / (width / 2);
+    const mouseY = (clientY - rect.top - height / 2) / (height / 2);
 
-    // Rotate X is inverted relative to Y
     const rotX = -mouseY * maxTilt;
     const rotY = mouseX * maxTilt;
 
     setRotation({ x: rotX, y: rotY });
 
-    // Glare coordinates
-    const glareX = ((e.clientX - rect.left) / width) * 100;
-    const glareY = ((e.clientY - rect.top) / height) * 100;
+    const glareX = ((clientX - rect.left) / width) * 100;
+    const glareY = ((clientY - rect.top) / height) * 100;
     setGlarePos({ x: glareX, y: glareY, opacity: glareOpacity });
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    handleMove(e.clientX, e.clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    handleMove(touch.clientX, touch.clientY);
+  };
+
+  const handlePointerLeave = () => {
     setRotation({ x: 0, y: 0 });
     setGlarePos(prev => ({ ...prev, opacity: 0 }));
   };
@@ -57,12 +64,14 @@ export const Tilt3DCard: React.FC<Tilt3DCardProps> = ({
   return (
     <div
       style={{ perspective: `${perspective}px` }}
-      className={cn("w-full h-full select-none", className)}
+      className={cn("w-full h-full select-none touch-none", className)}
     >
       <motion.div
         ref={cardRef}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={handlePointerLeave}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handlePointerLeave}
         animate={{
           rotateX: rotation.x,
           rotateY: rotation.y,

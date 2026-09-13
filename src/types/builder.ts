@@ -38,6 +38,32 @@ export type ComponentCategory =
   | 'Inputs & Forms'
   | 'Creative & Shaders';
 
+// Animation Types for Components
+export type EntranceAnimationType =
+  | 'fade-spring'
+  | 'blur-scale-up'
+  | 'slide-up'
+  | 'slide-down'
+  | 'none';
+
+export type ExitAnimationType =
+  | 'fade-out'
+  | 'scale-down'
+  | 'slide-up-exit'
+  | 'none';
+
+export type LoopingAnimationType =
+  | 'gentle-float'
+  | 'pulse-glow'
+  | 'subtle-orbit'
+  | 'none';
+
+export interface ComponentAnimations {
+  entrance?: EntranceAnimationType;
+  exit?: ExitAnimationType;
+  looping?: LoopingAnimationType;
+}
+
 export interface PropFieldSchema {
   key: string;
   label: string;
@@ -155,6 +181,7 @@ export interface BuilderComponentInstance {
   props: Record<string, any>;
   isVisible: boolean;
   fusions?: ComponentFusion[];
+  animations?: ComponentAnimations;
 }
 
 export type ViewportMode = 'desktop' | 'tablet' | 'mobile';

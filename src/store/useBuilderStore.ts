@@ -10,7 +10,8 @@ import {
   FusionTargetSlot,
   FusionTriggerType,
   DraggingFusionItem,
-  ActiveDropZone
+  ActiveDropZone,
+  ComponentAnimations
 } from '../types/builder';
 import { ThemePalette } from '../types';
 import { GODUI_CATALOG } from '../data/goduiCatalog';
@@ -36,7 +37,8 @@ interface BuilderState {
   // Animation Play & Replay Engine
   componentReplayKeys: Record<string, number>;
   globalReplayKey: number;
-  replayComponentAnimation: (componentId?: string) => void;
+  replayComponentAnimation: (componentId?: string, type?: 'entrance' | 'exit') => void;
+  setComponentAnimations: (componentId: string, animations: ComponentAnimations) => void;
 
   // Page Scroll Simulation
   scrollSimulationProgress: number; // 0 to 100
@@ -144,35 +146,53 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
   componentReplayKeys: {},
   globalReplayKey: 0,
 
-  replayComponentAnimation: (componentId) => {
+  replayComponentAnimation: (componentId, type = 'entrance') => {
+    const keySuffix = type === 'exit' ? '-exit' : '';
     if (componentId) {
       set((state) => ({
         componentReplayKeys: {
           ...state.componentReplayKeys,
-          [componentId]: (state.componentReplayKeys[componentId] || 0) + 1,
+          [`${componentId}${keySuffix}`]: (state.componentReplayKeys[`${componentId}${keySuffix}`] || 0) + 1,
         },
         activeToast: {
-          message: '▶️ Animação de entrada reproduzida!',
+          message: type === 'exit' ? '◀ Animação de saída reproduzida!' : '▶️ Animação de entrada reproduzida!',
           type: 'info',
         },
       }));
     } else {
-      // Replay all animations on canvas
       set((state) => {
         const nextKeys: Record<string, number> = {};
         state.components.forEach((c) => {
-          nextKeys[c.id] = (state.componentReplayKeys[c.id] || 0) + 1;
+          nextKeys[`${c.id}${keySuffix}`] = (state.componentReplayKeys[`${c.id}${keySuffix}`] || 0) + 1;
         });
         return {
           componentReplayKeys: nextKeys,
           globalReplayKey: state.globalReplayKey + 1,
           activeToast: {
-            message: '▶️ Todas as animações de entrada reiniciadas!',
+            message: type === 'exit' ? '◀ Todas as animações de saída reiniciadas!' : '▶️ Todas as animações de entrada reiniciadas!',
             type: 'info',
           },
         };
       });
     }
+  },
+
+  setComponentAnimations: (componentId, animations) => {
+    const currentList = get().components;
+    const updatedList = currentList.map((comp) => {
+      if (comp.id !== componentId) return comp;
+      return { ...comp, animations };
+    });
+
+    const newHistory = get().history.slice(0, get().historyIndex + 1);
+    newHistory.push(updatedList);
+    if (newHistory.length > MAX_HISTORY) newHistory.shift();
+
+    set({
+      components: updatedList,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+    });
   },
 
   // Page Scroll Simulation

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   ChevronUp, 
   ChevronDown, 
@@ -13,10 +13,53 @@ import {
   Zap,
   Droplets
 } from 'lucide-react';
-import { BuilderComponentInstance } from '../../types/builder';
+import { BuilderComponentInstance, EntranceAnimationType, ExitAnimationType } from '../../types/builder';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { THEMES } from '../../data/themes';
 import { cn } from '../../lib/utils';
+
+// Animation Variants
+const entranceVariants: Record<EntranceAnimationType, any> = {
+  'fade-spring': {
+    hidden: { opacity: 0, y: 15, scale: 0.98 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 260, damping: 20 } },
+  },
+  'blur-scale-up': {
+    hidden: { opacity: 0, scale: 0.94, filter: 'blur(10px)' },
+    visible: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+  },
+  'slide-up': {
+    hidden: { opacity: 0, y: 35 },
+    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+  },
+  'slide-down': {
+    hidden: { opacity: 0, y: -35 },
+    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+  },
+  'none': {
+    hidden: { opacity: 1 },
+    visible: { opacity: 1 },
+  },
+};
+
+const exitVariants: Record<ExitAnimationType, any> = {
+  'fade-out': {
+    visible: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, transition: { duration: 0.3 } },
+  },
+  'scale-down': {
+    visible: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.8, transition: { duration: 0.3 } },
+  },
+  'slide-up-exit': {
+    visible: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.25 } },
+  },
+  'none': {
+    visible: { opacity: 1 },
+    exit: { opacity: 1 },
+  },
+};
 
 // GodUI Components
 import { FloatingIslandHeader } from '../godui/FloatingIslandHeader';
@@ -430,6 +473,32 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   };
 
   if (!isBuilderMode) {
+    const entrance = instance.animations?.entrance || 'none';
+    const exit = instance.animations?.exit || 'none';
+    const hasAnimations = entrance !== 'none' || exit !== 'none';
+    const replayKey = store.componentReplayKeys[instance.id] || 0;
+
+    if (hasAnimations) {
+      return (
+        <div className="relative w-full">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${instance.id}-${replayKey}`}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={{
+                ...entranceVariants[entrance],
+                ...exitVariants[exit],
+              }}
+            >
+              {renderGodUIElement()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      );
+    }
+
     return (
       <div className="relative w-full">
         {renderGodUIElement()}
@@ -438,6 +507,11 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   }
 
   // Builder mode with selection border and quick actions
+  const entrance = instance.animations?.entrance || 'none';
+  const exit = instance.animations?.exit || 'none';
+  const hasAnimations = entrance !== 'none' || exit !== 'none';
+  const replayKey = store.componentReplayKeys[instance.id] || 0;
+
   return (
     <div
       onClick={(e) => {
@@ -552,12 +626,30 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
       {/* Render component */}
       <div className="relative">
-        {renderGodUIElement()}
+        {hasAnimations ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${instance.id}-builder-${replayKey}`}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={{
+                ...entranceVariants[entrance],
+                ...exitVariants[exit],
+              }}
+            >
+              {renderGodUIElement()}
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          renderGodUIElement()
+        )}
 
         {/* DRAG-AND-DROP FUSION OVERLAY: Active when user drags an effect */}
         {store.draggingItem && (
           <div 
             className="absolute inset-0 z-50 rounded-2xl overflow-hidden bg-black/40 backdrop-blur-[2px] p-2 flex flex-col justify-between pointer-events-auto border-2 border-dashed border-cyan-400/80 animate-pulse"
+            data-component-id={instance.id}
             onDragOver={(e) => {
               e.preventDefault();
               e.dataTransfer.dropEffect = 'copy';
@@ -567,6 +659,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             <div className="flex items-center justify-between gap-2">
               <button
                 type="button"
+                data-component-id={instance.id}
+                data-fusion-slot="before-glow"
                 onClick={() => store.dropEffectOnSlot(instance.id, 'before-glow')}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -588,6 +682,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
               <button
                 type="button"
+                data-component-id={instance.id}
+                data-fusion-slot="title"
                 onClick={() => store.dropEffectOnSlot(instance.id, 'title')}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -612,6 +708,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             <div className="flex flex-wrap items-center justify-center gap-2 my-2">
               <button
                 type="button"
+                data-component-id={instance.id}
+                data-fusion-slot="border"
                 onClick={() => store.dropEffectOnSlot(instance.id, 'border')}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -633,6 +731,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
               <button
                 type="button"
+                data-component-id={instance.id}
+                data-fusion-slot="active-item"
                 onClick={() => store.dropEffectOnSlot(instance.id, 'active-item')}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -654,6 +754,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
               <button
                 type="button"
+                data-component-id={instance.id}
+                data-fusion-slot="icon"
                 onClick={() => store.dropEffectOnSlot(instance.id, 'icon')}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -675,6 +777,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
               <button
                 type="button"
+                data-component-id={instance.id}
+                data-fusion-slot="background"
                 onClick={() => store.dropEffectOnSlot(instance.id, 'background')}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -699,6 +803,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             <div className="flex items-center justify-between gap-2">
               <button
                 type="button"
+                data-component-id={instance.id}
+                data-fusion-slot="interactive-items"
                 onClick={() => store.dropEffectOnSlot(instance.id, 'interactive-items')}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -720,6 +826,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
               <button
                 type="button"
+                data-component-id={instance.id}
+                data-fusion-slot="after-shine"
                 onClick={() => store.dropEffectOnSlot(instance.id, 'after-shine')}
                 onDragOver={(e) => {
                   e.preventDefault();

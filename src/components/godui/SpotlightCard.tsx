@@ -29,13 +29,28 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMove = (clientX: number, clientY: number) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: clientX - rect.left,
+      y: clientY - rect.top,
     });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    handleMove(e.clientX, e.clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    handleMove(touch.clientX, touch.clientY);
+  };
+
+  const handleTouchEnd = () => {
+    setMousePos({ x: 0, y: 0 });
+    setIsHovered(false);
   };
 
   const activeSpotlight = spotlightColor || theme.glow;
@@ -45,10 +60,12 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => { setIsHovered(false); setMousePos({ x: 0, y: 0 }); }}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       onClick={onClick}
       className={cn(
-        "relative rounded-3xl p-8 overflow-hidden group cursor-pointer transition-all duration-300",
+        "relative rounded-3xl p-8 overflow-hidden group cursor-pointer transition-all duration-300 touch-none",
         "bg-zinc-950/80 backdrop-blur-2xl border border-white/10 text-white shadow-2xl",
         "hover:border-white/20",
         className
