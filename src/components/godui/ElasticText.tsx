@@ -113,7 +113,7 @@ const ElasticText = React.forwardRef<HTMLSpanElement, ElasticTextProps>(
       children,
       text,
       className,
-      mode = 'auto',
+      mode = 'auto' as ElasticTextMode,
       minWeight = 300,
       maxWeight = 900,
       duration = 2,
@@ -207,12 +207,12 @@ const ElasticText = React.forwardRef<HTMLSpanElement, ElasticTextProps>(
     }, [duration, loop, mode, reducedMotion, segments, spotlight, startOnView]);
 
     const updateCenters = React.useCallback(() => {
-      const container = containerRef.current;
+      const container = containerRef.current as HTMLElement | null;
       if (!container) {
         return;
       }
-      const spans = container.querySelectorAll('[data-elastic-segment]');
-      centersRef.current = Array.from(spans).map((span) => {
+      const spans = container.querySelectorAll<HTMLElement>('[data-elastic-segment]');
+      centersRef.current = Array.from(spans).map((span: HTMLElement) => {
         const rect = span.getBoundingClientRect();
         return rect.left + rect.width / 2;
       });
@@ -280,7 +280,7 @@ const ElasticText = React.forwardRef<HTMLSpanElement, ElasticTextProps>(
       >
         {segments.map((segment, index) => (
           <Segment
-            key={index}
+            {...({ key: index } as any)}
             segment={segment}
             index={index}
             minWeight={minWeight}

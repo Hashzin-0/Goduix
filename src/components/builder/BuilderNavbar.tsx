@@ -15,7 +15,8 @@ import {
   ChevronDown,
   LayoutTemplate,
   Play,
-  SkipBack
+  SkipBack,
+  Wand2
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { ViewportMode, ViewMode } from '../../types/builder';
@@ -150,6 +151,19 @@ export const BuilderNavbar: React.FC<BuilderNavbarProps> = ({ onOpenExportModal 
           >
             <Code2 className="w-3.5 h-3.5" />
             <span className="hidden md:inline">Código</span>
+          </button>
+
+          <button
+            onClick={() => store.setViewMode('composer')}
+            className={cn(
+              "px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer",
+              store.viewMode === 'composer'
+                ? "bg-violet-500/30 text-white shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            )}
+          >
+            <Wand2 className="w-3.5 h-3.5 text-violet-400" />
+            <span className="hidden md:inline">Compor</span>
           </button>
         </div>
 

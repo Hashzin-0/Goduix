@@ -710,7 +710,7 @@ export const FUSION_DONORS: Record<FusionEffectType, FusionDonorMeta> = {
  * Returns the primary signature effect for ANY component on the site!
  */
 export function getComponentSignatureEffect(type: GodUIComponentType): FusionEffectType {
-  const map: Record<GodUIComponentType, FusionEffectType> = {
+  const map: Partial<Record<GodUIComponentType, FusionEffectType>> = {
     'dynamic-island': 'island-morph',
     'godui-dock': 'dock-magnification',
     'floating-toolbar': 'toolbar-pill-morph',
@@ -737,6 +737,40 @@ export function getComponentSignatureEffect(type: GodUIComponentType): FusionEff
     'scroll-text-reveal': 'scroll-reveal',
     'lamp': 'lamp-beam',
     'ascii-dither': 'ascii-dither-fx',
+    'inset-glass-card': 'glass-refraction',
+    'scroll-glow-container': 'spotlight-beam',
+    'progress-fold-button': 'jelly-bounce',
+    'slide-confirm-button': 'hold-confirm-ring',
+    'otp-input': 'magic-rainbow-stroke',
+    'holographic-card': 'hologram-3d-tilt',
+    'liquid-glass-card': 'liquid-glass',
+    'encrypted-card': 'glass-refraction',
+    'border-beam': 'shimmer-beam',
+    'spotlight-reveal': 'spotlight-beam',
+    'scroll-reveal': 'scroll-reveal',
+    'liquid-image': 'liquid-glass',
+    'terminal': 'ascii-dither-fx',
+    'marquee': 'elastic-stretch',
+    'text-animate': 'elastic-stretch',
+    'text-scramble': 'ascii-dither-fx',
+    'highlighter': 'aurora-glow',
+    'confetti': 'jelly-bounce',
+    'beam-draw': 'lamp-beam',
+    'scroll-progress': 'scroll-reveal',
+    'fluid-cursor': 'spotlight-beam',
+    'particle-dissolve': 'ascii-dither-fx',
+    'image-trail': 'magic-sparkle',
+    'gradient-background': 'aurora-glow',
+    'decorative-background': 'glass-refraction',
+    'effect-background': 'aurora-glow',
+    'geometric-background': 'bento-gradient-border',
+    'liquid-metaballs': 'gooey-liquid',
+    'flow-field': 'aurora-glow',
+    'light-rays': 'lamp-beam',
+    'pixel-grid': 'blueprint-laser',
+    'topographic-drift': 'glass-refraction',
+    'warp-starfield': 'spotlight-beam',
+    'liquid-glass-lens': 'liquid-glass',
   };
 
   return map[type] || 'liquid-glass';

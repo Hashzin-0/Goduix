@@ -7,6 +7,7 @@ import { GeneratedCodeView } from './components/builder/GeneratedCodeView';
 import { ComponentDocsModal } from './components/builder/ComponentDocsModal';
 import { ExportPageModal } from './components/builder/ExportPageModal';
 import { FusionModal } from './components/builder/FusionModal';
+import { ComposerView } from './components/composer/ComposerView';
 import { useBuilderStore } from './store/useBuilderStore';
 import { THEMES } from './data/themes';
 import { cn } from './lib/utils';
@@ -18,7 +19,8 @@ import {
   Code2, 
   PlusCircle, 
   Palette,
-  Sparkles
+  Sparkles,
+  Wand2
 } from 'lucide-react';
 
 export default function App() {
@@ -51,6 +53,9 @@ export default function App() {
             </div>
             <RealtimeCanvas />
           </div>
+        ) : store.viewMode === 'composer' ? (
+          /* VIEW 4: COMPOSER MODE */
+          <ComposerView />
         ) : (
           /* VIEW 3: BUILDER MODE (DESKTOP THREE-PANEL + MOBILE RESPONSIVE TABS) */
           <>
@@ -164,6 +169,15 @@ export default function App() {
           >
             <Code2 className="w-4 h-4" />
             <span className="text-[10px] mt-0.5 font-medium">Código</span>
+          </button>
+
+          {/* Composer Mode Toggle on Mobile */}
+          <button
+            onClick={() => store.setViewMode('composer')}
+            className="flex-1 flex flex-col items-center justify-center py-1 rounded-xl text-zinc-400 hover:text-zinc-200 transition-all cursor-pointer"
+          >
+            <Wand2 className="w-4 h-4 text-violet-400" />
+            <span className="text-[10px] mt-0.5 font-medium">Compor</span>
           </button>
         </nav>
       )}

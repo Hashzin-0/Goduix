@@ -29,9 +29,12 @@ export const ScrollTimeline: React.FC<ScrollTimelineProps> = ({
     <div ref={ref} className={cn('relative pl-8', className)}>
       <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-zinc-800">
         <motion.div
-          style={{ scaleY, transformOrigin: 'top' }}
-          className="w-full bg-gradient-to-b"
-          style={{ background: `linear-gradient(to bottom, ${theme.primary}, ${theme.accent})` }}
+          style={{
+            scaleY,
+            transformOrigin: 'top',
+            background: `linear-gradient(to bottom, ${theme.primary}, ${theme.accent})`,
+          }}
+          className="w-full"
         />
       </div>
       {items.map((item, i) => (

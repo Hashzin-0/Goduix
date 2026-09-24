@@ -292,7 +292,7 @@ export interface BuilderComponentInstance {
 }
 
 export type ViewportMode = 'desktop' | 'tablet' | 'mobile';
-export type ViewMode = 'builder' | 'preview' | 'code';
+export type ViewMode = 'builder' | 'preview' | 'code' | 'composer';
 
 export interface InteractionEvent {
   id: string;

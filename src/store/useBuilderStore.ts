@@ -17,6 +17,20 @@ import { ThemePalette } from '../types';
 import { GODUI_CATALOG } from '../data/goduiCatalog';
 import { PAGE_TEMPLATES } from '../data/templates';
 import { FUSION_PRESETS, FUSION_DONORS, getComponentSignatureEffect } from '../data/fusionCatalog';
+import {
+  ComposedComponent,
+  ComposedLayer,
+  AppliedEffect,
+  DesignToken,
+  DraggingEffectItem,
+  CompositionPreset,
+} from '../types/composition';
+import { COMPONENT_REGISTRY } from '../data/componentRegistry';
+import { getEffectById } from '../data/effectRegistry';
+import { conflictResolver } from '../engine/conflictResolver';
+import { mergeEngine } from '../engine/mergeEngine';
+import { generateCode, ExportFormat } from '../engine/codeGenerator';
+import { COMPOSITION_PRESETS } from '../data/compositionPresets';
 
 interface BuilderState {
   // Canvas State
@@ -113,6 +127,62 @@ interface BuilderState {
   // Interactions
   triggerInteraction: (source: string, action: string, details: string) => void;
   dismissToast: () => void;
+
+  // ============================================
+  // COMPOSER STATE
+  // ============================================
+
+  // Current composition
+  currentComposition: ComposedComponent | null;
+  composerHistory: ComposedComponent[][];
+  composerHistoryIndex: number;
+
+  // Drag state for composer
+  draggingEffect: DraggingEffectItem | null;
+  activeComposerDropZone: { compositionId: string; layerId: string } | null;
+
+  // Composer UI state
+  composerSelectedLayer: string | null;
+  composerConfiguringEffect: { layerId: string; effectId: string } | null;
+  composerPreviewFormat: ExportFormat;
+
+  // Saved presets
+  savedCompositionPresets: CompositionPreset[];
+
+  // Composer Actions
+  createComposition: (base: GodUIComponentType, name?: string) => void;
+  loadComposition: (composition: ComposedComponent) => void;
+  clearComposition: () => void;
+
+  // Layer management
+  addLayer: (layerId: string) => void;
+  removeLayer: (layerId: string) => void;
+  reorderLayers: (fromIndex: number, toIndex: number) => void;
+
+  // Effect management
+  applyEffect: (layerId: string, effectId: string) => void;
+  removeEffect: (layerId: string, effectId: string) => void;
+  configureEffect: (layerId: string, effectId: string, config: Record<string, any>) => void;
+  toggleEffect: (layerId: string, effectId: string) => void;
+  reorderEffects: (layerId: string, fromIndex: number, toIndex: number) => void;
+
+  // Token management
+  setToken: (key: string, value: string | number) => void;
+  removeToken: (key: string) => void;
+
+  // Preset management
+  loadPreset: (presetId: string) => void;
+  saveAsPreset: (name: string, namePt: string, category: string, tags: string[]) => void;
+
+  // Composer drag state
+  setDraggingEffect: (item: DraggingEffectItem | null) => void;
+  setActiveComposerDropZone: (zone: { compositionId: string; layerId: string } | null) => void;
+  setComposerSelectedLayer: (layerId: string | null) => void;
+  setComposerConfiguringEffect: (target: { layerId: string; effectId: string } | null) => void;
+  setComposerPreviewFormat: (format: ExportFormat) => void;
+
+  // Code generation
+  generateCompositionCode: (format?: ExportFormat) => string;
 }
 
 // Generate an initial default page from the first template
@@ -706,4 +776,399 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
   },
 
   dismissToast: () => set({ activeToast: null }),
+
+  // ============================================
+  // COMPOSER STATE & ACTIONS
+  // ============================================
+
+  currentComposition: null,
+  composerHistory: [],
+  composerHistoryIndex: -1,
+  draggingEffect: null,
+  activeComposerDropZone: null,
+  composerSelectedLayer: null,
+  composerConfiguringEffect: null,
+  composerPreviewFormat: 'react-tsx',
+  savedCompositionPresets: COMPOSITION_PRESETS,
+
+  createComposition: (base, name) => {
+    const component = COMPONENT_REGISTRY[base];
+    if (!component) return;
+
+    const composition: ComposedComponent = {
+      id: `comp-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      name: name || `My ${component.name}`,
+      baseComponent: base,
+      layers: component.layers.map(l => ({
+        layerId: l.id,
+        effects: [],
+      })),
+      tokens: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      tags: [],
+    };
+
+    const history = get().composerHistory.slice(0, get().composerHistoryIndex + 1);
+    history.push([composition]);
+
+    set({
+      currentComposition: composition,
+      composerHistory: history,
+      composerHistoryIndex: history.length - 1,
+      composerSelectedLayer: null,
+      composerConfiguringEffect: null,
+      activeToast: { message: `Composição criada: ${composition.name}`, type: 'success' },
+    });
+  },
+
+  loadComposition: (composition) => {
+    set({
+      currentComposition: { ...composition, updatedAt: Date.now() },
+      composerSelectedLayer: null,
+      composerConfiguringEffect: null,
+    });
+  },
+
+  clearComposition: () => {
+    set({
+      currentComposition: null,
+      composerSelectedLayer: null,
+      composerConfiguringEffect: null,
+      composerHistory: [],
+      composerHistoryIndex: -1,
+    });
+  },
+
+  addLayer: (layerId) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+    if (comp.layers.some(l => l.layerId === layerId)) return;
+
+    const component = COMPONENT_REGISTRY[comp.baseComponent];
+    const layerDef = component?.layers.find(l => l.id === layerId);
+    if (!layerDef) return;
+
+    const newLayer: ComposedLayer = { layerId, effects: [] };
+    const newComp: ComposedComponent = {
+      ...comp,
+      layers: [...comp.layers, newLayer].sort((a, b) => {
+        const aDef = component?.layers.find(l => l.id === a.layerId);
+        const bDef = component?.layers.find(l => l.id === b.layerId);
+        return (aDef?.order || 0) - (bDef?.order || 0);
+      }),
+      updatedAt: Date.now(),
+    };
+
+    const history = get().composerHistory.slice(0, get().composerHistoryIndex + 1);
+    history.push([newComp]);
+
+    set({
+      currentComposition: newComp,
+      composerHistory: history,
+      composerHistoryIndex: history.length - 1,
+    });
+  },
+
+  removeLayer: (layerId) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      layers: comp.layers.filter(l => l.layerId !== layerId),
+      updatedAt: Date.now(),
+    };
+
+    const history = get().composerHistory.slice(0, get().composerHistoryIndex + 1);
+    history.push([newComp]);
+
+    set({
+      currentComposition: newComp,
+      composerHistory: history,
+      composerHistoryIndex: history.length - 1,
+      composerSelectedLayer: get().composerSelectedLayer === layerId ? null : get().composerSelectedLayer,
+    });
+  },
+
+  reorderLayers: (fromIndex, toIndex) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const newLayers = [...comp.layers];
+    const [removed] = newLayers.splice(fromIndex, 1);
+    newLayers.splice(toIndex, 0, removed);
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      layers: newLayers,
+      updatedAt: Date.now(),
+    };
+
+    const history = get().composerHistory.slice(0, get().composerHistoryIndex + 1);
+    history.push([newComp]);
+
+    set({
+      currentComposition: newComp,
+      composerHistory: history,
+      composerHistoryIndex: history.length - 1,
+    });
+  },
+
+  applyEffect: (layerId, effectId) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const effect = getEffectById(effectId);
+    if (!effect) return;
+
+    // Check conflicts
+    const layer = comp.layers.find(l => l.layerId === layerId);
+    const currentEffectIds = (layer?.effects || []).map(e => e.effectId);
+    const conflict = conflictResolver.wouldConflict(effectId, currentEffectIds);
+    if (conflict) {
+      set({
+        activeToast: {
+          message: `Conflito: ${conflict.resolution === 'keep-last' ? 'Este efeito conflita com um existente' : 'Este efeito entra em conflito com um efeito existente'}`,
+          type: 'warning',
+        },
+      });
+      return;
+    }
+
+    const newEffect: AppliedEffect = {
+      effectId,
+      config: { ...effect.defaultConfig },
+      enabled: true,
+      order: (layer?.effects.length || 0),
+    };
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      layers: comp.layers.map(l => {
+        if (l.layerId !== layerId) return l;
+        return { ...l, effects: [...l.effects, newEffect] };
+      }),
+      updatedAt: Date.now(),
+    };
+
+    const history = get().composerHistory.slice(0, get().composerHistoryIndex + 1);
+    history.push([newComp]);
+
+    set({
+      currentComposition: newComp,
+      composerHistory: history,
+      composerHistoryIndex: history.length - 1,
+      activeToast: { message: `Efeito aplicado: ${effect.name}`, type: 'success' },
+    });
+  },
+
+  removeEffect: (layerId, effectId) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      layers: comp.layers.map(l => {
+        if (l.layerId !== layerId) return l;
+        return { ...l, effects: l.effects.filter(e => e.effectId !== effectId) };
+      }),
+      updatedAt: Date.now(),
+    };
+
+    const history = get().composerHistory.slice(0, get().composerHistoryIndex + 1);
+    history.push([newComp]);
+
+    set({
+      currentComposition: newComp,
+      composerHistory: history,
+      composerHistoryIndex: history.length - 1,
+      composerConfiguringEffect: get().composerConfiguringEffect?.effectId === effectId
+        ? null
+        : get().composerConfiguringEffect,
+    });
+  },
+
+  configureEffect: (layerId, effectId, config) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      layers: comp.layers.map(l => {
+        if (l.layerId !== layerId) return l;
+        return {
+          ...l,
+          effects: l.effects.map(e => {
+            if (e.effectId !== effectId) return e;
+            return { ...e, config: { ...e.config, ...config } };
+          }),
+        };
+      }),
+      updatedAt: Date.now(),
+    };
+
+    set({ currentComposition: newComp });
+  },
+
+  toggleEffect: (layerId, effectId) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      layers: comp.layers.map(l => {
+        if (l.layerId !== layerId) return l;
+        return {
+          ...l,
+          effects: l.effects.map(e => {
+            if (e.effectId !== effectId) return e;
+            return { ...e, enabled: !e.enabled };
+          }),
+        };
+      }),
+      updatedAt: Date.now(),
+    };
+
+    set({ currentComposition: newComp });
+  },
+
+  reorderEffects: (layerId, fromIndex, toIndex) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      layers: comp.layers.map(l => {
+        if (l.layerId !== layerId) return l;
+        const newEffects = [...l.effects];
+        const [removed] = newEffects.splice(fromIndex, 1);
+        newEffects.splice(toIndex, 0, removed);
+        return { ...l, effects: newEffects.map((e, i) => ({ ...e, order: i })) };
+      }),
+      updatedAt: Date.now(),
+    };
+
+    const history = get().composerHistory.slice(0, get().composerHistoryIndex + 1);
+    history.push([newComp]);
+
+    set({
+      currentComposition: newComp,
+      composerHistory: history,
+      composerHistoryIndex: history.length - 1,
+    });
+  },
+
+  setToken: (key, value) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const existing = comp.tokens.find(t => t.key === key);
+    let newTokens: DesignToken[];
+
+    if (existing) {
+      newTokens = comp.tokens.map(t => t.key === key ? { ...t, value } : t);
+    } else {
+      newTokens = [...comp.tokens, { key, value, category: 'spacing', label: key, labelPt: key }];
+    }
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      tokens: newTokens,
+      updatedAt: Date.now(),
+    };
+
+    set({ currentComposition: newComp });
+  },
+
+  removeToken: (key) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const newComp: ComposedComponent = {
+      ...comp,
+      tokens: comp.tokens.filter(t => t.key !== key),
+      updatedAt: Date.now(),
+    };
+
+    set({ currentComposition: newComp });
+  },
+
+  loadPreset: (presetId) => {
+    const preset = COMPOSITION_PRESETS.find(p => p.id === presetId);
+    if (!preset) return;
+
+    const composition: ComposedComponent = {
+      id: `comp-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      name: preset.name,
+      baseComponent: preset.baseComponent,
+      layers: preset.layers.map(l => ({
+        layerId: l.layerId,
+        effects: l.effects.map(e => ({
+          ...e,
+          config: { ...e.config },
+        })),
+      })),
+      tokens: preset.tokens.map(t => ({ ...t })),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      tags: [...preset.tags],
+    };
+
+    const history = get().composerHistory.slice(0, get().composerHistoryIndex + 1);
+    history.push([composition]);
+
+    set({
+      currentComposition: composition,
+      composerHistory: history,
+      composerHistoryIndex: history.length - 1,
+      composerSelectedLayer: null,
+      composerConfiguringEffect: null,
+      activeToast: { message: `Preset carregado: ${preset.name}`, type: 'success' },
+    });
+  },
+
+  saveAsPreset: (name, namePt, category, tags) => {
+    const comp = get().currentComposition;
+    if (!comp) return;
+
+    const preset: CompositionPreset = {
+      id: `preset-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      name,
+      namePt,
+      description: `Custom preset: ${name}`,
+      descriptionPt: `Preset personalizado: ${namePt}`,
+      category,
+      baseComponent: comp.baseComponent,
+      layers: comp.layers.map(l => ({
+        layerId: l.layerId,
+        effects: l.effects.map(e => ({
+          effectId: e.effectId,
+          config: { ...e.config },
+          enabled: e.enabled,
+          order: e.order,
+        })),
+      })),
+      tokens: comp.tokens.map(t => ({ ...t })),
+      tags,
+    };
+
+    set(state => ({
+      savedCompositionPresets: [...state.savedCompositionPresets, preset],
+      activeToast: { message: `Preset salvo: ${name}`, type: 'success' },
+    }));
+  },
+
+  setDraggingEffect: (item) => set({ draggingEffect: item }),
+  setActiveComposerDropZone: (zone) => set({ activeComposerDropZone: zone }),
+  setComposerSelectedLayer: (layerId) => set({ composerSelectedLayer: layerId }),
+  setComposerConfiguringEffect: (target) => set({ composerConfiguringEffect: target }),
+  setComposerPreviewFormat: (format) => set({ composerPreviewFormat: format }),
+
+  generateCompositionCode: (format) => {
+    const comp = get().currentComposition;
+    if (!comp) return '';
+    const result = generateCode(comp, format || get().composerPreviewFormat);
+    return result.code;
+  },
 }));

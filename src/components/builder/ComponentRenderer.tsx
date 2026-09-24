@@ -17,6 +17,8 @@ import { BuilderComponentInstance, EntranceAnimationType, ExitAnimationType } fr
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { THEMES } from '../../data/themes';
 import { cn } from '../../lib/utils';
+import { AnimatedTestimonials } from '../godui/AnimatedTestimonials';
+import { AppShowcase } from '../godui/AppShowcase';
 
 // Animation Variants
 const entranceVariants: Record<EntranceAnimationType, any> = {
@@ -78,6 +80,105 @@ import { VoiceOrb } from '../godui/VoiceOrb';
 import { GlassFooter } from '../godui/GlassFooter';
 import { BlueprintGrid } from '../godui/BlueprintGrid';
 import { Interactive3DMesh } from '../godui/Interactive3DMesh';
+// Buttons
+import { ProgressFoldButton } from '../godui/ProgressFoldButton';
+import { SlideConfirmButton } from '../godui/SlideConfirmButton';
+// Inputs
+import { OtpInput } from '../godui/OtpInput';
+// Navigation
+import { Breadcrumbs } from '../godui/Breadcrumbs';
+import { Combobox } from '../godui/Combobox';
+import { ContextMenu } from '../godui/ContextMenu';
+import { DropdownMenu } from '../godui/DropdownMenu';
+import { FilterBar } from '../godui/FilterBar';
+import { MagicTab } from '../godui/MagicTab';
+import { MegaMenu } from '../godui/MegaMenu';
+import { ResizableHeader } from '../godui/ResizableHeader';
+import { SegmentedControl } from '../godui/SegmentedControl';
+import { TabBar } from '../godui/TabBar';
+// Overlays
+import { AnimatedTooltip } from '../godui/AnimatedTooltip';
+import { CommandPalette } from '../godui/CommandPalette';
+import { Drawer } from '../godui/Drawer';
+import { MorphingDialog } from '../godui/MorphingDialog';
+import { Toast } from '../godui/Toast';
+// Layout
+import { Accordion } from '../godui/Accordion';
+import { AvatarGroup } from '../godui/AvatarGroup';
+import { CardSwap } from '../godui/CardSwap';
+import { ContainerScroll } from '../godui/ContainerScroll';
+import { CoverFlow } from '../godui/CoverFlow';
+import { GooeyStack } from '../godui/GooeyStack';
+import { HeroParallax } from '../godui/HeroParallax';
+import { ImageAccordion } from '../godui/ImageAccordion';
+import { ImageCompare } from '../godui/ImageCompare';
+import { InertiaGallery } from '../godui/InertiaGallery';
+import { MorphGallery } from '../godui/MorphGallery';
+import { OrbitCarousel } from '../godui/OrbitCarousel';
+import { ProgressiveCardReveal } from '../godui/ProgressiveCardReveal';
+import { ReorderList } from '../godui/ReorderList';
+import { ScrollStack } from '../godui/ScrollStack';
+import { SpinViewer } from '../godui/SpinViewer';
+import { SplitFlapDisplay } from '../godui/SplitFlapDisplay';
+import { Stepper } from '../godui/Stepper';
+import { StickyScroll } from '../godui/StickyScroll';
+import { StackBadge } from '../godui/StackBadge';
+import { StoreBadge } from '../godui/StoreBadge';
+import { SwipeDeck } from '../godui/SwipeDeck';
+import { ThreeDMarquee } from '../godui/ThreeDMarquee';
+import { HolographicCard } from '../godui/HolographicCard';
+// Text
+import { TextAnimate } from '../godui/TextAnimate';
+import { TextScramble } from '../godui/TextScramble';
+import { Highlighter } from '../godui/Highlighter';
+// AI
+import { AgentFlow } from '../godui/AgentFlow';
+import { AgentTimeline } from '../godui/AgentTimeline';
+import { ConversationThread } from '../godui/ConversationThread';
+import { PromptComposer } from '../godui/PromptComposer';
+import { PromptSuggestions } from '../godui/PromptSuggestions';
+import { SourceCitations } from '../godui/SourceCitations';
+// Collaboration
+import { CommentPin } from '../godui/CommentPin';
+import { LiveCursors } from '../godui/LiveCursors';
+import { NotificationInbox } from '../godui/NotificationInbox';
+import { PresenceFacepile } from '../godui/PresenceFacepile';
+// Visualizations
+import { AnimatedBeam } from '../godui/AnimatedBeam';
+import { Globe } from '../godui/Globe';
+import { Gravity } from '../godui/Gravity';
+import { OrbitingCircles } from '../godui/OrbitingCircles';
+import { ScrollTimeline } from '../godui/ScrollTimeline';
+import { WorldMap } from '../godui/WorldMap';
+// Effects
+import { BeamDraw } from '../godui/BeamDraw';
+import { BorderBeam } from '../godui/BorderBeam';
+import { Confetti } from '../godui/Confetti';
+import { EncryptedCard } from '../godui/EncryptedCard';
+import { FluidCursor } from '../godui/FluidCursor';
+import { ImageTrail } from '../godui/ImageTrail';
+import { LiquidImage } from '../godui/LiquidImage';
+import { Marquee } from '../godui/Marquee';
+import { ParticleDissolve } from '../godui/ParticleDissolve';
+import { ScrollProgress } from '../godui/ScrollProgress';
+import { ScrollReveal } from '../godui/ScrollReveal';
+import { SpotlightReveal } from '../godui/SpotlightReveal';
+import { Terminal } from '../godui/Terminal';
+// Backgrounds
+import { FlowField } from '../godui/FlowField';
+import { LightRays } from '../godui/LightRays';
+import { LiquidMetaballs } from '../godui/LiquidMetaballs';
+import { PixelGrid } from '../godui/PixelGrid';
+import { TopographicDrift } from '../godui/TopographicDrift';
+import { WarpStarfield } from '../godui/WarpStarfield';
+// Glass
+import { LiquidGlassCard } from '../godui/LiquidGlassCard';
+import { LiquidGlassLens } from '../godui/LiquidGlassLens';
+// Static Effects
+import { DecorativeBackground } from '../godui/DecorativeBackground';
+import { EffectBackground } from '../godui/EffectBackground';
+import { GeometricBackground } from '../godui/GeometricBackground';
+import { GradientBackground } from '../godui/GradientBackground';
 
 // New GodUI Components
 import { JellyButton } from '../godui/JellyButton';
@@ -511,6 +612,987 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                 Conteúdo do container com brilho reativo ao scroll
               </div>
             </ScrollGlowContainer>
+          </div>
+        );
+
+      // Buttons
+      case 'progress-fold-button':
+        return (
+          <div className="flex justify-center my-4">
+            <ProgressFoldButton
+              label={props.label || 'Fold & Submit'}
+              progress={props.progress || 0}
+              theme={theme}
+              onClick={() => store.triggerInteraction('Progress Fold Button', 'click', props.label)}
+            />
+          </div>
+        );
+
+      case 'slide-confirm-button':
+        return (
+          <div className="flex justify-center my-4">
+            <SlideConfirmButton
+              label={props.label || 'Slide to Confirm'}
+              confirmLabel={props.confirmLabel || 'Confirmed!'}
+              theme={theme}
+              onConfirm={() => store.triggerInteraction('Slide Confirm Button', 'confirm', 'Confirmed')}
+            />
+          </div>
+        );
+
+      // Inputs
+      case 'otp-input':
+        return (
+          <div className="flex justify-center my-4">
+            <OtpInput
+              length={props.length || 6}
+              theme={theme}
+              onComplete={(otp) => store.triggerInteraction('OTP Input', 'complete', otp)}
+            />
+          </div>
+        );
+
+      // Navigation
+      case 'breadcrumbs':
+        return (
+          <div className="my-4">
+            <Breadcrumbs
+              items={props.items || [{ label: 'Home' }, { label: 'Page', active: true }]}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'combobox':
+        return (
+          <div className="flex justify-center my-4">
+            <Combobox
+              options={props.options || []}
+              value={props.value}
+              onChange={(v) => store.triggerInteraction('Combobox', 'select', v)}
+              placeholder={props.placeholder || 'Select...'}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'context-menu':
+        return (
+          <div className="flex justify-center my-4">
+            <ContextMenu
+              items={props.items || []}
+              theme={theme}
+            >
+              <div className="px-4 py-2 rounded-lg bg-zinc-900 border border-white/10 text-white text-sm cursor-pointer">
+                Right-click me
+              </div>
+            </ContextMenu>
+          </div>
+        );
+
+      case 'dropdown-menu':
+        return (
+          <div className="flex justify-center my-4">
+            <DropdownMenu
+              trigger={props.trigger || 'Menu'}
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'filter-bar':
+        return (
+          <div className="flex justify-center my-4">
+            <FilterBar
+              options={props.options || []}
+              value={props.value}
+              onChange={(v) => store.triggerInteraction('Filter Bar', 'filter', v)}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'magic-tab':
+        return (
+          <div className="flex justify-center my-4">
+            <MagicTab
+              items={props.items || []}
+              value={props.value}
+              onChange={(v) => store.triggerInteraction('Magic Tab', 'select', v)}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'mega-menu':
+        return (
+          <div className="flex justify-center my-4">
+            <MegaMenu
+              sections={props.sections || []}
+              theme={theme}
+            >
+              <div className="px-4 py-2 rounded-lg bg-zinc-900 border border-white/10 text-white text-sm cursor-pointer">
+                Open Menu
+              </div>
+            </MegaMenu>
+          </div>
+        );
+
+      case 'resizable-header':
+        return (
+          <div className="my-4">
+            <ResizableHeader
+              onResize={(w) => store.triggerInteraction('Resizable Header', 'resize', `${w}px`)}
+              minWidth={props.minWidth || 80}
+              theme={theme}
+            >
+              {props.children || 'Header'}
+            </ResizableHeader>
+          </div>
+        );
+
+      case 'segmented-control':
+        return (
+          <div className="flex justify-center my-4">
+            <SegmentedControl
+              options={props.options || []}
+              value={props.value}
+              onChange={(v) => store.triggerInteraction('Segmented Control', 'select', v)}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'tab-bar':
+        return (
+          <div className="my-4">
+            <TabBar
+              items={props.items || []}
+              value={props.value}
+              onChange={(v) => store.triggerInteraction('Tab Bar', 'select', v)}
+              theme={theme}
+            />
+          </div>
+        );
+
+      // Overlays
+      case 'animated-tooltip':
+        return (
+          <div className="flex justify-center my-4">
+            <AnimatedTooltip
+              content={props.content || 'Tooltip'}
+              side={props.side || 'top'}
+              theme={theme}
+            >
+              <div className="px-4 py-2 rounded-lg bg-zinc-900 border border-white/10 text-white text-sm">
+                Hover me
+              </div>
+            </AnimatedTooltip>
+          </div>
+        );
+
+      case 'command-palette':
+        return (
+          <div className="my-4">
+            <CommandPalette
+              items={props.items || []}
+              open={props.open ?? false}
+              onClose={() => store.triggerInteraction('Command Palette', 'close', '')}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'drawer':
+        return (
+          <div className="my-4">
+            <Drawer
+              open={props.open ?? false}
+              onClose={() => store.triggerInteraction('Drawer', 'close', '')}
+              side={props.side || 'right'}
+              title={props.title}
+              theme={theme}
+            >
+              <div className="text-zinc-400 text-sm">Drawer content</div>
+            </Drawer>
+          </div>
+        );
+
+      case 'morphing-dialog':
+        return (
+          <div className="my-4">
+            <MorphingDialog
+              open={props.open ?? false}
+              onClose={() => store.triggerInteraction('Morphing Dialog', 'close', '')}
+              title={props.title}
+              theme={theme}
+            >
+              <div className="text-zinc-400 text-sm">Dialog content</div>
+            </MorphingDialog>
+          </div>
+        );
+
+      case 'toast':
+        return (
+          <div className="my-4">
+            <Toast
+              message={props.message || 'Notification'}
+              type={props.type || 'info'}
+              open={props.open ?? false}
+              onClose={() => store.triggerInteraction('Toast', 'close', '')}
+              theme={theme}
+            />
+          </div>
+        );
+
+      // Text
+      case 'text-animate':
+        return (
+          <div className="flex justify-center my-4">
+            <TextAnimate
+              text={props.text || 'Animated Text'}
+              animation={props.animation || 'fade'}
+              delay={props.delay || 0}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'text-scramble':
+        return (
+          <div className="flex justify-center my-4">
+            <TextScramble
+              text={props.text || 'Scramble Text'}
+              duration={props.duration || 1000}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'highlighter':
+        return (
+          <div className="flex justify-center my-4">
+            <Highlighter
+              text={props.text || 'Highlighted text'}
+              highlight={props.highlight || 'Highlighted'}
+              variant={props.variant || 'background'}
+              theme={theme}
+            />
+          </div>
+        );
+
+      // AI
+      case 'agent-flow':
+        return (
+          <div className="flex justify-center my-4">
+            <AgentFlow
+              steps={props.steps || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'agent-timeline':
+        return (
+          <div className="my-4">
+            <AgentTimeline
+              events={props.events || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'conversation-thread':
+        return (
+          <div className="my-4">
+            <ConversationThread
+              messages={props.messages || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'prompt-composer':
+        return (
+          <div className="my-4">
+            <PromptComposer
+              placeholder={props.placeholder}
+              onSubmit={(v) => store.triggerInteraction('Prompt Composer', 'submit', v)}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'prompt-suggestions':
+        return (
+          <div className="my-4">
+            <PromptSuggestions
+              suggestions={props.suggestions || []}
+              onSelect={(s) => store.triggerInteraction('Prompt Suggestions', 'select', s)}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'source-citations':
+        return (
+          <div className="my-4">
+            <SourceCitations
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      // Collaboration
+      case 'comment-pin':
+        return (
+          <div className="flex justify-center my-4">
+            <CommentPin
+              author={props.author || 'User'}
+              content={props.content || 'Comment'}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'live-cursors':
+        return (
+          <div className="my-4 relative h-32">
+            <LiveCursors
+              cursors={props.cursors || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'notification-inbox':
+        return (
+          <div className="my-4">
+            <NotificationInbox
+              notifications={props.notifications || []}
+              onRead={(id) => store.triggerInteraction('Notification Inbox', 'read', id)}
+              onDismiss={(id) => store.triggerInteraction('Notification Inbox', 'dismiss', id)}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'presence-facepile':
+        return (
+          <div className="flex justify-center my-4">
+            <PresenceFacepile
+              users={props.users || []}
+              max={props.max || 5}
+              theme={theme}
+            />
+          </div>
+        );
+
+      // Visualizations
+      case 'animated-beam':
+        return (
+          <div className="my-4">
+            <AnimatedBeam
+              direction={props.direction || 'horizontal'}
+              duration={props.duration || 2}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'globe':
+        return (
+          <div className="flex justify-center my-4">
+            <Globe
+              size={props.size || 200}
+              dots={props.dots || 50}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'gravity':
+        return (
+          <div className="my-4">
+            <Gravity
+              count={props.count || 20}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'orbiting-circles':
+        return (
+          <div className="flex justify-center my-4">
+            <OrbitingCircles
+              orbits={props.orbits || 3}
+              itemsPerOrbit={props.itemsPerOrbit || 6}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'scroll-timeline':
+        return (
+          <div className="my-4">
+            <ScrollTimeline
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'world-map':
+        return (
+          <div className="my-4">
+            <WorldMap
+              points={props.points || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      // Layout
+      case 'accordion':
+        return (
+          <div className="my-4">
+            <Accordion
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'animated-testimonials':
+        return (
+          <div className="my-4">
+            <AnimatedTestimonials
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'app-showcase':
+        return (
+          <div className="my-4">
+            <AppShowcase
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'avatar-group':
+        return (
+          <div className="flex justify-center my-4">
+            <AvatarGroup
+              avatars={props.avatars || []}
+              max={props.max || 4}
+              size={props.size || 'md'}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'card-swap':
+        return (
+          <div className="my-4">
+            <CardSwap
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'container-scroll':
+        return (
+          <div className="my-4">
+            <ContainerScroll
+              theme={theme}
+            >
+              <div className="p-8 text-center text-zinc-400">Scroll content</div>
+            </ContainerScroll>
+          </div>
+        );
+
+      case 'cover-flow':
+        return (
+          <div className="my-4">
+            <CoverFlow
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'gooey-stack':
+        return (
+          <div className="flex justify-center my-4">
+            <GooeyStack
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'hero-parallax':
+        return (
+          <div className="my-4">
+            <HeroParallax
+              title={props.title || 'Hero Title'}
+              subtitle={props.subtitle}
+              backgroundImage={props.backgroundImage}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'image-accordion':
+        return (
+          <div className="my-4">
+            <ImageAccordion
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'image-compare':
+        return (
+          <div className="my-4">
+            <ImageCompare
+              beforeImage={props.beforeImage || ''}
+              afterImage={props.afterImage || ''}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'inertia-gallery':
+        return (
+          <div className="my-4">
+            <InertiaGallery
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'morph-gallery':
+        return (
+          <div className="my-4">
+            <MorphGallery
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'orbit-carousel':
+        return (
+          <div className="my-4">
+            <OrbitCarousel
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'progressive-card-reveal':
+        return (
+          <div className="my-4">
+            <ProgressiveCardReveal
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'reorder-list':
+        return (
+          <div className="my-4">
+            <ReorderList
+              items={props.items || []}
+              onReorder={(items) => store.triggerInteraction('Reorder List', 'reorder', `${items.length} items`)}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'scroll-stack':
+        return (
+          <div className="my-4">
+            <ScrollStack
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'spin-viewer':
+        return (
+          <div className="my-4">
+            <SpinViewer
+              images={props.images || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'split-flap-display':
+        return (
+          <div className="flex justify-center my-4">
+            <SplitFlapDisplay
+              text={props.text || 'HELLO'}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'stepper':
+        return (
+          <div className="flex justify-center my-4">
+            <Stepper
+              steps={props.steps || []}
+              currentStep={props.currentStep || 0}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'sticky-scroll':
+        return (
+          <div className="my-4">
+            <StickyScroll
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'stack-badge':
+        return (
+          <div className="flex justify-center my-4">
+            <StackBadge
+              items={props.items || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'store-badge':
+        return (
+          <div className="flex justify-center my-4">
+            <StoreBadge
+              platform={props.platform || 'ios'}
+              theme={theme}
+              onClick={() => store.triggerInteraction('Store Badge', 'click', props.platform)}
+            />
+          </div>
+        );
+
+      case 'swipe-deck':
+        return (
+          <div className="my-4">
+            <SwipeDeck
+              items={props.items || []}
+              theme={theme}
+              onSwipe={(dir, i) => store.triggerInteraction('Swipe Deck', dir, `Card ${i}`)}
+            />
+          </div>
+        );
+
+      case 'three-d-marquee':
+        return (
+          <div className="my-4">
+            <ThreeDMarquee
+              items={props.items || []}
+              speed={props.speed || 20}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'holographic-card':
+        return (
+          <div className="max-w-md mx-auto my-4">
+            <HolographicCard
+              title={props.title}
+              theme={theme}
+            >
+              <div className="text-zinc-400 text-sm">Card content</div>
+            </HolographicCard>
+          </div>
+        );
+
+      // Effects
+      case 'beam-draw':
+        return (
+          <div className="my-4">
+            <BeamDraw
+              duration={props.duration || 2}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'border-beam':
+        return (
+          <div className="my-4">
+            <BorderBeam
+              duration={props.duration || 3}
+              theme={theme}
+            >
+              <div className="p-8 text-center text-zinc-400 text-sm">Content with border beam</div>
+            </BorderBeam>
+          </div>
+        );
+
+      case 'confetti':
+        return (
+          <div className="my-4">
+            <Confetti
+              count={props.count || 50}
+              active={props.active ?? false}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'encrypted-card':
+        return (
+          <div className="max-w-md mx-auto my-4">
+            <EncryptedCard
+              text={props.text || 'Encrypted Text'}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'fluid-cursor':
+        return (
+          <div className="my-4">
+            <FluidCursor
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'image-trail':
+        return (
+          <div className="my-4">
+            <ImageTrail
+              images={props.images || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'liquid-image':
+        return (
+          <div className="max-w-md mx-auto my-4">
+            <LiquidImage
+              src={props.src || ''}
+              alt={props.alt || ''}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'marquee':
+        return (
+          <div className="my-4">
+            <Marquee
+              items={props.items || []}
+              speed={props.speed || 20}
+              reverse={props.reverse ?? false}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'particle-dissolve':
+        return (
+          <div className="my-4">
+            <ParticleDissolve
+              count={props.count || 30}
+              theme={theme}
+            >
+              <div className="p-8 text-center text-zinc-400 text-sm bg-zinc-900 rounded-2xl border border-white/10">
+                Click to dissolve
+              </div>
+            </ParticleDissolve>
+          </div>
+        );
+
+      case 'scroll-progress':
+        return (
+          <div className="my-4">
+            <ScrollProgress
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'scroll-reveal':
+        return (
+          <div className="my-4">
+            <ScrollReveal
+              direction={props.direction || 'up'}
+              theme={theme}
+            >
+              <div className="p-8 text-center text-zinc-400 text-sm">
+                Scroll to reveal this content
+              </div>
+            </ScrollReveal>
+          </div>
+        );
+
+      case 'spotlight-reveal':
+        return (
+          <div className="my-4">
+            <SpotlightReveal
+              theme={theme}
+            >
+              <div className="p-8 text-center text-zinc-400 text-sm">
+                Content with spotlight reveal
+              </div>
+            </SpotlightReveal>
+          </div>
+        );
+
+      case 'terminal':
+        return (
+          <div className="my-4">
+            <Terminal
+              lines={props.lines || []}
+              theme={theme}
+            />
+          </div>
+        );
+
+      // Backgrounds
+      case 'flow-field':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <FlowField
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'light-rays':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <LightRays
+              count={props.count || 8}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'liquid-metaballs':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <LiquidMetaballs
+              count={props.count || 5}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'pixel-grid':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <PixelGrid
+              pixelSize={props.pixelSize || 4}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'topographic-drift':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <TopographicDrift
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'warp-starfield':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <WarpStarfield
+              count={props.count || 100}
+              theme={theme}
+            />
+          </div>
+        );
+
+      // Glass
+      case 'liquid-glass-card':
+        return (
+          <div className="max-w-md mx-auto my-4">
+            <LiquidGlassCard
+              theme={theme}
+            >
+              <div className="text-zinc-400 text-sm">Liquid glass content</div>
+            </LiquidGlassCard>
+          </div>
+        );
+
+      case 'liquid-glass-lens':
+        return (
+          <div className="flex justify-center my-4">
+            <LiquidGlassLens
+              theme={theme}
+            >
+              <div className="text-zinc-400 text-sm">Lens content</div>
+            </LiquidGlassLens>
+          </div>
+        );
+
+      // Static Effects
+      case 'decorative-background':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <DecorativeBackground
+              variant={props.variant || 'dots'}
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'effect-background':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <EffectBackground
+              theme={theme}
+            >
+              <div className="text-zinc-400 text-sm text-center pt-24">Effect Background</div>
+            </EffectBackground>
+          </div>
+        );
+
+      case 'geometric-background':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <GeometricBackground
+              theme={theme}
+            />
+          </div>
+        );
+
+      case 'gradient-background':
+        return (
+          <div className="my-4 h-64 relative rounded-2xl overflow-hidden">
+            <GradientBackground
+              theme={theme}
+            >
+              <div className="text-zinc-400 text-sm text-center pt-24">Gradient Background</div>
+            </GradientBackground>
           </div>
         );
 
