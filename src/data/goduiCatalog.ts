@@ -1734,16 +1734,53 @@ export function ScrollGlowContainer({ children }) {
     type: 'border-beam',
     name: 'Border Beam',
     category: 'Effects & Backgrounds',
-    description: 'Feixe de borda.',
+    description: 'Feixe de luz que viaja ou respira na borda de qualquer elemento — extraído do Libraries.dev border-beam com famílias rotate e pulse, palettes colorful/mono/ocean/sunset e strength 0–1.',
     iconName: 'Square',
-    badge: 'Border',
+    badge: 'Libraries.dev',
     registryName: 'border-beam',
-    dependencies: ['motion/react'],
+    dependencies: ['clsx', 'tailwind-merge'],
     propFields: [
-      { key: 'duration', label: 'Duração (s)', type: 'number', defaultValue: 3, min: 1, max: 8, step: 0.5 },
+      {
+        key: 'size',
+        label: 'Variante',
+        type: 'select',
+        defaultValue: 'md',
+        options: [
+          { label: 'md — borda completa', value: 'md' },
+          { label: 'sm — compacto', value: 'sm' },
+          { label: 'line — aresta inferior', value: 'line' },
+          { label: 'pulse-inner — respiração interna', value: 'pulse-inner' },
+          { label: 'pulse-outside — halo externo', value: 'pulse-outside' },
+        ],
+      },
+      {
+        key: 'colorVariant',
+        label: 'Paleta',
+        type: 'select',
+        defaultValue: 'colorful',
+        options: [
+          { label: 'Colorful (tema)', value: 'colorful' },
+          { label: 'Mono', value: 'mono' },
+          { label: 'Ocean', value: 'ocean' },
+          { label: 'Sunset', value: 'sunset' },
+        ],
+      },
+      { key: 'duration', label: 'Duração do ciclo (s)', type: 'number', defaultValue: 1.96, min: 0.5, max: 8, step: 0.14 },
+      { key: 'strength', label: 'Intensidade (0-1)', type: 'number', defaultValue: 1, min: 0.1, max: 1, step: 0.1 },
+      { key: 'active', label: 'Animação ativa', type: 'boolean', defaultValue: true },
     ],
-    defaultProps: { duration: 3 },
-    sampleCode: `export function BorderBeam() {\n  return <div>Border</div>;\n}`,
+    defaultProps: { size: 'md', colorVariant: 'colorful', duration: 1.96, strength: 1, active: true },
+    sampleCode: `import { BorderBeam } from "@/src/components/godui/BorderBeam";
+
+export function Card() {
+  return (
+    <BorderBeam size="md" colorVariant="colorful" strength={1}>
+      <div className="rounded-2xl bg-zinc-950 p-8 border border-white/10">
+        Content with border beam
+      </div>
+    </BorderBeam>
+  );
+}`,
   },
   'confetti': {
     type: 'confetti',
@@ -2336,5 +2373,299 @@ export function ScrollGlowContainer({ children }) {
     propFields: [],
     defaultProps: {},
     sampleCode: `export function WorldMap() {\n  return <div>Map</div>;\n}`,
+  },
+
+  'thinking-orb': {
+    type: 'thinking-orb',
+    name: 'Thinking Orb',
+    category: 'AI & Collaboration',
+    description: 'Orbe de pensamento pontilhado em canvas 2D com nove estados animados (working, searching, solving…) — indicadores de carregamento para interfaces de IA.',
+    iconName: 'Brain',
+    badge: 'Libraries.dev',
+    registryName: 'thinking-orb',
+    dependencies: ['clsx', 'tailwind-merge'],
+    propFields: [
+      {
+        key: 'state',
+        label: 'Estado do Agente',
+        type: 'select',
+        defaultValue: 'working',
+        options: [
+          { label: 'Working (partículas)', value: 'working' },
+          { label: 'Searching (meridiano)', value: 'searching' },
+          { label: 'Solving (bandas)', value: 'solving' },
+          { label: 'Listening (waveform)', value: 'listening' },
+          { label: 'Connecting (constelação)', value: 'connecting' },
+          { label: 'Weaving (tramas)', value: 'weaving' },
+          { label: 'Composing (sash)', value: 'composing' },
+          { label: 'Breathing (anel)', value: 'breathing' },
+          { label: 'Shaping (formas)', value: 'shaping' },
+        ],
+      },
+      { key: 'size', label: 'Tamanho (px)', type: 'number', defaultValue: 64, min: 20, max: 128, step: 4 },
+      { key: 'speed', label: 'Velocidade (x)', type: 'number', defaultValue: 1, min: 0.25, max: 3, step: 0.25 },
+      { key: 'paused', label: 'Pausar', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { state: 'working', size: 64, speed: 1, paused: false },
+    sampleCode: `import { ThinkingOrb } from "@/src/components/godui/ThinkingOrb";
+
+export function Status() {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-zinc-900/80 p-4">
+      <ThinkingOrb state="searching" size={64} />
+      <span className="text-sm text-zinc-300">Analisando repositório…</span>
+    </div>
+  );
+}`,
+  },
+
+  'bot-avatar': {
+    type: 'bot-avatar',
+    name: 'Bot Avatar',
+    category: 'AI & Collaboration',
+    description: 'Avatares de bot animados em canvas 2D com rosto vivo (olhos, piscar, boca), 18 formas, 3 estados (idle/working/sleeping) e shading plástico.',
+    iconName: 'Bot',
+    badge: 'Libraries.dev',
+    registryName: 'bot-avatar',
+    dependencies: ['clsx', 'tailwind-merge'],
+    propFields: [
+      {
+        key: 'type',
+        label: 'Corpo',
+        type: 'select',
+        defaultValue: 'clover',
+        options: [
+          { label: 'Clover', value: 'clover' },
+          { label: 'Flower', value: 'flower' },
+          { label: 'Triangle', value: 'triangle' },
+          { label: 'Square', value: 'square' },
+          { label: 'Blob', value: 'blob' },
+          { label: 'Ghost', value: 'ghost' },
+          { label: 'Circle', value: 'circle' },
+          { label: 'Drop', value: 'drop' },
+          { label: 'Star', value: 'star' },
+          { label: 'Droid', value: 'droid' },
+          { label: 'Mech', value: 'mech' },
+          { label: 'Alien', value: 'alien' },
+          { label: 'Hexagon', value: 'hexagon' },
+          { label: 'Cat', value: 'cat' },
+          { label: 'Cloud', value: 'cloud' },
+          { label: 'Pill', value: 'pill' },
+          { label: 'Pebble', value: 'pebble' },
+          { label: 'Puddle', value: 'puddle' },
+        ],
+      },
+      {
+        key: 'state',
+        label: 'Estado',
+        type: 'select',
+        defaultValue: 'default',
+        options: [
+          { label: 'Idle', value: 'default' },
+          { label: 'Working', value: 'working' },
+          { label: 'Sleeping', value: 'sleeping' },
+        ],
+      },
+      {
+        key: 'face',
+        label: 'Rosto',
+        type: 'select',
+        defaultValue: 'eyes',
+        options: [
+          { label: 'Apenas olhos', value: 'eyes' },
+          { label: 'Olhos + boca', value: 'mouth' },
+        ],
+      },
+      { key: 'size', label: 'Tamanho (px)', type: 'number', defaultValue: 64, min: 24, max: 160, step: 4 },
+      { key: 'interactive', label: 'Segue o ponteiro', type: 'boolean', defaultValue: true },
+      { key: 'paused', label: 'Pausar', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: {
+      type: 'clover',
+      state: 'default',
+      face: 'eyes',
+      size: 64,
+      interactive: true,
+      paused: false,
+    },
+    sampleCode: `import { BotAvatar } from "@/src/components/godui/BotAvatar";
+
+export function Agent({ busy }: { busy: boolean }) {
+  return (
+    <BotAvatar
+      type="clover"
+      state={busy ? "working" : "default"}
+      face="mouth"
+      size={64}
+    />
+  );
+}`,
+  },
+
+  'voice-beam': {
+    type: 'voice-beam',
+    name: 'Voice Beam',
+    category: 'Effects & Backgrounds',
+    description: 'Brilho reativo à voz na borda inferior de qualquer elemento — stroke, glow interno e bloom que sobem com o nível de áudio (Web Audio opcional).',
+    iconName: 'AudioLines',
+    badge: 'Libraries.dev',
+    registryName: 'voice-beam',
+    dependencies: ['clsx', 'tailwind-merge'],
+    propFields: [
+      { key: 'strength', label: 'Intensidade (0-1)', type: 'number', defaultValue: 1, min: 0.1, max: 1, step: 0.1 },
+      { key: 'idle', label: 'Respiro em repouso (0-1)', type: 'number', defaultValue: 0.23, min: 0, max: 1, step: 0.01 },
+      { key: 'bend', label: 'Altura do arco (px)', type: 'number', defaultValue: 60, min: 0, max: 140, step: 5 },
+      { key: 'sensitivity', label: 'Sensibilidade do mic', type: 'number', defaultValue: 3.1, min: 0.5, max: 8, step: 0.1 },
+      { key: 'active', label: 'Efeito ativo', type: 'boolean', defaultValue: true },
+      { key: 'processing', label: 'Modo processando', type: 'boolean', defaultValue: false },
+      {
+        key: 'colorVariant',
+        label: 'Paleta',
+        type: 'select',
+        defaultValue: 'auto',
+        options: [
+          { label: 'Do tema (auto)', value: 'auto' },
+          { label: 'Monocromático', value: 'mono' },
+        ],
+      },
+    ],
+    defaultProps: {
+      strength: 1,
+      idle: 0.23,
+      bend: 60,
+      sensitivity: 3.1,
+      active: true,
+      processing: false,
+      colorVariant: 'auto',
+    },
+    sampleCode: `import { VoiceBeam } from "@/src/components/godui/VoiceBeam";
+
+export function Composer() {
+  return (
+    <VoiceBeam level={0.6} bend={60} strength={1}>
+      <div className="rounded-2xl bg-zinc-900 p-6 text-zinc-300">
+        Listening…
+      </div>
+    </VoiceBeam>
+  );
+}`,
+  },
+
+  'metal-fx': {
+    type: 'metal-fx',
+    name: 'Metal FX',
+    category: 'Buttons & Actions',
+    description: 'Metal líquido animado para botões, ícones, texto e badges — anel conico com especular em órbita, luz de cursor e presets chromatic/silver/gold.',
+    iconName: 'Sparkles',
+    badge: 'Libraries.dev',
+    registryName: 'metal-fx',
+    dependencies: ['motion/react', 'clsx', 'tailwind-merge'],
+    propFields: [
+      {
+        key: 'variant',
+        label: 'Variante',
+        type: 'select',
+        defaultValue: 'button',
+        options: [
+          { label: 'Botão (pill)', value: 'button' },
+          { label: 'Círculo', value: 'circle' },
+          { label: 'Texto metálico', value: 'text' },
+          { label: 'Badge', value: 'badge' },
+        ],
+      },
+      {
+        key: 'preset',
+        label: 'Paleta',
+        type: 'select',
+        defaultValue: 'chromatic',
+        options: [
+          { label: 'Chromatic (iridescente)', value: 'chromatic' },
+          { label: 'Silver (aço)', value: 'silver' },
+          { label: 'Gold (ouro)', value: 'gold' },
+          { label: 'Do tema GodUI', value: 'theme' },
+        ],
+      },
+      { key: 'strength', label: 'Intensidade (0-1)', type: 'number', defaultValue: 1, min: 0.1, max: 1, step: 0.1 },
+      { key: 'paused', label: 'Pausar órbita', type: 'boolean', defaultValue: false },
+      { key: 'label', label: 'Texto (text/badge)', type: 'text', defaultValue: 'Upgrade to Pro' },
+    ],
+    defaultProps: {
+      variant: 'button',
+      preset: 'chromatic',
+      strength: 1,
+      paused: false,
+      label: 'Upgrade to Pro',
+    },
+    sampleCode: `import { MetalFx } from "@/src/components/godui/MetalFx";
+
+export function UpgradeButton() {
+  return (
+    <MetalFx variant="button" preset="chromatic" strength={1}>
+      <button className="rounded-full bg-zinc-900 px-6 py-2.5 text-sm text-white border border-white/10">
+        Upgrade to Pro
+      </button>
+    </MetalFx>
+  );
+}`,
+  },
+
+  'image-generation': {
+    type: 'image-generation',
+    name: 'Image Generation',
+    category: 'Effects & Backgrounds',
+    description: 'Loader WebGL-style em canvas 2D: mosaico de pixels que se dissolve revelando uma imagem do pool — presets pixels-organic, pixels-mechanic e sweep-gradient.',
+    iconName: 'Image',
+    badge: 'Libraries.dev',
+    registryName: 'image-generation',
+    dependencies: ['clsx', 'tailwind-merge'],
+    propFields: [
+      {
+        key: 'preset',
+        label: 'Preset do loader',
+        type: 'select',
+        defaultValue: 'pixels-organic',
+        options: [
+          { label: 'Pixels Organic (Chromium Flow)', value: 'pixels-organic' },
+          { label: 'Pixels Mechanic (Nebula)', value: 'pixels-mechanic' },
+          { label: 'Sweep Gradient', value: 'sweep-gradient' },
+        ],
+      },
+      {
+        key: 'images',
+        label: 'URLs das imagens (vírgula)',
+        type: 'text',
+        defaultValue:
+          'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=640,https://images.unsplash.com/photo-1634017839464-5c339bbe3c4b?w=640',
+      },
+      { key: 'autoReveal', label: 'Revelação automática', type: 'boolean', defaultValue: true },
+      { key: 'pixelScale', label: 'Escala do pixel (0.5-3)', type: 'number', defaultValue: 1, min: 0.5, max: 3, step: 0.25 },
+      { key: 'strength', label: 'Intensidade (0-1)', type: 'number', defaultValue: 1, min: 0.1, max: 1, step: 0.1 },
+      { key: 'paused', label: 'Pausar', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: {
+      preset: 'pixels-organic',
+      images:
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=640,https://images.unsplash.com/photo-1634017839464-5c339bbe3c4b?w=640',
+      autoReveal: true,
+      pixelScale: 1,
+      strength: 1,
+      paused: false,
+    },
+    sampleCode: `import { ImageGeneration } from "@/src/components/godui/ImageGeneration";
+
+export function RevealCard() {
+  return (
+    <ImageGeneration
+      preset="pixels-organic"
+      images={["/img/a.jpg", "/img/b.jpg"]}
+      autoReveal
+    >
+      <div
+        className="h-72 w-72 rounded-3xl bg-zinc-900 border border-white/10"
+        style={{ width: 288, height: 288 }}
+      />
+    </ImageGeneration>
+  );
+}`,
   },
 };

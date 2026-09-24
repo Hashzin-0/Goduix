@@ -193,6 +193,12 @@ import { Lamp } from '../godui/Lamp';
 import { AsciiDither } from '../godui/AsciiDither';
 import { InsetGlassCard } from '../godui/InsetGlassCard';
 import { ScrollGlowContainer } from '../godui/ScrollGlowContainer';
+import { ThinkingOrb } from '../godui/ThinkingOrb';
+import { BotAvatar } from '../godui/BotAvatar';
+import { VoiceBeam } from '../godui/VoiceBeam';
+import { MetalFx } from '../godui/MetalFx';
+import { ImageGeneration } from '../godui/ImageGeneration';
+import { FusionWrapper } from '../godui/fusion';
 import { FusionTargetSlot } from '../../types/builder';
 
 interface ComponentRendererProps {
@@ -237,10 +243,10 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     );
   }
 
-  // Render the specific GodUI component
+  // Render the specific GodUI component (always fusion-wrapped for all 116+)
   const renderGodUIElement = () => {
     const props = instance.props;
-
+    const node = (() => {
     switch (instance.type) {
       case 'dynamic-island':
         return (
@@ -334,7 +340,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           <div className="flex justify-center my-8">
             <GooeyFab
               theme={theme}
-              onActionSelect={(action) => store.triggerInteraction('Gooey FAB', `Sub-ação Líquida: ${action}`, 'Animação com filtro SVG metaball')}
+              fusions={instance.fusions}
+              onActionClick={(action) => store.triggerInteraction('Gooey FAB', `Sub-ação Líquida: ${action}`, 'Animação com filtro SVG metaball')}
             />
           </div>
         );
@@ -1341,10 +1348,16 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         return (
           <div className="my-4">
             <BorderBeam
-              duration={props.duration || 3}
+              duration={props.duration || undefined}
+              size={props.size || 'md'}
+              colorVariant={props.colorVariant || 'colorful'}
+              strength={props.strength ?? 1}
               theme={theme}
+              fusions={instance.fusions}
             >
-              <div className="p-8 text-center text-zinc-400 text-sm">Content with border beam</div>
+              <div className="rounded-2xl bg-zinc-950 p-8 text-center text-zinc-400 text-sm border border-white/10">
+                Content with border beam
+              </div>
             </BorderBeam>
           </div>
         );
@@ -1596,9 +1609,117 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           </div>
         );
 
+      // Libraries.dev extractions
+      case 'thinking-orb':
+        return (
+          <div className="my-4 flex justify-center">
+            <div className="inline-flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/80 px-6 py-5">
+              <ThinkingOrb
+                state={(props.state as any) || 'working'}
+                size={Number(props.size) || 64}
+                speed={Number(props.speed) || 1}
+                paused={!!props.paused}
+                theme={theme}
+                fusions={instance.fusions}
+              />
+              <div className="text-left">
+                <div className="text-sm font-medium text-zinc-200">Agente pensando…</div>
+                <div className="text-xs text-zinc-500">{String(props.state || 'working')}</div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'bot-avatar':
+        return (
+          <div className="my-4 flex justify-center">
+            <BotAvatar
+              type={(props.type as any) || 'clover'}
+              state={(props.state as any) || 'default'}
+              face={(props.face as any) || 'eyes'}
+              size={Number(props.size) || 64}
+              interactive={props.interactive ?? true}
+              paused={!!props.paused}
+              theme={theme}
+              fusions={instance.fusions}
+            />
+          </div>
+        );
+
+      case 'voice-beam':
+        return (
+          <div className="my-4">
+            <VoiceBeam
+              strength={Number(props.strength) || 1}
+              idle={props.idle !== undefined ? Number(props.idle) : 0.23}
+              bend={props.bend !== undefined ? Number(props.bend) : 60}
+              sensitivity={props.sensitivity !== undefined ? Number(props.sensitivity) : 3.1}
+              active={props.active ?? true}
+              processing={!!props.processing}
+              colorVariant={(props.colorVariant as any) || 'auto'}
+              theme={theme}
+              fusions={instance.fusions}
+            >
+              <div className="rounded-2xl bg-zinc-900 p-8 text-center text-zinc-400 text-sm border border-white/10">
+                Chat input with voice glow
+              </div>
+            </VoiceBeam>
+          </div>
+        );
+
+      case 'metal-fx':
+        return (
+          <div className="my-4 flex justify-center">
+            <MetalFx
+              variant={(props.variant as any) || 'button'}
+              preset={(props.preset as any) || 'chromatic'}
+              strength={Number(props.strength) || 1}
+              paused={!!props.paused}
+              label={props.label || 'Upgrade to Pro'}
+              theme={theme}
+              fusions={instance.fusions}
+            >
+              <button className="rounded-full bg-zinc-900 px-6 py-2.5 text-sm text-white border border-white/10">
+                {props.label || 'Upgrade to Pro'}
+              </button>
+            </MetalFx>
+          </div>
+        );
+
+      case 'image-generation':
+        return (
+          <div className="my-4 flex justify-center">
+            <ImageGeneration
+              preset={(props.preset as any) || 'pixels-organic'}
+              images={String(props.images || '')
+                .split(',')
+                .map((s: string) => s.trim())
+                .filter(Boolean)}
+              autoReveal={props.autoReveal ?? true}
+              pixelScale={Number(props.pixelScale) || 1}
+              strength={Number(props.strength) || 1}
+              paused={!!props.paused}
+              theme={theme}
+              fusions={instance.fusions}
+            >
+              <div
+                className="rounded-3xl bg-zinc-900 border border-white/10"
+                style={{ width: 288, height: 288 }}
+              />
+            </ImageGeneration>
+          </div>
+        );
+
       default:
         return null;
     }
+    })();
+
+    return (
+      <FusionWrapper fusions={instance.fusions} theme={theme}>
+        {node}
+      </FusionWrapper>
+    );
   };
 
   if (!isBuilderMode) {

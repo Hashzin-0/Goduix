@@ -130,7 +130,13 @@ export type GodUIComponentType =
   | 'decorative-background'
   | 'effect-background'
   | 'geometric-background'
-  | 'gradient-background';
+  | 'gradient-background'
+  // Libraries.dev extractions
+  | 'thinking-orb'
+  | 'bot-avatar'
+  | 'voice-beam'
+  | 'metal-fx'
+  | 'image-generation';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'
@@ -224,7 +230,15 @@ export type FusionEffectType =
   | 'number-odometer'
   | 'scroll-reveal'
   | 'magic-rainbow-stroke'
-  | 'glass-refraction';
+  | 'glass-refraction'
+  // Libraries.dev extractions
+  | 'beam-pulse'
+  | 'orb-loader'
+  | 'bot-face'
+  | 'voice-beam'
+  | 'metal-rim'
+  | 'pixel-reveal'
+  | 'gooey-morph';
 
 export type FusionTargetSlot =
   | 'border'            // Borda / Contorno / Stroke exterior

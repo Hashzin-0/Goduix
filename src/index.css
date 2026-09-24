@@ -39,3 +39,27 @@
 .perspective-1000 {
   perspective: 1000px;
 }
+
+/* Fusion Engine shared keyframes */
+@keyframes fusion-spin-border {
+  to { transform: rotate(360deg); }
+}
+@keyframes fusion-pulse-border {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+@keyframes fusion-sweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes fusion-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-fusions] .animate-\[fusion-spin-border_3\.5s_linear_infinite\],
+  [data-fusions] .animate-\[fusion-pulse-border_2\.4s_ease-in-out_infinite\],
+  [data-fusions] .animate-\[fusion-sweep_2\.8s_cubic-bezier\(0\.77\,0\,0\.175\,1\)_infinite\] {
+    animation: none !important;
+  }
+}
