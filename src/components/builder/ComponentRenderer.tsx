@@ -23,6 +23,42 @@ import { HairlineFigure } from '../godui/HairlineFigure';
 import { FeraUIExperiment } from '../godui/FeraUIExperiment';
 
 // Animation Variants
+const HAIRLINE_FIGURE_BY_COMPONENT: Record<string, string> = {
+  'hairline-riffle': 'riffle',
+  'hairline-terrain': 'terrain',
+  'hairline-exploded': 'exploded',
+  'hairline-phosphor': 'phosphor',
+  'hairline-slow': 'slow',
+  'hairline-turntable': 'turntable',
+  'hairline-keyboard': 'keyboard',
+  'hairline-elevator': 'elevator',
+  'hairline-phone': 'phone',
+  'hairline-laptop': 'laptop',
+  'hairline-terminal': 'terminal',
+  'hairline-cabinet': 'cabinet',
+  'hairline-branches': 'branches',
+  'hairline-vault': 'vault',
+  'hairline-lockers': 'lockers',
+  'hairline-padlock': 'padlock',
+  'hairline-patch': 'patch',
+  'hairline-dish': 'dish',
+  'hairline-router': 'router',
+  'hairline-loupe': 'loupe',
+  'hairline-sieve': 'sieve',
+  'hairline-rail': 'rail',
+  'hairline-plug': 'plug',
+  'hairline-query': 'query',
+  'hairline-drawer': 'drawer',
+  'hairline-basket': 'basket',
+  'hairline-plot': 'plot',
+  'hairline-hub': 'hub',
+  'hairline-relay': 'relay',
+  'hairline-settle': 'settle',
+  'hairline-format': 'format',
+  'hairline-rebuild': 'rebuild',
+  'hairline-stack': 'stack',
+};
+
 const entranceVariants: Record<EntranceAnimationType, any> = {
   'fade-spring': {
     hidden: { opacity: 0, y: 15, scale: 0.98 },
@@ -1738,6 +1774,53 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             <div className="w-full max-w-sm">
               <HairlineFigure
                 figureType={String(props.figureType || 'terrain')}
+                intensity={Number(props.intensity ?? 0.65)}
+                figureTheme={(props.figureTheme as 'auto' | 'light' | 'dark') || 'auto'}
+                label={String(props.label || 'Figura isométrica interativa')}
+                play={Boolean(props.play ?? false)}
+              />
+            </div>
+          </div>
+        );
+
+      case 'hairline-riffle':
+      case 'hairline-terrain':
+      case 'hairline-exploded':
+      case 'hairline-phosphor':
+      case 'hairline-slow':
+      case 'hairline-turntable':
+      case 'hairline-keyboard':
+      case 'hairline-elevator':
+      case 'hairline-phone':
+      case 'hairline-laptop':
+      case 'hairline-terminal':
+      case 'hairline-cabinet':
+      case 'hairline-branches':
+      case 'hairline-vault':
+      case 'hairline-lockers':
+      case 'hairline-padlock':
+      case 'hairline-patch':
+      case 'hairline-dish':
+      case 'hairline-router':
+      case 'hairline-loupe':
+      case 'hairline-sieve':
+      case 'hairline-rail':
+      case 'hairline-plug':
+      case 'hairline-query':
+      case 'hairline-drawer':
+      case 'hairline-basket':
+      case 'hairline-plot':
+      case 'hairline-hub':
+      case 'hairline-relay':
+      case 'hairline-settle':
+      case 'hairline-format':
+      case 'hairline-rebuild':
+      case 'hairline-stack':
+        return (
+          <div className="my-4 flex justify-center">
+            <div className="w-full max-w-sm">
+              <HairlineFigure
+                figureType={HAIRLINE_FIGURE_BY_COMPONENT[instance.type] || 'terrain'}
                 intensity={Number(props.intensity ?? 0.65)}
                 figureTheme={(props.figureTheme as 'auto' | 'light' | 'dark') || 'auto'}
                 label={String(props.label || 'Figura isométrica interativa')}
