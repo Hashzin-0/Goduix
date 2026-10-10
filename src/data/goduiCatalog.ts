@@ -2668,4 +2668,27 @@ export function RevealCard() {
   );
 }`,
   },
+  'isometric-figure': {
+    type: 'isometric-figure',
+    name: 'Isometric Figure',
+    category: 'Visualizations',
+    description: 'Ilustração vetorial SVG em perspectiva isométrica, com modelos de terreno, camadas e terminal. Ajuste tema, intensidade e movimento.',
+    iconName: 'Layers',
+    badge: 'SVG Vector',
+    registryName: 'isometric-figure',
+    dependencies: ['motion/react'],
+    propFields: [
+      { key: 'figureType', label: 'Modelo da figura', type: 'select', defaultValue: 'terrain', options: [{ label: 'Terreno / Topografia', value: 'terrain' }, { label: 'Pilha / Camadas', value: 'stack' }, { label: 'Terminal / Interface', value: 'terminal' }] },
+      { key: 'intensity', label: 'Intensidade visual', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema da figura', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Legenda acessível', type: 'text', defaultValue: 'Figura isométrica' },
+      { key: 'play', label: 'Movimento flutuante', type: 'boolean', defaultValue: true },
+    ],
+    defaultProps: { figureType: 'terrain', intensity: 0.65, figureTheme: 'auto', label: 'Figura isométrica', play: true },
+    sampleCode: `import { IsometricFigure } from "@/src/components/godui/IsometricFigure";
+
+export function IsometricFigureExample() {
+  return <IsometricFigure figureType="terrain" intensity={0.65} figureTheme="auto" play />;
+}`,
+  },
 };
