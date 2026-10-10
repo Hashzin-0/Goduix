@@ -241,6 +241,8 @@ import { PlasmaSurface } from '../godui/PlasmaSurface';
 import { LiquidGooeyCursor } from '../godui/LiquidGooeyCursor';
 import { CompleteShelf } from '../godui/CompleteShelf';
 import { BrandLogoExplorer } from '../godui/BrandLogoExplorer';
+import { PixelFlowFolderHover } from '../godui/PixelFlowFolderHover';
+import { PixelFlowPricingCards } from '../godui/PixelFlowPricingCards';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
@@ -1947,6 +1949,26 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             title={String(props.title || 'Brand Logo Explorer')}
             initialQuery={String(props.initialQuery || '')}
             includeTheSvg={Boolean(props.includeTheSvg ?? true)}
+          />
+        );
+
+      case 'pixelflow-folder-hover':
+        return (
+          <PixelFlowFolderHover
+            title={String(props.title || 'Project files')}
+            subtitle={String(props.subtitle || '')}
+            accent={String(props.accent || '#60a5fa')}
+            duration={Number(props.duration ?? 380)}
+          />
+        );
+
+      case 'pixelflow-pricing-cards':
+        return (
+          <PixelFlowPricingCards
+            title={String(props.title || 'Planos para construir melhor')}
+            description={String(props.description || '')}
+            accent={String(props.accent || '#818cf8')}
+            defaultAnnual={Boolean(props.defaultAnnual ?? true)}
           />
         );
 
