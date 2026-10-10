@@ -138,6 +138,18 @@ export type GodUIComponentType =
   | 'metal-fx'
   | 'image-generation'
   | 'isometric-figure'
+  | 'feraui-pull-cord'
+  | 'feraui-claw-captcha'
+  | 'feraui-gradient-builder'
+  | 'feraui-screenery'
+  | 'feraui-deskfolio'
+  | 'feraui-blob'
+  | 'feraui-animaps'
+  | 'feraui-fur'
+  | 'feraui-vacuum'
+  | 'feraui-crumple'
+  | 'feraui-hologram'
+  | 'feraui-matchday'
   | 'hairline-figure';
 
 export type ComponentCategory =
