@@ -35,8 +35,8 @@ export const PixelFlowFolderHover: React.FC<PixelFlowFolderHoverProps> = ({
           onBlur={(event) => {
             if (!event.currentTarget.parentElement?.contains(event.relatedTarget as Node | null)) setOpen(false);
           }}
-          className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
-          style={{ ['--tw-ring-color' as string]: accent, transitionDuration: `${speed}ms` }}
+          className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+          style={{ transitionDuration: `${speed}ms` }}
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ color: accent, backgroundColor: `${accent}18` }}>
             {open ? <FolderOpen size={24} /> : <Folder size={24} />}
