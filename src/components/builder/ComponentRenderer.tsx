@@ -198,6 +198,9 @@ import { ScrollGlowContainer } from '../godui/ScrollGlowContainer';
 import { ThinkingOrb } from '../godui/ThinkingOrb';
 import { BotAvatar } from '../godui/BotAvatar';
 import { VoiceBeam } from '../godui/VoiceBeam';
+import { RobotHeads } from '../godui/RobotHeads';
+import { MorphiconsShowcase } from '../godui/MorphiconsShowcase';
+import { VoiceStudioExtension } from '../godui/VoiceStudioExtension';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
@@ -1777,6 +1780,44 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
               />
             </ImageGeneration>
           </div>
+        );
+
+      case 'robot-heads':
+        return (
+          <RobotHeads
+            shape={props.shape || 'rectangle'}
+            state={props.state || 'thinking'}
+            size={Number(props.size ?? 180)}
+            color={String(props.color || '#263b62')}
+            trimColor={String(props.trimColor || '#a8c2e8')}
+            screenColor={String(props.screenColor || '#d8f7ff')}
+            speed={Number(props.speed ?? 1)}
+            paused={Boolean(props.paused ?? false)}
+            interactive={Boolean(props.interactive ?? true)}
+            antenna={Boolean(props.antenna ?? true)}
+            label={String(props.label || 'Mascote robótico do GodUI')}
+          />
+        );
+
+      case 'morphicons-showcase':
+        return (
+          <MorphiconsShowcase
+            size={Number(props.size ?? 44)}
+            color={String(props.color || '#67e8f9')}
+            spring={props.spring || 'snappy'}
+            label={String(props.label || 'Ícones com morphing')}
+          />
+        );
+
+      case 'voice-studio-extension':
+        return (
+          <VoiceStudioExtension
+            title={String(props.title || 'Voice Studio')}
+            defaultText={String(props.defaultText || 'Olá! Este é o módulo de voz do GodUI.')}
+            language={String(props.language || 'pt-BR')}
+            voiceStudioUrl={String(props.voiceStudioUrl || 'http://localhost:3900')}
+            accentColor={String(props.accentColor || '#67e8f9')}
+          />
         );
 
       default:
