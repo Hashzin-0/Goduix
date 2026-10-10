@@ -45,7 +45,7 @@ fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
   let angle = atan2(p.y, p.x);
   let warpedAngle = angle + 0.22 / max(radius, 0.12) + t;
   let diskRadius = radius + sin(warpedAngle * 4.0 - t * 3.0) * 0.025;
-  let disk = smoothstep(0.78, 0.64, abs(diskRadius - 0.48));
+  let disk = 1.0 - smoothstep(0.64, 0.78, abs(diskRadius - 0.48));
   let outerGlow = exp(-abs(radius - 0.56) * 12.0) * 0.32;
   let innerRing = exp(-abs(radius - 0.34) * 28.0) * 0.7;
   let horizon = 1.0 - smoothstep(0.25, 0.29, radius);
