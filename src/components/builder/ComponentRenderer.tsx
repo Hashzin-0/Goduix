@@ -201,6 +201,9 @@ import { VoiceBeam } from '../godui/VoiceBeam';
 import { RobotHeads } from '../godui/RobotHeads';
 import { MorphiconsShowcase } from '../godui/MorphiconsShowcase';
 import { VoiceStudioExtension } from '../godui/VoiceStudioExtension';
+import { PlasmaSurface } from '../godui/PlasmaSurface';
+import { LiquidGooeyCursor } from '../godui/LiquidGooeyCursor';
+import { CompleteShelf } from '../godui/CompleteShelf';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
@@ -1817,6 +1820,40 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             language={String(props.language || 'pt-BR')}
             voiceStudioUrl={String(props.voiceStudioUrl || 'http://localhost:3900')}
             accentColor={String(props.accentColor || '#67e8f9')}
+          />
+        );
+
+      case 'plasma-surface':
+        return (
+          <PlasmaSurface
+            title={String(props.title || 'Plasma Surface')}
+            description={String(props.description || '')}
+            mood={props.mood || 'tidal'}
+            tint={String(props.tint || '#67e8f9')}
+            opacity={Number(props.opacity ?? 0.12)}
+            frost={Number(props.frost ?? 0.2)}
+            viscosity={Number(props.viscosity ?? 0.5)}
+            flow={Number(props.flow ?? 0.25)}
+            interactive={Boolean(props.interactive ?? true)}
+          />
+        );
+
+      case 'liquid-gooey-cursor':
+        return (
+          <LiquidGooeyCursor
+            title={String(props.title || 'Liquid Gooey Cursor')}
+            description={String(props.description || '')}
+            accent={String(props.accent || '#67e8f9')}
+            intensity={Number(props.intensity ?? 0.7)}
+          />
+        );
+
+      case 'complete-shelf':
+        return (
+          <CompleteShelf
+            title={String(props.title || 'The Complete Shelf')}
+            showDescriptions={Boolean(props.showDescriptions ?? true)}
+            accent={String(props.accent || '#67e8f9')}
           />
         );
 
