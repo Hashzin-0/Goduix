@@ -874,6 +874,7 @@ export const FUSION_DONORS: Record<FusionEffectType, FusionDonorMeta> = {
 export function getComponentSignatureEffect(type: GodUIComponentType): FusionEffectType {
   const map: Partial<Record<GodUIComponentType, FusionEffectType>> = {
     'dynamic-island': 'island-morph',
+    'isometric-figure': 'blueprint-laser',
     'godui-dock': 'dock-magnification',
     'floating-toolbar': 'toolbar-pill-morph',
     'liquid-glass-button': 'liquid-glass',
