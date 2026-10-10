@@ -156,7 +156,8 @@ export type GodUIComponentType =
   | 'voice-studio-extension'
   | 'plasma-surface'
   | 'liquid-gooey-cursor'
-  | 'complete-shelf';
+  | 'complete-shelf'
+  | 'brand-logo-explorer';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'
