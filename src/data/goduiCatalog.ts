@@ -2953,5 +2953,80 @@ export function IsometricHero() {
 export function IsometricFigureExample() {
   return <IsometricFigure figureType="terrain" intensity={0.65} figureTheme="auto" play />;
 }`,
+  },,
+'robot-heads': {
+    type: 'robot-heads',
+    name: 'Robot Heads',
+    category: 'Visualizations',
+    description: 'Mascote robótico animado em canvas 2D com expressões de agente, quatro formatos de cabeça, antena e estados de atividade.',
+    iconName: 'Bot',
+    badge: 'Robot Heads · MIT',
+    registryName: 'robot-heads',
+    dependencies: ['robot-heads'],
+    propFields: [
+      { key: 'shape', label: 'Formato', type: 'select', defaultValue: 'rectangle', options: [{ label: 'TV retangular', value: 'rectangle' }, { label: 'Quadrado', value: 'square' }, { label: 'Circular', value: 'circle' }, { label: 'Hexagonal', value: 'hexagon' }] },
+      { key: 'state', label: 'Estado do agente', type: 'select', defaultValue: 'thinking', options: [{ label: 'Ocioso', value: 'idle' }, { label: 'Pensando', value: 'thinking' }, { label: 'Pesquisando', value: 'searching' }, { label: 'Ouvindo', value: 'listening' }, { label: 'Falando', value: 'speaking' }, { label: 'Trabalhando', value: 'working' }, { label: 'Feliz', value: 'happy' }, { label: 'Erro', value: 'error' }, { label: 'Dormindo', value: 'sleeping' }] },
+      { key: 'size', label: 'Tamanho (px)', type: 'number', defaultValue: 180, min: 80, max: 320, step: 10 },
+      { key: 'color', label: 'Cor do corpo', type: 'color', defaultValue: '#263b62' },
+      { key: 'trimColor', label: 'Cor dos detalhes', type: 'color', defaultValue: '#a8c2e8' },
+      { key: 'screenColor', label: 'Cor da tela LED', type: 'color', defaultValue: '#d8f7ff' },
+      { key: 'speed', label: 'Velocidade', type: 'number', defaultValue: 1, min: 0.2, max: 2, step: 0.1 },
+      { key: 'paused', label: 'Pausar animação', type: 'boolean', defaultValue: false },
+      { key: 'interactive', label: 'Interação com ponteiro', type: 'boolean', defaultValue: true },
+      { key: 'antenna', label: 'Exibir antena', type: 'boolean', defaultValue: true },
+    ],
+    defaultProps: { shape: 'rectangle', state: 'thinking', size: 180, color: '#263b62', trimColor: '#a8c2e8', screenColor: '#d8f7ff', speed: 1, paused: false, interactive: true, antenna: true, label: 'Mascote robótico do GodUI' },
+    sampleCode: `import { RobotHead } from "robot-heads";
+
+export function AgentMascot() {
+  return <RobotHead shape="rectangle" state="thinking" size={180} />;
+}`,
   },
+  'morphicons-showcase': {
+    type: 'morphicons-showcase',
+    name: 'Morphicons',
+    category: 'Typography & AI',
+    description: 'Ícones vetoriais que se transformam uns nos outros com interpolação geométrica e física de mola, usando os dados de ícones Lucide.',
+    iconName: 'Waypoints',
+    badge: 'Morphicons · MIT',
+    registryName: 'morphicons-showcase',
+    dependencies: ['morphicons', 'lucide'],
+    propFields: [
+      { key: 'size', label: 'Tamanho dos ícones', type: 'number', defaultValue: 44, min: 20, max: 72, step: 4 },
+      { key: 'color', label: 'Cor', type: 'color', defaultValue: '#67e8f9' },
+      { key: 'spring', label: 'Física da transição', type: 'select', defaultValue: 'snappy', options: [{ label: 'Rápida', value: 'snappy' }, { label: 'Suave', value: 'gentle' }, { label: 'Elástica', value: 'bouncy' }, { label: 'Rígida', value: 'stiff' }] },
+      { key: 'label', label: 'Título', type: 'text', defaultValue: 'Ícones com morphing' },
+    ],
+    defaultProps: { size: 44, color: '#67e8f9', spring: 'snappy', label: 'Ícones com morphing' },
+    sampleCode: `import { MorphIcon } from "morphicons/react";
+import { Menu, X } from "lucide";
+
+export function MorphingMenu({ open }) {
+  return <MorphIcon icon={open ? X : Menu} spring="snappy" size={44} />;
+}`,
+  },
+  'voice-studio-extension': {
+    type: 'voice-studio-extension',
+    name: 'Voice Studio Extension',
+    category: 'AI & Collaboration',
+    description: 'Console de voz com síntese e ditado via APIs do navegador, controles de ritmo/tom e atalho para uma instância separada do VoiceStudio local.',
+    iconName: 'AudioLines',
+    badge: 'Voice Extension',
+    registryName: 'voice-studio-extension',
+    dependencies: ['lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Voice Studio' },
+      { key: 'defaultText', label: 'Texto inicial', type: 'text', defaultValue: 'Olá! Este é o módulo de voz do GodUI.' },
+      { key: 'language', label: 'Idioma BCP-47', type: 'text', defaultValue: 'pt-BR' },
+      { key: 'voiceStudioUrl', label: 'URL do VoiceStudio', type: 'text', defaultValue: 'http://localhost:3900' },
+      { key: 'accentColor', label: 'Cor de destaque', type: 'color', defaultValue: '#67e8f9' },
+    ],
+    defaultProps: { title: 'Voice Studio', defaultText: 'Olá! Este é o módulo de voz do GodUI.', language: 'pt-BR', voiceStudioUrl: 'http://localhost:3900', accentColor: '#67e8f9' },
+    sampleCode: `import { VoiceStudioExtension } from "@/src/components/godui/VoiceStudioExtension";
+
+export function VoicePanel() {
+  return <VoiceStudioExtension language="pt-BR" voiceStudioUrl="http://localhost:3900" />;
+}`,
+  },
+
 };
