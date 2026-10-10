@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AudioLines, Mic, MicOff, Play, Square, Volume2, ExternalLink } from 'lucide-react';
 
 type SpeechRecognitionAlternativeLike = { transcript: string };
@@ -41,12 +41,17 @@ export const VoiceStudioExtension: React.FC<VoiceStudioExtensionProps> = ({
   const [rate, setRate] = useState(1);
   const [pitch, setPitch] = useState(1);
   const [error, setError] = useState('');
-  const voices = useMemo(() => typeof window === 'undefined' ? [] : window.speechSynthesis?.getVoices() ?? [], []);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const recognitionConstructor = typeof window === 'undefined' ? undefined : (window as SpeechWindow).SpeechRecognition ?? (window as SpeechWindow).webkitSpeechRecognition;
 
   useEffect(() => {
     if (!('speechSynthesis' in window)) return;
-    const refresh = () => setVoiceName((current) => current || window.speechSynthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith(language.toLowerCase()))?.name || '');
+    const refresh = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      setVoices(availableVoices);
+      setVoiceName((current) => current || availableVoices.find((voice) => voice.lang.toLowerCase().startsWith(language.toLowerCase()))?.name || '');
+    };
     refresh();
     window.speechSynthesis.addEventListener?.('voiceschanged', refresh);
     return () => window.speechSynthesis.removeEventListener?.('voiceschanged', refresh);
@@ -72,11 +77,16 @@ export const VoiceStudioExtension: React.FC<VoiceStudioExtensionProps> = ({
 
   const stop = () => {
     window.speechSynthesis?.cancel();
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
     setSpeaking(false);
+    setListening(false);
   };
 
   const toggleListening = () => {
     if (listening) {
+      recognitionRef.current?.stop();
+      recognitionRef.current = null;
       setListening(false);
       return;
     }
@@ -85,6 +95,7 @@ export const VoiceStudioExtension: React.FC<VoiceStudioExtensionProps> = ({
       return;
     }
     const recognition = new recognitionConstructor();
+    recognitionRef.current = recognition;
     recognition.lang = language;
     recognition.interimResults = true;
     recognition.continuous = false;
@@ -93,7 +104,7 @@ export const VoiceStudioExtension: React.FC<VoiceStudioExtensionProps> = ({
       setText(transcript);
     };
     recognition.onerror = () => { setListening(false); setError('O microfone não pôde ser acessado. Verifique a permissão do navegador.'); };
-    recognition.onend = () => setListening(false);
+    recognition.onend = () => { setListening(false); recognitionRef.current = null; };
     setListening(true);
     setError('');
     try { recognition.start(); } catch { setListening(false); setError('Não foi possível iniciar a captura de voz.'); }
@@ -111,7 +122,7 @@ export const VoiceStudioExtension: React.FC<VoiceStudioExtensionProps> = ({
             <p className="text-xs text-zinc-400">Síntese e captura de voz no navegador</p>
           </div>
         </div>
-        <a href={voiceStudioUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-white/10">
+        <a href={/^https?:\\/\\//i.test(voiceStudioUrl) ? voiceStudioUrl : 'http://localhost:3900'} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-white/10">
           VoiceStudio <ExternalLink size={12} />
         </a>
       </header>
