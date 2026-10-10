@@ -198,6 +198,7 @@ import { BotAvatar } from '../godui/BotAvatar';
 import { VoiceBeam } from '../godui/VoiceBeam';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
+import { IsometricFigure } from '../godui/IsometricFigure';
 import { FusionWrapper } from '../godui/fusion';
 import { FusionTargetSlot } from '../../types/builder';
 
@@ -1683,6 +1684,21 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                 {props.label || 'Upgrade to Pro'}
               </button>
             </MetalFx>
+          </div>
+        );
+
+      case 'isometric-figure':
+        return (
+          <div className="my-4 flex justify-center">
+            <div className="w-full max-w-sm">
+              <IsometricFigure
+                figureType={(props.figureType as any) || 'terrain'}
+                intensity={Number(props.intensity ?? 0.65)}
+                figureTheme={(props.figureTheme as any) || 'auto'}
+                label={props.label || 'Figura isométrica'}
+                play={props.play ?? true}
+              />
+            </div>
           </div>
         );
 
