@@ -3893,4 +3893,26 @@ export function PricingDemo() {
   return <PixelFlowPricingCards accent="#818cf8" defaultAnnual />;
 }`,
   },
+,
+  'vgpu-black-hole': {
+    type: 'vgpu-black-hole',
+    name: 'VGPU Black Hole',
+    category: 'Creative & Shaders',
+    description: 'Buraco negro procedural com disco de acreção em WGSL/WebGPU, renderização em tempo real e fallback CSS para navegadores sem suporte.',
+    iconName: 'Orbit',
+    badge: 'VGPU · MIT',
+    registryName: 'vgpu-black-hole',
+    dependencies: [],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Event Horizon' },
+      { key: 'description', label: 'Descrição', type: 'text', defaultValue: 'Um campo gravitacional luminoso renderizado em tempo real com WebGPU.' },
+      { key: 'intensity', label: 'Intensidade luminosa', type: 'number', defaultValue: 0.85, min: 0, max: 1.5, step: 0.05 },
+    ],
+    defaultProps: { title: 'Event Horizon', description: 'Um campo gravitacional luminoso renderizado em tempo real com WebGPU.', intensity: 0.85 },
+    sampleCode: `import { VgpuBlackHole } from "@/src/components/godui/VgpuBlackHole";
+
+export function BlackHoleDemo() {
+  return <VgpuBlackHole title="Event Horizon" intensity={0.85} />;
+}`,
+  },
 };
