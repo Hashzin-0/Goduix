@@ -150,7 +150,10 @@ export type GodUIComponentType =
   | 'feraui-crumple'
   | 'feraui-hologram'
   | 'feraui-matchday'
-  | 'hairline-figure';
+  | 'hairline-figure'
+  | 'robot-heads'
+  | 'morphicons-showcase'
+  | 'voice-studio-extension';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'
