@@ -196,6 +196,7 @@ export const ComponentLibraryPanel: React.FC = () => {
     'Inputs & Forms',
     'Creative & Shaders',
     'Footers & Backgrounds',
+    'FeraUI Experiments',
   ];
 
   const catalogList = Object.values(GODUI_CATALOG);
