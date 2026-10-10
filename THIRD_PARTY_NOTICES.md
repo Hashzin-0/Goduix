@@ -54,3 +54,17 @@ This file records the upstream projects used by GodUI integrations. Keep each no
 - Source/API: https://github.com/GLINCKER/thesvg and https://thesvg.org/docs/api
 - License: MIT for project code; individual brand assets may be subject to trademark and owner-specific rights.
 - Usage: the public static manifest and SVG CDN are queried at runtime. GodUI does not mirror or bundle the full library.
+
+## PixelFlow Folder Hover Animation
+
+- Source: https://github.com/wearepixelflow/folder-hover-animation
+- License: MIT (per the upstream README).
+- Usage: adapted into an accessible React component with keyboard focus and click support.
+- Attribution: WeArePixelFlow.
+
+## PixelFlow Pricing Card Section
+
+- Source: https://github.com/wearepixelflow/pricing-card-section
+- License: MIT (per the upstream README).
+- Usage: independent React implementation of the pricing-section pattern, with demonstration prices and no checkout or payment processing.
+- Attribution: WeArePixelFlow.
