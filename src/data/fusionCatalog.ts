@@ -882,6 +882,7 @@ export function getComponentSignatureEffect(type: GodUIComponentType): FusionEff
     'plasma-surface': 'liquid-glass',
     'liquid-gooey-cursor': 'gooey-morph',
     'complete-shelf': 'hologram-3d-tilt',
+    'brand-logo-explorer': 'pixel-reveal',
     'feraui-pull-cord': 'blueprint-laser',
     'feraui-claw-captcha': 'blueprint-laser',
     'feraui-gradient-builder': 'blueprint-laser',
