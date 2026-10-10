@@ -3100,4 +3100,26 @@ export function ShelfDemo() {
   return <CompleteShelf title="The Complete Shelf" />;
 }`,
   },
+
+  'brand-logo-explorer': {
+    type: 'brand-logo-explorer',
+    name: 'Brand Logo Explorer',
+    category: 'Visualizations',
+    description: 'Busca unificada de logotipos SVG nas APIs públicas SVGL e theSVG, com filtro por nome, origem, visualização e cópia da URL do ativo.',
+    iconName: 'Images',
+    badge: 'SVGL + theSVG',
+    registryName: 'brand-logo-explorer',
+    dependencies: ['lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Brand Logo Explorer' },
+      { key: 'initialQuery', label: 'Busca inicial', type: 'text', defaultValue: 'openai' },
+      { key: 'includeTheSvg', label: 'Incluir biblioteca theSVG', type: 'boolean', defaultValue: true },
+    ],
+    defaultProps: { title: 'Brand Logo Explorer', initialQuery: 'openai', includeTheSvg: true },
+    sampleCode: `import { BrandLogoExplorer } from "@/src/components/godui/BrandLogoExplorer";
+
+export function LogoPicker() {
+  return <BrandLogoExplorer initialQuery="openai" includeTheSvg />;
+}`,
+  },
 };
