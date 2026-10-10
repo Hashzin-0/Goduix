@@ -26,13 +26,11 @@ export const PixelFlowFolderHover: React.FC<PixelFlowFolderHoverProps> = ({
 
   return (
     <section className="mx-auto my-5 w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-950 p-5 text-white">
-      <div className="relative">
+      <div className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
         <button
           type="button"
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
           onFocus={() => setOpen(true)}
           onBlur={(event) => {
             if (!event.currentTarget.parentElement?.contains(event.relatedTarget as Node | null)) setOpen(false);
