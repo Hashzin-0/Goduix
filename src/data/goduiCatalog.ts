@@ -2953,8 +2953,8 @@ export function IsometricHero() {
 export function IsometricFigureExample() {
   return <IsometricFigure figureType="terrain" intensity={0.65} figureTheme="auto" play />;
 }`,
-  },,
-'robot-heads': {
+  },
+  'robot-heads': {
     type: 'robot-heads',
     name: 'Robot Heads',
     category: 'Visualizations',
