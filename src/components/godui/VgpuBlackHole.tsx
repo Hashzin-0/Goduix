@@ -142,7 +142,7 @@ export const VgpuBlackHole: React.FC<VgpuBlackHoleProps> = ({
           return;
         }
 
-        const context = canvas.getContext('webgpu') as any;
+        const context = (canvas as any).getContext('webgpu') as any;
         if (!context) {
           device.destroy();
           device = null;
@@ -152,6 +152,11 @@ export const VgpuBlackHole: React.FC<VgpuBlackHoleProps> = ({
 
         const format = gpu.getPreferredCanvasFormat();
         const shader = device.createShaderModule({ label: 'GodUI black-hole shader', code: BLACK_HOLE_SHADER });
+        const compilation = await shader.getCompilationInfo();
+        const shaderErrors = compilation.messages.filter((message: { type: string }) => message.type === 'error');
+        if (shaderErrors.length > 0) {
+          throw new Error('The WebGPU shader could not be compiled.');
+        }
         const pipeline = device.createRenderPipeline({
           label: 'GodUI black-hole pipeline',
           layout: 'auto',
@@ -242,7 +247,7 @@ export const VgpuBlackHole: React.FC<VgpuBlackHoleProps> = ({
             <p className="mt-2 text-sm leading-relaxed text-white/70">{description}</p>
             {gpuStatus === 'fallback' && (
               <p className="mt-3 text-xs text-white/45">
-                WebGPU não está disponível neste navegador ou dispositivo. A visualização usa um fundo CSS leve.
+                WebGPU não pôde ser inicializado neste navegador ou dispositivo. A visualização usa um fundo CSS leve.
               </p>
             )}
           </div>
