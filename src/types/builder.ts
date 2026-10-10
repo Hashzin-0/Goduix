@@ -136,7 +136,8 @@ export type GodUIComponentType =
   | 'bot-avatar'
   | 'voice-beam'
   | 'metal-fx'
-  | 'image-generation';
+  | 'image-generation'
+  | 'isometric-figure';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'
