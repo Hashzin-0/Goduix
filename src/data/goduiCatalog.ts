@@ -2954,4 +2954,898 @@ export function IsometricFigureExample() {
   return <IsometricFigure figureType="terrain" intensity={0.65} figureTheme="auto" play />;
 }`,
   },
+  'robot-heads': {
+    type: 'robot-heads',
+    name: 'Robot Heads',
+    category: 'Visualizations',
+    description: 'Mascote robótico animado em canvas 2D com expressões de agente, quatro formatos de cabeça, antena e estados de atividade.',
+    iconName: 'Bot',
+    badge: 'Robot Heads · MIT',
+    registryName: 'robot-heads',
+    dependencies: ['robot-heads'],
+    propFields: [
+      { key: 'shape', label: 'Formato', type: 'select', defaultValue: 'rectangle', options: [{ label: 'TV retangular', value: 'rectangle' }, { label: 'Quadrado', value: 'square' }, { label: 'Circular', value: 'circle' }, { label: 'Hexagonal', value: 'hexagon' }] },
+      { key: 'state', label: 'Estado do agente', type: 'select', defaultValue: 'thinking', options: [{ label: 'Ocioso', value: 'idle' }, { label: 'Pensando', value: 'thinking' }, { label: 'Pesquisando', value: 'searching' }, { label: 'Ouvindo', value: 'listening' }, { label: 'Falando', value: 'speaking' }, { label: 'Trabalhando', value: 'working' }, { label: 'Feliz', value: 'happy' }, { label: 'Erro', value: 'error' }, { label: 'Dormindo', value: 'sleeping' }] },
+      { key: 'size', label: 'Tamanho (px)', type: 'number', defaultValue: 180, min: 80, max: 320, step: 10 },
+      { key: 'color', label: 'Cor do corpo', type: 'color', defaultValue: '#263b62' },
+      { key: 'trimColor', label: 'Cor dos detalhes', type: 'color', defaultValue: '#a8c2e8' },
+      { key: 'screenColor', label: 'Cor da tela LED', type: 'color', defaultValue: '#d8f7ff' },
+      { key: 'speed', label: 'Velocidade', type: 'number', defaultValue: 1, min: 0.2, max: 2, step: 0.1 },
+      { key: 'paused', label: 'Pausar animação', type: 'boolean', defaultValue: false },
+      { key: 'interactive', label: 'Interação com ponteiro', type: 'boolean', defaultValue: true },
+      { key: 'antenna', label: 'Exibir antena', type: 'boolean', defaultValue: true },
+    ],
+    defaultProps: { shape: 'rectangle', state: 'thinking', size: 180, color: '#263b62', trimColor: '#a8c2e8', screenColor: '#d8f7ff', speed: 1, paused: false, interactive: true, antenna: true, label: 'Mascote robótico do GodUI' },
+    sampleCode: `import { RobotHead } from "robot-heads";
+
+export function AgentMascot() {
+  return <RobotHead shape="rectangle" state="thinking" size={180} />;
+}`,
+  },
+  'morphicons-showcase': {
+    type: 'morphicons-showcase',
+    name: 'Morphicons',
+    category: 'Typography & AI',
+    description: 'Ícones vetoriais que se transformam uns nos outros com interpolação geométrica e física de mola, usando os dados de ícones Lucide.',
+    iconName: 'Waypoints',
+    badge: 'Morphicons · MIT',
+    registryName: 'morphicons-showcase',
+    dependencies: ['morphicons', 'lucide'],
+    propFields: [
+      { key: 'size', label: 'Tamanho dos ícones', type: 'number', defaultValue: 44, min: 20, max: 72, step: 4 },
+      { key: 'color', label: 'Cor', type: 'color', defaultValue: '#67e8f9' },
+      { key: 'spring', label: 'Física da transição', type: 'select', defaultValue: 'snappy', options: [{ label: 'Rápida', value: 'snappy' }, { label: 'Suave', value: 'gentle' }, { label: 'Elástica', value: 'bouncy' }, { label: 'Rígida', value: 'stiff' }] },
+      { key: 'label', label: 'Título', type: 'text', defaultValue: 'Ícones com morphing' },
+    ],
+    defaultProps: { size: 44, color: '#67e8f9', spring: 'snappy', label: 'Ícones com morphing' },
+    sampleCode: `import { MorphIcon } from "morphicons/react";
+import { Menu, X } from "lucide";
+
+export function MorphingMenu({ open }) {
+  return <MorphIcon icon={open ? X : Menu} spring="snappy" size={44} />;
+}`,
+  },
+  'voice-studio-extension': {
+    type: 'voice-studio-extension',
+    name: 'Voice Studio Extension',
+    category: 'AI & Collaboration',
+    description: 'Console de voz com síntese e ditado via APIs do navegador, controles de ritmo/tom e atalho para uma instância separada do VoiceStudio local.',
+    iconName: 'AudioLines',
+    badge: 'Voice Extension',
+    registryName: 'voice-studio-extension',
+    dependencies: ['lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Voice Studio' },
+      { key: 'defaultText', label: 'Texto inicial', type: 'text', defaultValue: 'Olá! Este é o módulo de voz do GodUI.' },
+      { key: 'language', label: 'Idioma BCP-47', type: 'text', defaultValue: 'pt-BR' },
+      { key: 'voiceStudioUrl', label: 'URL do VoiceStudio', type: 'text', defaultValue: 'http://localhost:3900' },
+      { key: 'accentColor', label: 'Cor de destaque', type: 'color', defaultValue: '#67e8f9' },
+    ],
+    defaultProps: { title: 'Voice Studio', defaultText: 'Olá! Este é o módulo de voz do GodUI.', language: 'pt-BR', voiceStudioUrl: 'http://localhost:3900', accentColor: '#67e8f9' },
+    sampleCode: `import { VoiceStudioExtension } from "@/src/components/godui/VoiceStudioExtension";
+
+export function VoicePanel() {
+  return <VoiceStudioExtension language="pt-BR" voiceStudioUrl="http://localhost:3900" />;
+}`,
+  },
+
+
+  'plasma-surface': {
+    type: 'plasma-surface',
+    name: 'Plasma Surface',
+    category: 'Glass & Static',
+    description: 'Superfície de vidro líquido renderizada em WebGL com refração, tensão superficial e material cromático; usa fallback leve em telas pequenas ou com movimento reduzido.',
+    iconName: 'Waves',
+    badge: 'Plasma UI · MIT',
+    registryName: 'plasma-surface',
+    dependencies: ['@cruxgarden/plasma-ui'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Plasma Surface' },
+      { key: 'description', label: 'Descrição', type: 'text', defaultValue: 'Superfície líquida com refração, tensão superficial e reflexos cromáticos.' },
+      { key: 'mood', label: 'Paleta', type: 'select', defaultValue: 'tidal', options: [{ label: 'Tidal', value: 'tidal' }, { label: 'Aurora', value: 'aurora' }, { label: 'Ember', value: 'ember' }] },
+      { key: 'tint', label: 'Cor', type: 'color', defaultValue: '#67e8f9' },
+      { key: 'opacity', label: 'Opacidade', type: 'number', defaultValue: 0.12, min: 0, max: 1, step: 0.05 },
+      { key: 'frost', label: 'Fosco', type: 'number', defaultValue: 0.2, min: 0, max: 1, step: 0.05 },
+      { key: 'viscosity', label: 'Viscosidade', type: 'number', defaultValue: 0.5, min: 0, max: 1, step: 0.1 },
+      { key: 'flow', label: 'Fluxo', type: 'number', defaultValue: 0.25, min: 0, max: 1, step: 0.05 },
+      { key: 'interactive', label: 'Interação e arraste', type: 'boolean', defaultValue: true },
+    ],
+    defaultProps: { title: 'Plasma Surface', description: 'Superfície líquida com refração, tensão superficial e reflexos cromáticos.', mood: 'tidal', tint: '#67e8f9', opacity: 0.12, frost: 0.2, viscosity: 0.5, flow: 0.25, interactive: true },
+    sampleCode: `import { PlasmaProvider, Plasma } from "@cruxgarden/plasma-ui";
+
+export function LiquidPanel() {
+  return <PlasmaProvider mood="tidal"><Plasma draggable>Conteúdo</Plasma></PlasmaProvider>;
+}`,
+  },
+  'liquid-gooey-cursor': {
+    type: 'liquid-gooey-cursor',
+    name: 'Liquid Gooey Cursor',
+    category: 'Effects & Backgrounds',
+    description: 'Interação local com partículas metaball, filtro SVG gooey e halo que acompanha o ponteiro, baseada no conceito do WeArePixelFlow.',
+    iconName: 'MousePointer2',
+    badge: 'WeArePixelFlow · MIT',
+    registryName: 'liquid-gooey-cursor',
+    dependencies: ['lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Liquid Gooey Cursor' },
+      { key: 'description', label: 'Descrição', type: 'text', defaultValue: 'Mova o ponteiro sobre a área para conectar as partículas líquidas.' },
+      { key: 'accent', label: 'Cor', type: 'color', defaultValue: '#67e8f9' },
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.7, min: 0.1, max: 1, step: 0.1 },
+    ],
+    defaultProps: { title: 'Liquid Gooey Cursor', description: 'Mova o ponteiro sobre a área para conectar as partículas líquidas.', accent: '#67e8f9', intensity: 0.7 },
+    sampleCode: `import { LiquidGooeyCursor } from "@/src/components/godui/LiquidGooeyCursor";
+
+export function GooeyDemo() {
+  return <LiquidGooeyCursor intensity={0.7} />;
+}`,
+  },
+  'complete-shelf': {
+    type: 'complete-shelf',
+    name: 'Complete Shelf',
+    category: 'Cards & Layout',
+    description: 'Estante interativa de livros com perspectiva 3D, seleção de volumes, detalhes e navegação por coleção; reimplementação independente.',
+    iconName: 'BookOpen',
+    badge: 'Independent recreation',
+    registryName: 'complete-shelf',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'The Complete Shelf' },
+      { key: 'showDescriptions', label: 'Exibir descrições', type: 'boolean', defaultValue: true },
+      { key: 'accent', label: 'Cor de destaque', type: 'color', defaultValue: '#67e8f9' },
+    ],
+    defaultProps: { title: 'The Complete Shelf', showDescriptions: true, accent: '#67e8f9' },
+    sampleCode: `import { CompleteShelf } from "@/src/components/godui/CompleteShelf";
+
+export function ShelfDemo() {
+  return <CompleteShelf title="The Complete Shelf" />;
+}`,
+  },
+
+  'brand-logo-explorer': {
+    type: 'brand-logo-explorer',
+    name: 'Brand Logo Explorer',
+    category: 'Visualizations',
+    description: 'Busca unificada de logotipos SVG nas APIs públicas SVGL e theSVG, com filtro por nome, origem, visualização e cópia da URL do ativo.',
+    iconName: 'Images',
+    badge: 'SVGL + theSVG',
+    registryName: 'brand-logo-explorer',
+    dependencies: ['lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Brand Logo Explorer' },
+      { key: 'initialQuery', label: 'Busca inicial', type: 'text', defaultValue: 'openai' },
+      { key: 'includeTheSvg', label: 'Incluir biblioteca theSVG', type: 'boolean', defaultValue: true },
+    ],
+    defaultProps: { title: 'Brand Logo Explorer', initialQuery: 'openai', includeTheSvg: true },
+    sampleCode: `import { BrandLogoExplorer } from "@/src/components/godui/BrandLogoExplorer";
+
+export function LogoPicker() {
+  return <BrandLogoExplorer initialQuery="openai" includeTheSvg />;
+}`,
+  },
+  'hairline-riffle': {
+    type: 'hairline-riffle',
+    name: 'Hairline Riffle',
+    category: 'Visualizations',
+    description: "Cartões interativos que se elevam em sequência ao passar o ponteiro.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-riffle',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Riffle — Cartões interativos que se elevam em sequência ao passar o ponteiro." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Riffle — Cartões interativos que se elevam em sequência ao passar o ponteiro.", play: false },
+    sampleCode: `import { Riffle } from "@lucasmarkes/hairline/react";
+
+export function RiffleFigure() {
+  return <Riffle intensity={0.65} theme="auto" label="Riffle — Cartões interativos que se elevam em sequência ao passar o ponteiro." />;
+}`,
+  },
+  'hairline-terrain': {
+    type: 'hairline-terrain',
+    name: 'Hairline Terrain',
+    category: 'Visualizations',
+    description: "Campo topográfico de pilares que forma ondas ao redor do ponteiro.",
+    iconName: 'ChartNoAxesCombined',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-terrain',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Terrain — Campo topográfico de pilares que forma ondas ao redor do ponteiro." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Terrain — Campo topográfico de pilares que forma ondas ao redor do ponteiro.", play: false },
+    sampleCode: `import { Terrain } from "@lucasmarkes/hairline/react";
+
+export function TerrainFigure() {
+  return <Terrain intensity={0.65} theme="auto" label="Terrain — Campo topográfico de pilares que forma ondas ao redor do ponteiro." />;
+}`,
+  },
+  'hairline-exploded': {
+    type: 'hairline-exploded',
+    name: 'Hairline Exploded',
+    category: 'Visualizations',
+    description: "Camadas de interface que se separam espacialmente sob interação.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-exploded',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Exploded — Camadas de interface que se separam espacialmente sob interação." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Exploded — Camadas de interface que se separam espacialmente sob interação.", play: false },
+    sampleCode: `import { Exploded } from "@lucasmarkes/hairline/react";
+
+export function ExplodedFigure() {
+  return <Exploded intensity={0.65} theme="auto" label="Exploded — Camadas de interface que se separam espacialmente sob interação." />;
+}`,
+  },
+  'hairline-phosphor': {
+    type: 'hairline-phosphor',
+    name: 'Hairline Phosphor',
+    category: 'Visualizations',
+    description: "Matriz luminosa de pontos com persistência e resposta ao ponteiro.",
+    iconName: 'ChartNoAxesCombined',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-phosphor',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Phosphor — Matriz luminosa de pontos com persistência e resposta ao ponteiro." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Phosphor — Matriz luminosa de pontos com persistência e resposta ao ponteiro.", play: false },
+    sampleCode: `import { Phosphor } from "@lucasmarkes/hairline/react";
+
+export function PhosphorFigure() {
+  return <Phosphor intensity={0.65} theme="auto" label="Phosphor — Matriz luminosa de pontos com persistência e resposta ao ponteiro." />;
+}`,
+  },
+  'hairline-slow': {
+    type: 'hairline-slow',
+    name: 'Hairline Slow',
+    category: 'Visualizations',
+    description: "Esteira mecânica com movimento desacelerado e resposta de intensidade.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-slow',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Slow — Esteira mecânica com movimento desacelerado e resposta de intensidade." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Slow — Esteira mecânica com movimento desacelerado e resposta de intensidade.", play: false },
+    sampleCode: `import { Slow } from "@lucasmarkes/hairline/react";
+
+export function SlowFigure() {
+  return <Slow intensity={0.65} theme="auto" label="Slow — Esteira mecânica com movimento desacelerado e resposta de intensidade." />;
+}`,
+  },
+  'hairline-turntable': {
+    type: 'hairline-turntable',
+    name: 'Hairline Turntable',
+    category: 'Visualizations',
+    description: "Plataforma giratória isométrica com inércia e rotação.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-turntable',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Turntable — Plataforma giratória isométrica com inércia e rotação." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Turntable — Plataforma giratória isométrica com inércia e rotação.", play: false },
+    sampleCode: `import { Turntable } from "@lucasmarkes/hairline/react";
+
+export function TurntableFigure() {
+  return <Turntable intensity={0.65} theme="auto" label="Turntable — Plataforma giratória isométrica com inércia e rotação." />;
+}`,
+  },
+  'hairline-keyboard': {
+    type: 'hairline-keyboard',
+    name: 'Hairline Keyboard',
+    category: 'Visualizations',
+    description: "Teclas em perspectiva que afundam ao redor do ponteiro.",
+    iconName: 'Laptop',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-keyboard',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Keyboard — Teclas em perspectiva que afundam ao redor do ponteiro." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Keyboard — Teclas em perspectiva que afundam ao redor do ponteiro.", play: false },
+    sampleCode: `import { Keyboard } from "@lucasmarkes/hairline/react";
+
+export function KeyboardFigure() {
+  return <Keyboard intensity={0.65} theme="auto" label="Keyboard — Teclas em perspectiva que afundam ao redor do ponteiro." />;
+}`,
+  },
+  'hairline-elevator': {
+    type: 'hairline-elevator',
+    name: 'Hairline Elevator',
+    category: 'Visualizations',
+    description: "Mecanismo de elevador com resposta elástica.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-elevator',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Elevator — Mecanismo de elevador com resposta elástica." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Elevator — Mecanismo de elevador com resposta elástica.", play: false },
+    sampleCode: `import { Elevator } from "@lucasmarkes/hairline/react";
+
+export function ElevatorFigure() {
+  return <Elevator intensity={0.65} theme="auto" label="Elevator — Mecanismo de elevador com resposta elástica." />;
+}`,
+  },
+  'hairline-phone': {
+    type: 'hairline-phone',
+    name: 'Hairline Phone',
+    category: 'Visualizations',
+    description: "Telefone em camadas com espaçamento ajustável.",
+    iconName: 'Laptop',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-phone',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Phone — Telefone em camadas com espaçamento ajustável." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Phone — Telefone em camadas com espaçamento ajustável.", play: false },
+    sampleCode: `import { Phone } from "@lucasmarkes/hairline/react";
+
+export function PhoneFigure() {
+  return <Phone intensity={0.65} theme="auto" label="Phone — Telefone em camadas com espaçamento ajustável." />;
+}`,
+  },
+  'hairline-laptop': {
+    type: 'hairline-laptop',
+    name: 'Hairline Laptop',
+    category: 'Visualizations',
+    description: "Notebook vetorial com abertura de tampa controlada pela interação.",
+    iconName: 'Laptop',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-laptop',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Laptop — Notebook vetorial com abertura de tampa controlada pela interação." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Laptop — Notebook vetorial com abertura de tampa controlada pela interação.", play: false },
+    sampleCode: `import { Laptop } from "@lucasmarkes/hairline/react";
+
+export function LaptopFigure() {
+  return <Laptop intensity={0.65} theme="auto" label="Laptop — Notebook vetorial com abertura de tampa controlada pela interação." />;
+}`,
+  },
+  'hairline-terminal': {
+    type: 'hairline-terminal',
+    name: 'Hairline Terminal',
+    category: 'Visualizations',
+    description: "Terminal de código com linhas que se afastam sob o ponteiro.",
+    iconName: 'GitBranch',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-terminal',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Terminal — Terminal de código com linhas que se afastam sob o ponteiro." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Terminal — Terminal de código com linhas que se afastam sob o ponteiro.", play: false },
+    sampleCode: `import { Terminal } from "@lucasmarkes/hairline/react";
+
+export function TerminalFigure() {
+  return <Terminal intensity={0.65} theme="auto" label="Terminal — Terminal de código com linhas que se afastam sob o ponteiro." />;
+}`,
+  },
+  'hairline-cabinet': {
+    type: 'hairline-cabinet',
+    name: 'Hairline Cabinet',
+    category: 'Visualizations',
+    description: "Rack de servidores com gavetas que deslizam individualmente.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-cabinet',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Cabinet — Rack de servidores com gavetas que deslizam individualmente." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Cabinet — Rack de servidores com gavetas que deslizam individualmente.", play: false },
+    sampleCode: `import { Cabinet } from "@lucasmarkes/hairline/react";
+
+export function CabinetFigure() {
+  return <Cabinet intensity={0.65} theme="auto" label="Cabinet — Rack de servidores com gavetas que deslizam individualmente." />;
+}`,
+  },
+  'hairline-branches': {
+    type: 'hairline-branches',
+    name: 'Hairline Branches',
+    category: 'Visualizations',
+    description: "Grafo de commits em que ancestrais se elevam em sequência.",
+    iconName: 'GitBranch',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-branches',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Branches — Grafo de commits em que ancestrais se elevam em sequência." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Branches — Grafo de commits em que ancestrais se elevam em sequência.", play: false },
+    sampleCode: `import { Branches } from "@lucasmarkes/hairline/react";
+
+export function BranchesFigure() {
+  return <Branches intensity={0.65} theme="auto" label="Branches — Grafo de commits em que ancestrais se elevam em sequência." />;
+}`,
+  },
+  'hairline-vault': {
+    type: 'hairline-vault',
+    name: 'Hairline Vault',
+    category: 'Visualizations',
+    description: "Cofre isométrico com movimento inercial.",
+    iconName: 'ShieldCheck',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-vault',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Vault — Cofre isométrico com movimento inercial." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Vault — Cofre isométrico com movimento inercial.", play: false },
+    sampleCode: `import { Vault } from "@lucasmarkes/hairline/react";
+
+export function VaultFigure() {
+  return <Vault intensity={0.65} theme="auto" label="Vault — Cofre isométrico com movimento inercial." />;
+}`,
+  },
+  'hairline-lockers': {
+    type: 'hairline-lockers',
+    name: 'Hairline Lockers',
+    category: 'Visualizations',
+    description: "Armários com portas articuladas e abertura progressiva.",
+    iconName: 'ShieldCheck',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-lockers',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Lockers — Armários com portas articuladas e abertura progressiva." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Lockers — Armários com portas articuladas e abertura progressiva.", play: false },
+    sampleCode: `import { Lockers } from "@lucasmarkes/hairline/react";
+
+export function LockersFigure() {
+  return <Lockers intensity={0.65} theme="auto" label="Lockers — Armários com portas articuladas e abertura progressiva." />;
+}`,
+  },
+  'hairline-padlock': {
+    type: 'hairline-padlock',
+    name: 'Hairline Padlock',
+    category: 'Visualizations',
+    description: "Cadeado vetorial interativo.",
+    iconName: 'ShieldCheck',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-padlock',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Padlock — Cadeado vetorial interativo." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Padlock — Cadeado vetorial interativo.", play: false },
+    sampleCode: `import { Padlock } from "@lucasmarkes/hairline/react";
+
+export function PadlockFigure() {
+  return <Padlock intensity={0.65} theme="auto" label="Padlock — Cadeado vetorial interativo." />;
+}`,
+  },
+  'hairline-patch': {
+    type: 'hairline-patch',
+    name: 'Hairline Patch',
+    category: 'Visualizations',
+    description: "Painel de conexões com portas e linhas de patch.",
+    iconName: 'Network',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-patch',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Patch — Painel de conexões com portas e linhas de patch." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Patch — Painel de conexões com portas e linhas de patch.", play: false },
+    sampleCode: `import { Patch } from "@lucasmarkes/hairline/react";
+
+export function PatchFigure() {
+  return <Patch intensity={0.65} theme="auto" label="Patch — Painel de conexões com portas e linhas de patch." />;
+}`,
+  },
+  'hairline-dish': {
+    type: 'hairline-dish',
+    name: 'Hairline Dish',
+    category: 'Visualizations',
+    description: "Antena parabólica isométrica com orientação interativa.",
+    iconName: 'Network',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-dish',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Dish — Antena parabólica isométrica com orientação interativa." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Dish — Antena parabólica isométrica com orientação interativa.", play: false },
+    sampleCode: `import { Dish } from "@lucasmarkes/hairline/react";
+
+export function DishFigure() {
+  return <Dish intensity={0.65} theme="auto" label="Dish — Antena parabólica isométrica com orientação interativa." />;
+}`,
+  },
+  'hairline-router': {
+    type: 'hairline-router',
+    name: 'Hairline Router',
+    category: 'Visualizations',
+    description: "Roteador com portas e sinais de conectividade.",
+    iconName: 'Network',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-router',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Router — Roteador com portas e sinais de conectividade." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Router — Roteador com portas e sinais de conectividade.", play: false },
+    sampleCode: `import { Router } from "@lucasmarkes/hairline/react";
+
+export function RouterFigure() {
+  return <Router intensity={0.65} theme="auto" label="Router — Roteador com portas e sinais de conectividade." />;
+}`,
+  },
+  'hairline-loupe': {
+    type: 'hairline-loupe',
+    name: 'Hairline Loupe',
+    category: 'Visualizations',
+    description: "Lupa vetorial para estado vazio e busca.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-loupe',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Loupe — Lupa vetorial para estado vazio e busca." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Loupe — Lupa vetorial para estado vazio e busca.", play: false },
+    sampleCode: `import { Loupe } from "@lucasmarkes/hairline/react";
+
+export function LoupeFigure() {
+  return <Loupe intensity={0.65} theme="auto" label="Loupe — Lupa vetorial para estado vazio e busca." />;
+}`,
+  },
+  'hairline-sieve': {
+    type: 'hairline-sieve',
+    name: 'Hairline Sieve',
+    category: 'Visualizations',
+    description: "Peneira para ilustrar filtros sem resultados.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-sieve',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Sieve — Peneira para ilustrar filtros sem resultados." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Sieve — Peneira para ilustrar filtros sem resultados.", play: false },
+    sampleCode: `import { Sieve } from "@lucasmarkes/hairline/react";
+
+export function SieveFigure() {
+  return <Sieve intensity={0.65} theme="auto" label="Sieve — Peneira para ilustrar filtros sem resultados." />;
+}`,
+  },
+  'hairline-rail': {
+    type: 'hairline-rail',
+    name: 'Hairline Rail',
+    category: 'Visualizations',
+    description: "Trilho com elementos pendurados e seleção por proximidade.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-rail',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Rail — Trilho com elementos pendurados e seleção por proximidade." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Rail — Trilho com elementos pendurados e seleção por proximidade.", play: false },
+    sampleCode: `import { Rail } from "@lucasmarkes/hairline/react";
+
+export function RailFigure() {
+  return <Rail intensity={0.65} theme="auto" label="Rail — Trilho com elementos pendurados e seleção por proximidade." />;
+}`,
+  },
+  'hairline-plug': {
+    type: 'hairline-plug',
+    name: 'Hairline Plug',
+    category: 'Visualizations',
+    description: "Tomada e plugue para estados de conexão vazios.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-plug',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Plug — Tomada e plugue para estados de conexão vazios." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Plug — Tomada e plugue para estados de conexão vazios.", play: false },
+    sampleCode: `import { Plug } from "@lucasmarkes/hairline/react";
+
+export function PlugFigure() {
+  return <Plug intensity={0.65} theme="auto" label="Plug — Tomada e plugue para estados de conexão vazios." />;
+}`,
+  },
+  'hairline-query': {
+    type: 'hairline-query',
+    name: 'Hairline Query',
+    category: 'Visualizations',
+    description: "Ponto de interrogação com movimento de mola.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-query',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Query — Ponto de interrogação com movimento de mola." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Query — Ponto de interrogação com movimento de mola.", play: false },
+    sampleCode: `import { Query } from "@lucasmarkes/hairline/react";
+
+export function QueryFigure() {
+  return <Query intensity={0.65} theme="auto" label="Query — Ponto de interrogação com movimento de mola." />;
+}`,
+  },
+  'hairline-drawer': {
+    type: 'hairline-drawer',
+    name: 'Hairline Drawer',
+    category: 'Visualizations',
+    description: "Gavetas que abrem em resposta à posição do ponteiro.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-drawer',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Drawer — Gavetas que abrem em resposta à posição do ponteiro." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Drawer — Gavetas que abrem em resposta à posição do ponteiro.", play: false },
+    sampleCode: `import { Drawer } from "@lucasmarkes/hairline/react";
+
+export function DrawerFigure() {
+  return <Drawer intensity={0.65} theme="auto" label="Drawer — Gavetas que abrem em resposta à posição do ponteiro." />;
+}`,
+  },
+  'hairline-basket': {
+    type: 'hairline-basket',
+    name: 'Hairline Basket',
+    category: 'Visualizations',
+    description: "Cesta vetorial para estados vazios de conteúdo.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-basket',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Basket — Cesta vetorial para estados vazios de conteúdo." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Basket — Cesta vetorial para estados vazios de conteúdo.", play: false },
+    sampleCode: `import { Basket } from "@lucasmarkes/hairline/react";
+
+export function BasketFigure() {
+  return <Basket intensity={0.65} theme="auto" label="Basket — Cesta vetorial para estados vazios de conteúdo." />;
+}`,
+  },
+  'hairline-plot': {
+    type: 'hairline-plot',
+    name: 'Hairline Plot',
+    category: 'Visualizations',
+    description: "Gráfico isométrico interativo.",
+    iconName: 'ChartNoAxesCombined',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-plot',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Plot — Gráfico isométrico interativo." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Plot — Gráfico isométrico interativo.", play: false },
+    sampleCode: `import { Plot } from "@lucasmarkes/hairline/react";
+
+export function PlotFigure() {
+  return <Plot intensity={0.65} theme="auto" label="Plot — Gráfico isométrico interativo." />;
+}`,
+  },
+  'hairline-hub': {
+    type: 'hairline-hub',
+    name: 'Hairline Hub',
+    category: 'Visualizations',
+    description: "Hub central com oito nós e conexões que acendem ao foco.",
+    iconName: 'Network',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-hub',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Hub — Hub central com oito nós e conexões que acendem ao foco." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Hub — Hub central com oito nós e conexões que acendem ao foco.", play: false },
+    sampleCode: `import { Hub } from "@lucasmarkes/hairline/react";
+
+export function HubFigure() {
+  return <Hub intensity={0.65} theme="auto" label="Hub — Hub central com oito nós e conexões que acendem ao foco." />;
+}`,
+  },
+  'hairline-relay': {
+    type: 'hairline-relay',
+    name: 'Hairline Relay',
+    category: 'Visualizations',
+    description: "Rede ramificada com realce sequencial de saltos.",
+    iconName: 'Network',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-relay',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Relay — Rede ramificada com realce sequencial de saltos." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Relay — Rede ramificada com realce sequencial de saltos.", play: false },
+    sampleCode: `import { Relay } from "@lucasmarkes/hairline/react";
+
+export function RelayFigure() {
+  return <Relay intensity={0.65} theme="auto" label="Relay — Rede ramificada com realce sequencial de saltos." />;
+}`,
+  },
+  'hairline-settle': {
+    type: 'hairline-settle',
+    name: 'Hairline Settle',
+    category: 'Visualizations',
+    description: "Nós desalinhados que se organizam em uma árvore conectada.",
+    iconName: 'Layers',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-settle',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Settle — Nós desalinhados que se organizam em uma árvore conectada." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Settle — Nós desalinhados que se organizam em uma árvore conectada.", play: false },
+    sampleCode: `import { Settle } from "@lucasmarkes/hairline/react";
+
+export function SettleFigure() {
+  return <Settle intensity={0.65} theme="auto" label="Settle — Nós desalinhados que se organizam em uma árvore conectada." />;
+}`,
+  },
+  'hairline-format': {
+    type: 'hairline-format',
+    name: 'Hairline Format',
+    category: 'Visualizations',
+    description: "Linhas desalinhadas que se alinham como um formatador de código.",
+    iconName: 'GitBranch',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-format',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Format — Linhas desalinhadas que se alinham como um formatador de código." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Format — Linhas desalinhadas que se alinham como um formatador de código.", play: false },
+    sampleCode: `import { Format } from "@lucasmarkes/hairline/react";
+
+export function FormatFigure() {
+  return <Format intensity={0.65} theme="auto" label="Format — Linhas desalinhadas que se alinham como um formatador de código." />;
+}`,
+  },
+  'hairline-rebuild': {
+    type: 'hairline-rebuild',
+    name: 'Hairline Rebuild',
+    category: 'Visualizations',
+    description: "Árvore de dependências cujos pacotes sobem em cadeia.",
+    iconName: 'GitBranch',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-rebuild',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Rebuild — Árvore de dependências cujos pacotes sobem em cadeia." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Rebuild — Árvore de dependências cujos pacotes sobem em cadeia.", play: false },
+    sampleCode: `import { Rebuild } from "@lucasmarkes/hairline/react";
+
+export function RebuildFigure() {
+  return <Rebuild intensity={0.65} theme="auto" label="Rebuild — Árvore de dependências cujos pacotes sobem em cadeia." />;
+}`,
+  },
+  'hairline-stack': {
+    type: 'hairline-stack',
+    name: 'Hairline Stack',
+    category: 'Visualizations',
+    description: "Pilha de chamadas com quadros que se separam pela posição do ponteiro.",
+    iconName: 'GitBranch',
+    badge: 'Hairline · MIT',
+    registryName: 'hairline-stack',
+    dependencies: ['@lucasmarkes/hairline'],
+    propFields: [
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.65, min: 0, max: 1, step: 0.05 },
+      { key: 'figureTheme', label: 'Tema', type: 'select', defaultValue: 'auto', options: [{ label: 'Automático', value: 'auto' }, { label: 'Claro', value: 'light' }, { label: 'Escuro', value: 'dark' }] },
+      { key: 'label', label: 'Descrição acessível', type: 'text', defaultValue: "Stack — Pilha de chamadas com quadros que se separam pela posição do ponteiro." },
+      { key: 'play', label: 'Reprodução automática', type: 'boolean', defaultValue: false },
+    ],
+    defaultProps: { intensity: 0.65, figureTheme: 'auto', label: "Stack — Pilha de chamadas com quadros que se separam pela posição do ponteiro.", play: false },
+    sampleCode: `import { Stack } from "@lucasmarkes/hairline/react";
+
+export function StackFigure() {
+  return <Stack intensity={0.65} theme="auto" label="Stack — Pilha de chamadas com quadros que se separam pela posição do ponteiro." />;
+}`,
+  },
 };

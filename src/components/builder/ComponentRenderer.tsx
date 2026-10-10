@@ -23,6 +23,42 @@ import { HairlineFigure } from '../godui/HairlineFigure';
 import { FeraUIExperiment } from '../godui/FeraUIExperiment';
 
 // Animation Variants
+const HAIRLINE_FIGURE_BY_COMPONENT: Record<string, string> = {
+  'hairline-riffle': 'riffle',
+  'hairline-terrain': 'terrain',
+  'hairline-exploded': 'exploded',
+  'hairline-phosphor': 'phosphor',
+  'hairline-slow': 'slow',
+  'hairline-turntable': 'turntable',
+  'hairline-keyboard': 'keyboard',
+  'hairline-elevator': 'elevator',
+  'hairline-phone': 'phone',
+  'hairline-laptop': 'laptop',
+  'hairline-terminal': 'terminal',
+  'hairline-cabinet': 'cabinet',
+  'hairline-branches': 'branches',
+  'hairline-vault': 'vault',
+  'hairline-lockers': 'lockers',
+  'hairline-padlock': 'padlock',
+  'hairline-patch': 'patch',
+  'hairline-dish': 'dish',
+  'hairline-router': 'router',
+  'hairline-loupe': 'loupe',
+  'hairline-sieve': 'sieve',
+  'hairline-rail': 'rail',
+  'hairline-plug': 'plug',
+  'hairline-query': 'query',
+  'hairline-drawer': 'drawer',
+  'hairline-basket': 'basket',
+  'hairline-plot': 'plot',
+  'hairline-hub': 'hub',
+  'hairline-relay': 'relay',
+  'hairline-settle': 'settle',
+  'hairline-format': 'format',
+  'hairline-rebuild': 'rebuild',
+  'hairline-stack': 'stack',
+};
+
 const entranceVariants: Record<EntranceAnimationType, any> = {
   'fade-spring': {
     hidden: { opacity: 0, y: 15, scale: 0.98 },
@@ -198,6 +234,13 @@ import { ScrollGlowContainer } from '../godui/ScrollGlowContainer';
 import { ThinkingOrb } from '../godui/ThinkingOrb';
 import { BotAvatar } from '../godui/BotAvatar';
 import { VoiceBeam } from '../godui/VoiceBeam';
+import { RobotHeads } from '../godui/RobotHeads';
+import { MorphiconsShowcase } from '../godui/MorphiconsShowcase';
+import { VoiceStudioExtension } from '../godui/VoiceStudioExtension';
+import { PlasmaSurface } from '../godui/PlasmaSurface';
+import { LiquidGooeyCursor } from '../godui/LiquidGooeyCursor';
+import { CompleteShelf } from '../godui/CompleteShelf';
+import { BrandLogoExplorer } from '../godui/BrandLogoExplorer';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
@@ -1740,6 +1783,53 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           </div>
         );
 
+      case 'hairline-riffle':
+      case 'hairline-terrain':
+      case 'hairline-exploded':
+      case 'hairline-phosphor':
+      case 'hairline-slow':
+      case 'hairline-turntable':
+      case 'hairline-keyboard':
+      case 'hairline-elevator':
+      case 'hairline-phone':
+      case 'hairline-laptop':
+      case 'hairline-terminal':
+      case 'hairline-cabinet':
+      case 'hairline-branches':
+      case 'hairline-vault':
+      case 'hairline-lockers':
+      case 'hairline-padlock':
+      case 'hairline-patch':
+      case 'hairline-dish':
+      case 'hairline-router':
+      case 'hairline-loupe':
+      case 'hairline-sieve':
+      case 'hairline-rail':
+      case 'hairline-plug':
+      case 'hairline-query':
+      case 'hairline-drawer':
+      case 'hairline-basket':
+      case 'hairline-plot':
+      case 'hairline-hub':
+      case 'hairline-relay':
+      case 'hairline-settle':
+      case 'hairline-format':
+      case 'hairline-rebuild':
+      case 'hairline-stack':
+        return (
+          <div className="my-4 flex justify-center">
+            <div className="w-full max-w-sm">
+              <HairlineFigure
+                figureType={HAIRLINE_FIGURE_BY_COMPONENT[instance.type] || 'terrain'}
+                intensity={Number(props.intensity ?? 0.65)}
+                figureTheme={(props.figureTheme as 'auto' | 'light' | 'dark') || 'auto'}
+                label={String(props.label || 'Figura isométrica interativa')}
+                play={Boolean(props.play ?? false)}
+              />
+            </div>
+          </div>
+        );
+
       case 'isometric-figure':
         return (
           <div className="my-4 flex justify-center">
@@ -1777,6 +1867,87 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
               />
             </ImageGeneration>
           </div>
+        );
+
+      case 'robot-heads':
+        return (
+          <RobotHeads
+            shape={props.shape || 'rectangle'}
+            state={props.state || 'thinking'}
+            size={Number(props.size ?? 180)}
+            color={String(props.color || '#263b62')}
+            trimColor={String(props.trimColor || '#a8c2e8')}
+            screenColor={String(props.screenColor || '#d8f7ff')}
+            speed={Number(props.speed ?? 1)}
+            paused={Boolean(props.paused ?? false)}
+            interactive={Boolean(props.interactive ?? true)}
+            antenna={Boolean(props.antenna ?? true)}
+            label={String(props.label || 'Mascote robótico do GodUI')}
+          />
+        );
+
+      case 'morphicons-showcase':
+        return (
+          <MorphiconsShowcase
+            size={Number(props.size ?? 44)}
+            color={String(props.color || '#67e8f9')}
+            spring={props.spring || 'snappy'}
+            label={String(props.label || 'Ícones com morphing')}
+          />
+        );
+
+      case 'voice-studio-extension':
+        return (
+          <VoiceStudioExtension
+            title={String(props.title || 'Voice Studio')}
+            defaultText={String(props.defaultText || 'Olá! Este é o módulo de voz do GodUI.')}
+            language={String(props.language || 'pt-BR')}
+            voiceStudioUrl={String(props.voiceStudioUrl || 'http://localhost:3900')}
+            accentColor={String(props.accentColor || '#67e8f9')}
+          />
+        );
+
+      case 'plasma-surface':
+        return (
+          <PlasmaSurface
+            title={String(props.title || 'Plasma Surface')}
+            description={String(props.description || '')}
+            mood={props.mood || 'tidal'}
+            tint={String(props.tint || '#67e8f9')}
+            opacity={Number(props.opacity ?? 0.12)}
+            frost={Number(props.frost ?? 0.2)}
+            viscosity={Number(props.viscosity ?? 0.5)}
+            flow={Number(props.flow ?? 0.25)}
+            interactive={Boolean(props.interactive ?? true)}
+          />
+        );
+
+      case 'liquid-gooey-cursor':
+        return (
+          <LiquidGooeyCursor
+            title={String(props.title || 'Liquid Gooey Cursor')}
+            description={String(props.description || '')}
+            accent={String(props.accent || '#67e8f9')}
+            intensity={Number(props.intensity ?? 0.7)}
+          />
+        );
+
+      case 'complete-shelf':
+        return (
+          <CompleteShelf
+            title={String(props.title || 'The Complete Shelf')}
+            showDescriptions={Boolean(props.showDescriptions ?? true)}
+            accent={String(props.accent || '#67e8f9')}
+          />
+        );
+
+      case 'brand-logo-explorer':
+        return (
+          <BrandLogoExplorer
+            title={String(props.title || 'Brand Logo Explorer')}
+            initialQuery={String(props.initialQuery || '')}
+            includeTheSvg={Boolean(props.includeTheSvg ?? true)}
+          />
         );
 
       default:
