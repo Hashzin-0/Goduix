@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   ArrowLeft, ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight,
-  CirclePlay, Copy, Moon, Music2, RotateCcw, Star, Sun, Trash2, Trophy,
+  CirclePlay, Copy, Music2, RotateCcw, Star, Trash2, Trophy,
 } from 'lucide-react';
 
 export type FeraUIExperimentType =
@@ -44,7 +44,7 @@ function ClawCaptcha() {
     <div className="relative mt-4 overflow-hidden rounded-xl border border-sky-100 bg-gradient-to-b from-sky-50 to-indigo-100 p-3 dark:border-white/10 dark:from-slate-900 dark:to-indigo-950">
       <div className="absolute left-1/2 top-2 h-5 w-1 -translate-x-1/2 bg-zinc-400" style={{ transform: 'translateX(' + ((claw - 2) * 48) + 'px)' }} />
       <div className="grid h-28 grid-cols-5 items-end gap-1 border-b-4 border-zinc-300 pb-2">{toys.map((toy, i) => <button type="button" key={toy} aria-label={'Selecionar brinquedo ' + toy} onClick={() => { setClaw(i); setWon(false); }} className={'rounded-lg p-1 text-2xl transition ' + (claw === i ? 'bg-white shadow ring-2 ring-sky-400' : 'hover:bg-white/60')}>{toy}</button>)}</div>
-      <div className="mt-3 flex justify-center gap-2"><button type="button" className={button} onClick={() => setClaw(v => Math.max(0, v - 1))} aria-label="Mover garra para a esquerda"><ChevronLeft size={16}/></button><button type="button" className={primary} onClick={() => { setWon(claw === target); if (claw === target) setTarget((target + 2) % toys.length); }}><Trophy size={15}/> Baixar a garra</button><button type="button" className={button} onClick={() => setClaw(v => Math.min(toys.length - 1, v + 1))} aria-label="Mover garra para a direita"><ChevronRight size={16}/></button></div>
+      <div className="mt-3 flex justify-center gap-2"><button type="button" className={button} onClick={() => setClaw(v => Math.max(0, v - 1))} aria-label="Mover garra para a esquerda"><ChevronLeft size={16}/></button><button type="button" className={primary} onClick={() => setWon(claw === target)}><Trophy size={15}/> Baixar a garra</button><button type="button" className={button} onClick={() => setClaw(v => Math.min(toys.length - 1, v + 1))} aria-label="Mover garra para a direita"><ChevronRight size={16}/></button></div>
     </div>
     <p role="status" className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">{won ? 'Você pegou o brinquedo. Desafio concluído!' : 'Encontre o brinquedo-alvo: ' + toys[target] + ' e mova a garra até ele.'}</p>
   </section>;
@@ -69,7 +69,7 @@ function Screenery() {
   const screens = [{ title: 'Bem-vindo de volta', subtitle: 'Seu espaço, do seu jeito.', cta: 'Continuar', bg: 'from-sky-100 to-indigo-100' }, { title: 'Tudo em um só lugar', subtitle: 'Organize ideias e projetos.', cta: 'Explorar projetos', bg: 'from-amber-100 to-rose-100' }, { title: 'Pronto para começar?', subtitle: 'Um pequeno passo de cada vez.', cta: 'Criar projeto', bg: 'from-emerald-100 to-teal-100' }];
   const s = screens[screen];
   return <section className={panel + ' p-5'}><div className="flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Screenery</p><h3 className="mt-1 text-lg font-semibold">Galeria de telas animadas</h3></div><span className="text-xs text-zinc-500">{screen + 1} / {screens.length}</span></div>
-    <AnimatePresence mode="wait"><motion.div key={screen} initial={{ opacity: 0, y: 14, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .25 }} className={'mt-4 flex min-h-56 flex-col justify-between rounded-xl bg-gradient-to-br p-6 text-zinc-900 ' + s.bg}><div><span className="text-xs font-semibold uppercase tracking-widest">Seu próximo capítulo</span><h4 className="mt-8 max-w-xs text-2xl font-bold">{s.title}</h4><p className="mt-2 text-sm">{s.subtitle}</p></div><button type="button" className="mt-6 w-fit rounded-full bg-zinc-900 px-4 py-2 text-sm text-white">{s.cta} <ArrowRight size={14} className="ml-1 inline"/></button></motion.div></AnimatePresence>
+    <AnimatePresence mode="wait"><motion.div key={screen} initial={{ opacity: 0, y: 14, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .25 }} className={'mt-4 flex min-h-56 flex-col justify-between rounded-xl bg-gradient-to-br p-6 text-zinc-900 ' + s.bg}><div><span className="text-xs font-semibold uppercase tracking-widest">Seu próximo capítulo</span><h4 className="mt-8 max-w-xs text-2xl font-bold">{s.title}</h4><p className="mt-2 text-sm">{s.subtitle}</p></div><button type="button" onClick={() => setScreen(v => (v + 1) % screens.length)} className="mt-6 w-fit rounded-full bg-zinc-900 px-4 py-2 text-sm text-white">{s.cta} <ArrowRight size={14} className="ml-1 inline"/></button></motion.div></AnimatePresence>
     <div className="mt-3 flex justify-between"><button type="button" className={button} onClick={() => setScreen(v => (v + screens.length - 1) % screens.length)}><ChevronLeft size={15}/> Anterior</button><button type="button" className={button} onClick={() => setScreen(v => (v + 1) % screens.length)}>Próxima <ChevronRight size={15}/></button></div>
   </section>;
 }
