@@ -54,7 +54,10 @@ export const VoiceStudioExtension: React.FC<VoiceStudioExtensionProps> = ({
     };
     refresh();
     window.speechSynthesis.addEventListener?.('voiceschanged', refresh);
-    return () => window.speechSynthesis.removeEventListener?.('voiceschanged', refresh);
+    return () => {
+      window.speechSynthesis.removeEventListener?.('voiceschanged', refresh);
+      window.speechSynthesis.cancel();
+    };
   }, [language]);
 
   const speak = () => {
@@ -122,7 +125,7 @@ export const VoiceStudioExtension: React.FC<VoiceStudioExtensionProps> = ({
             <p className="text-xs text-zinc-400">Síntese e captura de voz no navegador</p>
           </div>
         </div>
-        <a href={/^https?:\\/\\//i.test(voiceStudioUrl) ? voiceStudioUrl : 'http://localhost:3900'} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-white/10">
+        <a href={/^https?:\/\//i.test(voiceStudioUrl) ? voiceStudioUrl : 'http://localhost:3900'} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-white/10">
           VoiceStudio <ExternalLink size={12} />
         </a>
       </header>
