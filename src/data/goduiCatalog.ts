@@ -2668,6 +2668,210 @@ export function RevealCard() {
   );
 }`,
   },
+  'feraui-pull-cord': {
+    type: 'feraui-pull-cord',
+    name: 'PullCord',
+    category: 'FeraUI Experiments',
+    description: 'Cordão de luz interativo. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-pull-cord',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function PullCordExample() {
+  return <FeraUIExperiment experiment="feraui-pull-cord" />;
+}`,
+  },
+  'feraui-claw-captcha': {
+    type: 'feraui-claw-captcha',
+    name: 'ClawCaptcha',
+    category: 'FeraUI Experiments',
+    description: 'Mini jogo de garra, demonstrativo e sem função anti-bot. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-claw-captcha',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function ClawCaptchaExample() {
+  return <FeraUIExperiment experiment="feraui-claw-captcha" />;
+}`,
+  },
+  'feraui-gradient-builder': {
+    type: 'feraui-gradient-builder',
+    name: 'Gradient Builder',
+    category: 'FeraUI Experiments',
+    description: 'Editor interativo de gradientes com prévia e cópia de CSS. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-gradient-builder',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function GradientBuilderExample() {
+  return <FeraUIExperiment experiment="feraui-gradient-builder" />;
+}`,
+  },
+  'feraui-screenery': {
+    type: 'feraui-screenery',
+    name: 'Screenery',
+    category: 'FeraUI Experiments',
+    description: 'Galeria de telas com transições animadas. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-screenery',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function ScreeneryExample() {
+  return <FeraUIExperiment experiment="feraui-screenery" />;
+}`,
+  },
+  'feraui-deskfolio': {
+    type: 'feraui-deskfolio',
+    name: 'DeskFolio',
+    category: 'FeraUI Experiments',
+    description: 'Portfólio interativo em formato de livro. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-deskfolio',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function DeskFolioExample() {
+  return <FeraUIExperiment experiment="feraui-deskfolio" />;
+}`,
+  },
+  'feraui-blob': {
+    type: 'feraui-blob',
+    name: 'Blob',
+    category: 'FeraUI Experiments',
+    description: 'Mascote elástico com expressões reativas. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-blob',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function BlobExample() {
+  return <FeraUIExperiment experiment="feraui-blob" />;
+}`,
+  },
+  'feraui-animaps': {
+    type: 'feraui-animaps',
+    name: 'AniMaps',
+    category: 'FeraUI Experiments',
+    description: 'Rota ilustrativa com marcador animado. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-animaps',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function AniMapsExample() {
+  return <FeraUIExperiment experiment="feraui-animaps" />;
+}`,
+  },
+  'feraui-fur': {
+    type: 'feraui-fur',
+    name: 'Fur',
+    category: 'FeraUI Experiments',
+    description: 'Textura de fios reativa ao ponteiro e toque. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-fur',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function FurExample() {
+  return <FeraUIExperiment experiment="feraui-fur" />;
+}`,
+  },
+  'feraui-vacuum': {
+    type: 'feraui-vacuum',
+    name: 'Vacuum',
+    category: 'FeraUI Experiments',
+    description: 'Remoção em lote com transição animada. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-vacuum',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function VacuumExample() {
+  return <FeraUIExperiment experiment="feraui-vacuum" />;
+}`,
+  },
+  'feraui-crumple': {
+    type: 'feraui-crumple',
+    name: 'Crumple',
+    category: 'FeraUI Experiments',
+    description: 'Notas descartadas com animação de papel. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-crumple',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function CrumpleExample() {
+  return <FeraUIExperiment experiment="feraui-crumple" />;
+}`,
+  },
+  'feraui-hologram': {
+    type: 'feraui-hologram',
+    name: 'Hologram',
+    category: 'FeraUI Experiments',
+    description: 'Cartão com brilho holográfico reativo à inclinação. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-hologram',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function HologramExample() {
+  return <FeraUIExperiment experiment="feraui-hologram" />;
+}`,
+  },
+  'feraui-matchday': {
+    type: 'feraui-matchday',
+    name: 'Matchday',
+    category: 'FeraUI Experiments',
+    description: 'Diário de partidas com avaliação por estrelas. Implementação independente para Goduix com controles interativos e responsivos.',
+    iconName: 'Sparkles',
+    badge: 'FeraUI-inspired',
+    registryName: 'feraui-matchday',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [],
+    defaultProps: { accent: '#0f766e' },
+    sampleCode: `import { FeraUIExperiment } from "@/src/components/godui/FeraUIExperiment";
+
+export function MatchdayExample() {
+  return <FeraUIExperiment experiment="feraui-matchday" />;
+}`,
+  },
   'hairline-figure': {
     type: 'hairline-figure',
     name: 'Hairline Figure',

@@ -20,6 +20,7 @@ import { cn } from '../../lib/utils';
 import { AnimatedTestimonials } from '../godui/AnimatedTestimonials';
 import { AppShowcase } from '../godui/AppShowcase';
 import { HairlineFigure } from '../godui/HairlineFigure';
+import { FeraUIExperiment } from '../godui/FeraUIExperiment';
 
 // Animation Variants
 const entranceVariants: Record<EntranceAnimationType, any> = {
@@ -1687,6 +1688,42 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             </MetalFx>
           </div>
         );
+
+      case 'feraui-pull-cord':
+        return <FeraUIExperiment experiment="feraui-pull-cord" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-claw-captcha':
+        return <FeraUIExperiment experiment="feraui-claw-captcha" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-gradient-builder':
+        return <FeraUIExperiment experiment="feraui-gradient-builder" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-screenery':
+        return <FeraUIExperiment experiment="feraui-screenery" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-deskfolio':
+        return <FeraUIExperiment experiment="feraui-deskfolio" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-blob':
+        return <FeraUIExperiment experiment="feraui-blob" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-animaps':
+        return <FeraUIExperiment experiment="feraui-animaps" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-fur':
+        return <FeraUIExperiment experiment="feraui-fur" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-vacuum':
+        return <FeraUIExperiment experiment="feraui-vacuum" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-crumple':
+        return <FeraUIExperiment experiment="feraui-crumple" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-hologram':
+        return <FeraUIExperiment experiment="feraui-hologram" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
+
+      case 'feraui-matchday':
+        return <FeraUIExperiment experiment="feraui-matchday" title={String(props.title || '')} accent={String(props.accent || '#0f766e')} />;
 
       case 'hairline-figure':
         return (
