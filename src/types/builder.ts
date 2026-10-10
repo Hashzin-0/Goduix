@@ -190,7 +190,9 @@ export type GodUIComponentType =
   | 'hairline-settle'
   | 'hairline-format'
   | 'hairline-rebuild'
-  | 'hairline-stack';
+  | 'hairline-stack'
+  | 'pixelflow-folder-hover'
+  | 'pixelflow-pricing-cards';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'
