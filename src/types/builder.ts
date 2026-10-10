@@ -163,7 +163,8 @@ export type ComponentCategory =
   | 'AI & Collaboration'
   | 'Visualizations'
   | 'Effects & Backgrounds'
-  | 'Glass & Static';
+  | 'Glass & Static'
+  | 'FeraUI Experiments';
 
 // Animation Types for Components
 export type EntranceAnimationType =
