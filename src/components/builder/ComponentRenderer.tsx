@@ -19,6 +19,7 @@ import { THEMES } from '../../data/themes';
 import { cn } from '../../lib/utils';
 import { AnimatedTestimonials } from '../godui/AnimatedTestimonials';
 import { AppShowcase } from '../godui/AppShowcase';
+import { HairlineFigure } from '../godui/HairlineFigure';
 
 // Animation Variants
 const entranceVariants: Record<EntranceAnimationType, any> = {
@@ -1684,6 +1685,21 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                 {props.label || 'Upgrade to Pro'}
               </button>
             </MetalFx>
+          </div>
+        );
+
+      case 'hairline-figure':
+        return (
+          <div className="my-4 flex justify-center">
+            <div className="w-full max-w-sm">
+              <HairlineFigure
+                figureType={String(props.figureType || 'terrain')}
+                intensity={Number(props.intensity ?? 0.65)}
+                figureTheme={(props.figureTheme as 'auto' | 'light' | 'dark') || 'auto'}
+                label={String(props.label || 'Figura isométrica interativa')}
+                play={Boolean(props.play ?? false)}
+              />
+            </div>
           </div>
         );
 
