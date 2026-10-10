@@ -3899,7 +3899,7 @@ export function PricingDemo() {
     category: 'Creative & Shaders',
     description: 'Buraco negro procedural com disco de acreção em WGSL/WebGPU, renderização em tempo real e fallback CSS para navegadores sem suporte.',
     iconName: 'Orbit',
-    badge: 'VGPU · MIT',
+    badge: 'WebGPU · VGPU reference',
     registryName: 'vgpu-black-hole',
     dependencies: [],
     propFields: [
