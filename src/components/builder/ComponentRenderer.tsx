@@ -204,6 +204,7 @@ import { VoiceStudioExtension } from '../godui/VoiceStudioExtension';
 import { PlasmaSurface } from '../godui/PlasmaSurface';
 import { LiquidGooeyCursor } from '../godui/LiquidGooeyCursor';
 import { CompleteShelf } from '../godui/CompleteShelf';
+import { BrandLogoExplorer } from '../godui/BrandLogoExplorer';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
@@ -1854,6 +1855,15 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             title={String(props.title || 'The Complete Shelf')}
             showDescriptions={Boolean(props.showDescriptions ?? true)}
             accent={String(props.accent || '#67e8f9')}
+          />
+        );
+
+      case 'brand-logo-explorer':
+        return (
+          <BrandLogoExplorer
+            title={String(props.title || 'Brand Logo Explorer')}
+            initialQuery={String(props.initialQuery || '')}
+            includeTheSvg={Boolean(props.includeTheSvg ?? true)}
           />
         );
 
