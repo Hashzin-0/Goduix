@@ -6,7 +6,7 @@ export interface VgpuBlackHoleProps {
   intensity?: number;
 }
 
-const BLACK_HOLE_SHADER = /* wgsl */ \`
+const BLACK_HOLE_SHADER = /* wgsl */ `
 struct Frame {
   resolution: vec2f,
   time: f32,
@@ -67,7 +67,7 @@ fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
   color = color / (color + vec3f(1.0));
   return vec4f(color, 1.0);
 }
-\`;
+`;
 
 type WebGPUDeviceLike = {
   createShaderModule: (descriptor: Record<string, unknown>) => any;
@@ -232,7 +232,7 @@ export const VgpuBlackHole: React.FC<VgpuBlackHoleProps> = ({
         <div className="relative z-10 flex min-h-[280px] flex-col justify-between p-5 sm:min-h-[340px] sm:p-7">
           <div className="flex items-center justify-between gap-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-violet-200/20 bg-black/30 px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.2em] text-violet-100/80">
-              <span className={\`h-1.5 w-1.5 rounded-full \${gpuStatus === 'active' ? 'bg-cyan-300' : 'bg-violet-300'}\`} />
+              <span className={`h-1.5 w-1.5 rounded-full ${gpuStatus === 'active' ? 'bg-cyan-300' : 'bg-violet-300'}`} />
               {gpuStatus === 'active' ? 'WebGPU · Renderização ativa' : gpuStatus === 'loading' ? 'Inicializando GPU' : 'Fallback compatível'}
             </span>
             <span className="text-[10px] font-mono uppercase tracking-wider text-white/45">VGPU / REALTIME</span>
