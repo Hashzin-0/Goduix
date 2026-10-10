@@ -153,7 +153,10 @@ export type GodUIComponentType =
   | 'hairline-figure'
   | 'robot-heads'
   | 'morphicons-showcase'
-  | 'voice-studio-extension';
+  | 'voice-studio-extension'
+  | 'plasma-surface'
+  | 'liquid-gooey-cursor'
+  | 'complete-shelf';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'
