@@ -24,3 +24,21 @@ This file records the upstream projects used by GodUI integrations. Keep each no
 - License: AGPL-3.0-only
 - Usage in this phase: external-link/connector affordance only. No VoiceStudio application source, assets, or code are copied into GodUI. The browser-native voice panel is a separate implementation and does not claim to provide VoiceStudio's local TTS/ASR engines.
 - Before embedding or modifying VoiceStudio itself, review its AGPL obligations and model-specific licenses. A proprietary embedding would require a separate licensing assessment.
+
+## Plasma UI
+
+- Source: https://github.com/CruxGarden/plasma-ui
+- Package: `@cruxgarden/plasma-ui@0.8.0`
+- License: MIT
+- Usage: imported as a dependency. The GodUI adapter switches to a lightweight CSS fallback on narrow screens and when reduced motion is requested.
+- Copyright: Crux Garden.
+
+## WeArePixelFlow Liquid Gooey Cursor
+
+- Source/inspiration: https://github.com/wearepixelflow/liquid-gooey-cursor
+- Usage in this phase: independent React/CSS/SVG recreation of the local metaball interaction; no source files or bundled assets are copied.
+
+## Complete Shelf
+
+- Source/reference: https://github.com/MengTo/complete-shelf
+- Usage in this phase: independent CSS/React recreation of the interactive bookshelf concept. The upstream repository's license was not confirmed, so its source and assets are not copied.
