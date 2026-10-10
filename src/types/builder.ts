@@ -137,7 +137,8 @@ export type GodUIComponentType =
   | 'voice-beam'
   | 'metal-fx'
   | 'image-generation'
-  | 'isometric-figure';
+  | 'isometric-figure'
+  | 'hairline-figure';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'
