@@ -995,6 +995,7 @@ export function getComponentSignatureEffect(type: GodUIComponentType): FusionEff
     'voice-beam': 'voice-beam',
     'metal-fx': 'metal-rim',
     'image-generation': 'pixel-reveal',
+    'vgpu-black-hole': 'glass-refraction',
   };
 
   return map[type] || 'liquid-glass';
