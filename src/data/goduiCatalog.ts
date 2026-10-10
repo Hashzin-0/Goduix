@@ -3893,7 +3893,6 @@ export function PricingDemo() {
   return <PixelFlowPricingCards accent="#818cf8" defaultAnnual />;
 }`,
   },
-,
   'vgpu-black-hole': {
     type: 'vgpu-black-hole',
     name: 'VGPU Black Hole',
