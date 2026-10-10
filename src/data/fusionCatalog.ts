@@ -916,6 +916,8 @@ export function getComponentSignatureEffect(type: GodUIComponentType): FusionEff
     'hairline-format': 'blueprint-laser',
     'hairline-rebuild': 'blueprint-laser',
     'hairline-stack': 'blueprint-laser',
+    'pixelflow-folder-hover': 'hologram-3d-tilt',
+    'pixelflow-pricing-cards': 'liquid-glass',
     'feraui-pull-cord': 'blueprint-laser',
     'feraui-claw-captcha': 'blueprint-laser',
     'feraui-gradient-builder': 'blueprint-laser',

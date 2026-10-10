@@ -3848,4 +3848,49 @@ export function StackFigure() {
   return <Stack intensity={0.65} theme="auto" label="Stack — Pilha de chamadas com quadros que se separam pela posição do ponteiro." />;
 }`,
   },
+
+  'pixelflow-folder-hover': {
+    type: 'pixelflow-folder-hover',
+    name: 'PixelFlow Folder Hover',
+    category: 'Cards & Layout',
+    description: 'Cartão de pasta com painel de arquivos, animação de abertura, foco por teclado e duração ajustável, adaptado do projeto MIT do PixelFlow.',
+    iconName: 'FolderOpen',
+    badge: 'PixelFlow · MIT',
+    registryName: 'pixelflow-folder-hover',
+    dependencies: ['lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Project files' },
+      { key: 'subtitle', label: 'Descrição', type: 'text', defaultValue: 'Hover or focus to explore' },
+      { key: 'accent', label: 'Cor de destaque', type: 'color', defaultValue: '#60a5fa' },
+      { key: 'duration', label: 'Duração da animação (ms)', type: 'number', defaultValue: 380, min: 120, max: 900, step: 40 },
+    ],
+    defaultProps: { title: 'Project files', subtitle: 'Hover or focus to explore', accent: '#60a5fa', duration: 380 },
+    sampleCode: `import { PixelFlowFolderHover } from "@/src/components/godui/PixelFlowFolderHover";
+
+export function FolderDemo() {
+  return <PixelFlowFolderHover title="Project files" accent="#60a5fa" />;
+}`,
+  },
+  'pixelflow-pricing-cards': {
+    type: 'pixelflow-pricing-cards',
+    name: 'PixelFlow Pricing Cards',
+    category: 'Cards & Layout',
+    description: 'Seção responsiva de três planos com alternância mensal/anual, destaque do plano recomendado, cartões com brilho e seleção local de plano. Preços são ilustrativos.',
+    iconName: 'CreditCard',
+    badge: 'PixelFlow · MIT inspiration',
+    registryName: 'pixelflow-pricing-cards',
+    dependencies: ['lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Planos para construir melhor' },
+      { key: 'description', label: 'Descrição', type: 'text', defaultValue: 'Escolha a camada de ferramentas adequada ao seu fluxo.' },
+      { key: 'accent', label: 'Cor de destaque', type: 'color', defaultValue: '#818cf8' },
+      { key: 'defaultAnnual', label: 'Selecionar anual por padrão', type: 'boolean', defaultValue: true },
+    ],
+    defaultProps: { title: 'Planos para construir melhor', description: 'Escolha a camada de ferramentas adequada ao seu fluxo.', accent: '#818cf8', defaultAnnual: true },
+    sampleCode: `import { PixelFlowPricingCards } from "@/src/components/godui/PixelFlowPricingCards";
+
+export function PricingDemo() {
+  return <PixelFlowPricingCards accent="#818cf8" defaultAnnual />;
+}`,
+  },
 };
