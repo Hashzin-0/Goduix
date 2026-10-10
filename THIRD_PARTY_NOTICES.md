@@ -42,3 +42,15 @@ This file records the upstream projects used by GodUI integrations. Keep each no
 
 - Source/reference: https://github.com/MengTo/complete-shelf
 - Usage in this phase: independent CSS/React recreation of the interactive bookshelf concept. The upstream repository's license was not confirmed, so its source and assets are not copied.
+
+## SVGL
+
+- Source/API: https://github.com/pheralb/svgl and https://api.svgl.app
+- License: MIT for project code; individual logo assets retain the rights and usage terms described by their contributors/brand owners.
+- Usage: queried at runtime for logo discovery; GodUI does not bundle the entire SVGL catalog.
+
+## theSVG
+
+- Source/API: https://github.com/GLINCKER/thesvg and https://thesvg.org/docs/api
+- License: MIT for project code; individual brand assets may be subject to trademark and owner-specific rights.
+- Usage: the public static manifest and SVG CDN are queried at runtime. GodUI does not mirror or bundle the full library.
