@@ -3029,4 +3029,75 @@ export function VoicePanel() {
 }`,
   },
 
+
+  'plasma-surface': {
+    type: 'plasma-surface',
+    name: 'Plasma Surface',
+    category: 'Glass & Static',
+    description: 'Superfície de vidro líquido renderizada em WebGL com refração, tensão superficial e material cromático; usa fallback leve em telas pequenas ou com movimento reduzido.',
+    iconName: 'Waves',
+    badge: 'Plasma UI · MIT',
+    registryName: 'plasma-surface',
+    dependencies: ['@cruxgarden/plasma-ui'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Plasma Surface' },
+      { key: 'description', label: 'Descrição', type: 'text', defaultValue: 'Superfície líquida com refração, tensão superficial e reflexos cromáticos.' },
+      { key: 'mood', label: 'Paleta', type: 'select', defaultValue: 'tidal', options: [{ label: 'Tidal', value: 'tidal' }, { label: 'Aurora', value: 'aurora' }, { label: 'Ember', value: 'ember' }] },
+      { key: 'tint', label: 'Cor', type: 'color', defaultValue: '#67e8f9' },
+      { key: 'opacity', label: 'Opacidade', type: 'number', defaultValue: 0.12, min: 0, max: 1, step: 0.05 },
+      { key: 'frost', label: 'Fosco', type: 'number', defaultValue: 0.2, min: 0, max: 1, step: 0.05 },
+      { key: 'viscosity', label: 'Viscosidade', type: 'number', defaultValue: 0.5, min: 0, max: 1, step: 0.1 },
+      { key: 'flow', label: 'Fluxo', type: 'number', defaultValue: 0.25, min: 0, max: 1, step: 0.05 },
+      { key: 'interactive', label: 'Interação e arraste', type: 'boolean', defaultValue: true },
+    ],
+    defaultProps: { title: 'Plasma Surface', description: 'Superfície líquida com refração, tensão superficial e reflexos cromáticos.', mood: 'tidal', tint: '#67e8f9', opacity: 0.12, frost: 0.2, viscosity: 0.5, flow: 0.25, interactive: true },
+    sampleCode: `import { PlasmaProvider, Plasma } from "@cruxgarden/plasma-ui";
+
+export function LiquidPanel() {
+  return <PlasmaProvider mood="tidal"><Plasma draggable>Conteúdo</Plasma></PlasmaProvider>;
+}`,
+  },
+  'liquid-gooey-cursor': {
+    type: 'liquid-gooey-cursor',
+    name: 'Liquid Gooey Cursor',
+    category: 'Effects & Backgrounds',
+    description: 'Interação local com partículas metaball, filtro SVG gooey e halo que acompanha o ponteiro, baseada no conceito do WeArePixelFlow.',
+    iconName: 'MousePointer2',
+    badge: 'WeArePixelFlow · MIT',
+    registryName: 'liquid-gooey-cursor',
+    dependencies: ['lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'Liquid Gooey Cursor' },
+      { key: 'description', label: 'Descrição', type: 'text', defaultValue: 'Mova o ponteiro sobre a área para conectar as partículas líquidas.' },
+      { key: 'accent', label: 'Cor', type: 'color', defaultValue: '#67e8f9' },
+      { key: 'intensity', label: 'Intensidade', type: 'number', defaultValue: 0.7, min: 0.1, max: 1, step: 0.1 },
+    ],
+    defaultProps: { title: 'Liquid Gooey Cursor', description: 'Mova o ponteiro sobre a área para conectar as partículas líquidas.', accent: '#67e8f9', intensity: 0.7 },
+    sampleCode: `import { LiquidGooeyCursor } from "@/src/components/godui/LiquidGooeyCursor";
+
+export function GooeyDemo() {
+  return <LiquidGooeyCursor intensity={0.7} />;
+}`,
+  },
+  'complete-shelf': {
+    type: 'complete-shelf',
+    name: 'Complete Shelf',
+    category: 'Cards & Layout',
+    description: 'Estante interativa de livros com perspectiva 3D, seleção de volumes, detalhes e navegação por coleção; reimplementação independente.',
+    iconName: 'BookOpen',
+    badge: 'Independent recreation',
+    registryName: 'complete-shelf',
+    dependencies: ['motion/react', 'lucide-react'],
+    propFields: [
+      { key: 'title', label: 'Título', type: 'text', defaultValue: 'The Complete Shelf' },
+      { key: 'showDescriptions', label: 'Exibir descrições', type: 'boolean', defaultValue: true },
+      { key: 'accent', label: 'Cor de destaque', type: 'color', defaultValue: '#67e8f9' },
+    ],
+    defaultProps: { title: 'The Complete Shelf', showDescriptions: true, accent: '#67e8f9' },
+    sampleCode: `import { CompleteShelf } from "@/src/components/godui/CompleteShelf";
+
+export function ShelfDemo() {
+  return <CompleteShelf title="The Complete Shelf" />;
+}`,
+  },
 };
