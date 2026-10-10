@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 
 type FigureKind = 'terrain' | 'stack' | 'terminal';
@@ -25,6 +25,7 @@ export const IsometricFigure: React.FC<IsometricFigureProps> = ({
   play = true,
 }) => {
   const reduceMotion = useReducedMotion();
+  const gradientId = 'iso-shadow-' + useId().split(':').join('');
   const dark = figureTheme === 'dark' || (figureTheme === 'auto' && typeof document !== 'undefined' && document.documentElement.classList.contains('dark'));
   const p = palettes[dark ? 'dark' : 'light'];
   const opacity = Math.max(0, Math.min(1, intensity));
@@ -43,12 +44,12 @@ export const IsometricFigure: React.FC<IsometricFigureProps> = ({
         style={{ opacity }}
       >
         <defs>
-          <linearGradient id="iso-shadow" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor={p.muted} stopOpacity=".18" />
             <stop offset="100%" stopColor={p.muted} stopOpacity=".02" />
           </linearGradient>
         </defs>
-        <ellipse cx="120" cy="157" rx="78" ry="17" fill="url(#iso-shadow)" />
+        <ellipse cx="120" cy="157" rx="78" ry="17" fill={`url(#${gradientId})`} />
         {figureType === 'terrain' && <>
           <path d="M45 103 120 61 195 103 120 146Z" fill={p.top} stroke={p.line} strokeWidth="1.4" />
           <path d="M45 103 120 146 120 161 45 118Z" fill={p.front} stroke={p.line} strokeWidth="1.4" />
