@@ -684,7 +684,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
       { "key": "label", "label": "Legenda acessível", "type": "text", "defaultValue": "Superfície fluida 3D" }
     ],
     "defaultProps": { "accent": "#67e8f9", "label": "Superfície fluida 3D" },
-    "sampleCode": "import { FluidSurface3D } from '@/components/godui/Creative3DVisuals';\\n\\nexport function FluidSurface3DExample() {\\n  return <FluidSurface3D accent='#67e8f9' label='Superfície fluida 3D' />;\\n}"
+    "sampleCode": "import { FluidSurface3D } from '@/components/godui/Creative3DVisuals';\n\nexport function FluidSurface3DExample() {\n  return <FluidSurface3D accent='#67e8f9' label='Superfície fluida 3D' />;\n}"
   }
 ];
 
