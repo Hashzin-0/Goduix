@@ -59,7 +59,7 @@ export const PlasmaSurface: React.FC<PlasmaSurfaceProps> = ({
   return (
     <div className="mx-auto my-5 w-full max-w-2xl">
       <PlasmaProvider mood={mood as 'tidal' | 'aurora' | 'ember'} theme="dark" tint={tint} opacity={opacity} frost={frost} viscosity={viscosity} flow={flow} stretch={interactive ? 1 : 0} rim={1} shimmer={interactive ? 1 : 0}>
-        <Plasma draggable={interactive ? 1 : false} lean={interactive ? 1 : false} className="min-h-56 p-6 text-white">
+        <Plasma draggable={interactive} lean={interactive ? 1 : false} className="min-h-56 p-6 text-white">
           {content}
         </Plasma>
       </PlasmaProvider>
