@@ -18,7 +18,9 @@ import {
   ArrowUpDown,
   FileCode2,
   Play,
-  Move
+  Move,
+  ArrowLeft,
+  Maximize2
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
@@ -47,7 +49,9 @@ interface PointerDragState {
 
 const ComponentCardPreview: React.FC<{
   item: (typeof GODUI_CATALOG)[GodUIComponentType];
-}> = ({ item }) => {
+  onOpen: () => void;
+  fullscreen?: boolean;
+}> = ({ item, onOpen, fullscreen = false }) => {
   const store = useBuilderStore();
   const previewRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -96,13 +100,37 @@ const ComponentCardPreview: React.FC<{
   return (
     <div
       ref={previewRef}
-      className="group/preview relative isolate h-48 w-full overflow-auto overscroll-contain rounded-xl border border-white/10 bg-zinc-950/80 sm:h-56"
-      aria-label={`Prévia interativa de ${item.name}`}
+      role={fullscreen ? undefined : 'button'}
+      tabIndex={fullscreen ? undefined : 0}
+      onClick={(event) => {
+        if (fullscreen) return;
+        const target = event.target as HTMLElement;
+        if (target.closest('button, input, textarea, select, a, [role="button"], [data-no-preview-open]')) return;
+        onOpen();
+      }}
+      onKeyDown={(event) => {
+        if (!fullscreen && (event.key === 'Enter' || event.key === ' ')) {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
+      className={cn(
+        "group/preview relative isolate w-full overflow-auto overscroll-contain border border-white/10 bg-zinc-950/80",
+        fullscreen ? "h-full min-h-0 rounded-2xl" : "h-48 cursor-zoom-in rounded-xl sm:h-56"
+      )}
+      aria-label={fullscreen ? `Prévia interativa ampliada de ${item.name}` : `Abrir prévia ampliada de ${item.name}`}
+      title={fullscreen ? undefined : "Clique para ampliar a prévia"}
     >
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.08),transparent_70%)]" />
+      {!fullscreen && (
+        <div className="pointer-events-none absolute right-2 bottom-2 z-10 flex items-center gap-1 rounded-md border border-white/10 bg-black/70 px-1.5 py-1 text-[9px] text-zinc-300">
+          <Maximize2 className="h-3 w-3" />
+          Clique para ampliar
+        </div>
+      )}
       {isVisible ? (
-        <div className="flex min-h-full w-full min-w-0 items-center justify-center p-3 sm:p-4">
-          <div className="w-full min-w-0">
+        <div className={cn("flex w-full min-w-0 items-stretch justify-center", fullscreen ? "min-h-full h-full p-4 sm:p-8" : "min-h-full p-0")}>
+          <div className="flex h-full w-full min-w-0 items-center justify-center">
             <ComponentRenderer instance={previewInstance} index={0} total={1} isInteractiveOnly />
           </div>
         </div>
@@ -123,7 +151,9 @@ const ComponentCardPreview: React.FC<{
           Replay
         </button>
       )}
-      <span className="pointer-events-none absolute bottom-2 right-2 rounded-md border border-white/10 bg-black/60 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wide text-zinc-400">Interativa</span>
+      {fullscreen && (
+        <span className="pointer-events-none absolute bottom-3 right-3 rounded-md border border-white/10 bg-black/60 px-2 py-1 text-[10px] font-mono uppercase tracking-wide text-zinc-300">Prévia interativa</span>
+      )}
     </div>
   );
 };
@@ -135,6 +165,7 @@ export const ComponentLibraryPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'library' | 'canvas-tree' | 'templates'>('library');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ComponentCategory | 'All'>('All');
+  const [expandedPreviewItem, setExpandedPreviewItem] = useState<(typeof GODUI_CATALOG)[GodUIComponentType] | null>(null);
 
   // Pointer Drag State for mobile/touch DnD
   const [pointerDrag, setPointerDrag] = useState<PointerDragState>({
@@ -431,7 +462,7 @@ export const ComponentLibraryPanel: React.FC = () => {
                 key={item.type}
                 className="group relative p-3 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/15 transition-all duration-200"
               >
-                <ComponentCardPreview item={item} />
+                <ComponentCardPreview item={item} onOpen={() => setExpandedPreviewItem(item)} />
                 <div className="flex items-start justify-between gap-2 mt-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -631,6 +662,38 @@ export const ComponentLibraryPanel: React.FC = () => {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {expandedPreviewItem && (
+        <div
+          className="fixed inset-0 z-[100] flex flex-col bg-zinc-950/98 p-3 backdrop-blur-xl sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Prévia ampliada de ${expandedPreviewItem.name}`}
+        >
+          <div className="mb-3 flex shrink-0 items-center justify-between gap-3 border-b border-white/10 pb-3 sm:mb-4 sm:pb-4">
+            <button
+              type="button"
+              onClick={() => setExpandedPreviewItem(null)}
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+              autoFocus
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar à biblioteca
+            </button>
+            <div className="min-w-0 text-right">
+              <div className="truncate text-sm font-semibold text-white">{expandedPreviewItem.name}</div>
+              <div className="text-xs text-zinc-500">Prévia em tela cheia</div>
+            </div>
+          </div>
+          <div className="min-h-0 flex-1">
+            <ComponentCardPreview
+              item={expandedPreviewItem}
+              fullscreen
+              onOpen={() => undefined}
+            />
+          </div>
         </div>
       )}
 
