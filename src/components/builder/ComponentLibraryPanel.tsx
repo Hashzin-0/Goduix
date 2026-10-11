@@ -18,6 +18,7 @@ import {
   ArrowUpDown,
   FileCode2,
   Play,
+  X,
   Move
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
