@@ -7,6 +7,7 @@ import { ComponentInspectorPanel } from './components/builder/ComponentInspector
 import { ComponentDocsModal } from './components/builder/ComponentDocsModal';
 import { ExportPageModal } from './components/builder/ExportPageModal';
 import { FusionModal } from './components/builder/FusionModal';
+import { SemanticMergeIsland } from './components/builder/SemanticMergeIslandV3';
 import { ComposerView } from './components/composer/ComposerView';
 import { useBuilderStore } from './store/useBuilderStore';
 import { cn } from './lib/utils';
@@ -83,6 +84,7 @@ export default function App() {
 
       <ComponentDocsModal />
       <FusionModal />
+      <SemanticMergeIsland />
       <ExportPageModal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
