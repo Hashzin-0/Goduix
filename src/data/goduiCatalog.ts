@@ -651,7 +651,24 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     },
     "sampleCode": "import { UploadedModelViewer3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function UploadedModelViewer3DExample() {\n  return <UploadedModelViewer3D accent={\"#67e8f9\"} label={\"Visualizador de modelo 3D\"} />;\n}"
   }
+,
 
+  {
+    "type": "creative-2d-sprite-stage",
+    "name": "Compositor de Sprites 2D",
+    "category": "Creative & Shaders",
+    "description": "Editor Canvas para importar imagens do usuário, arrastar, transformar e exportar a composição como PNG.",
+    "iconName": "Image",
+    "badge": "Canvas / Local Assets",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": ["react", "motion/react"],
+    "propFields": [
+      { "key": "accent", "label": "Cor de destaque", "type": "color", "defaultValue": "#67e8f9" },
+      { "key": "label", "label": "Legenda acessível", "type": "text", "defaultValue": "Compositor de sprites 2D" }
+    ],
+    "defaultProps": { "accent": "#67e8f9", "label": "Compositor de sprites 2D" },
+    "sampleCode": "import { SpriteStage2D } from \"@/components/godui/CreativeVisuals\";\\n\\nexport function SpriteStage2DExample() {\\n  return <SpriteStage2D accent={\\"#67e8f9\\"} label={\\"Compositor de sprites 2D\\"} />;\\n}"
+  }
 ];
 
 export const GODUI_CATALOG: Record<GodUIComponentType, GodUIMeta> = {
