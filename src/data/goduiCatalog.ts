@@ -12,7 +12,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -44,7 +44,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -96,7 +96,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -138,7 +138,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -171,7 +171,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "dependencies": [
       "react",
       "three",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -204,7 +204,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "dependencies": [
       "react",
       "three",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -237,7 +237,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "dependencies": [
       "react",
       "three",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -269,7 +269,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -301,7 +301,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -333,7 +333,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -365,7 +365,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -397,7 +397,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -449,7 +449,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -501,7 +501,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -553,7 +553,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -596,7 +596,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "registryName": "godui/CreativeVisuals",
     "dependencies": [
       "react",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -629,7 +629,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "dependencies": [
       "react",
       "three",
-      "motion/react"
+      "motion"
     ],
     "propFields": [
       {
@@ -661,7 +661,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "iconName": "Image",
     "badge": "Canvas / Local Assets",
     "registryName": "godui/CreativeVisuals",
-    "dependencies": ["react", "motion/react"],
+    "dependencies": ["react", "motion"],
     "propFields": [
       { "key": "accent", "label": "Cor de destaque", "type": "color", "defaultValue": "#67e8f9" },
       { "key": "label", "label": "Legenda acessível", "type": "text", "defaultValue": "Compositor de sprites 2D" }
@@ -678,7 +678,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "iconName": "Waves",
     "badge": "Three.js / Vertex Motion",
     "registryName": "godui/Creative3DVisuals",
-    "dependencies": ["react", "three", "motion/react"],
+    "dependencies": ["react", "three", "motion"],
     "propFields": [
       { "key": "accent", "label": "Cor de destaque", "type": "color", "defaultValue": "#67e8f9" },
       { "key": "label", "label": "Legenda acessível", "type": "text", "defaultValue": "Superfície fluida 3D" }
