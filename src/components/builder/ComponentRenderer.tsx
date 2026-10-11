@@ -252,6 +252,7 @@ const LazyProductObject3D = React.lazy(() => import('../godui/Creative3DVisuals'
 const LazyDiorama3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Diorama3D })));
 const LazyHolographic3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Holographic3D })));
 const LazyUploadedModelViewer3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.UploadedModelViewer3D })));
+const LazyFluidSurface3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.FluidSurface3D })));
 import { FusionWrapper } from '../godui/fusion';
 import { FusionTargetSlot } from '../../types/builder';
 
@@ -1998,6 +1999,9 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
       case 'creative-3d-model-viewer':
         return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando visualizador 3D" />}><LazyUploadedModelViewer3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Visualizador de modelo 3D')} /></React.Suspense>;
+
+      case 'creative-3d-fluid':
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando superfície 3D" />}><LazyFluidSurface3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Superfície fluida 3D')} /></React.Suspense>;
 
       case 'creative-3d-product':
         return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyProductObject3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Vitrine de objeto 3D')} /></React.Suspense>;
