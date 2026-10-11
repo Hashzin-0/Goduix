@@ -2146,28 +2146,6 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           {instance.name}
         </span>
 
-        {/* Fusion Engine Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            store.openFusionModal(instance.id);
-          }}
-          title="Mesclar Efeito (Fusion Engine)"
-          className={cn(
-            "px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 cursor-pointer transition-all",
-            instance.fusions && instance.fusions.filter(f => f.active).length > 0
-              ? "bg-cyan-500/25 border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/40 shadow-sm"
-              : "hover:text-cyan-300 hover:bg-white/10 text-zinc-400"
-          )}
-        >
-          <Zap className="w-3 h-3 text-cyan-400" />
-          <span>
-            {instance.fusions && instance.fusions.filter(f => f.active).length > 0
-              ? `${instance.fusions.filter(f => f.active).length} Mesclado`
-              : 'Mesclar'}
-          </span>
-        </button>
-
         {/* Move up */}
         <button
           onClick={(e) => {
