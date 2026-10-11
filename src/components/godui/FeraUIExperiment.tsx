@@ -90,7 +90,7 @@ function DeskFolio() {
     <h3 className="mt-1 text-lg font-semibold">Mascote com expressões reais</h3>
     <div className="mt-4 flex min-h-56 flex-col items-center justify-center gap-3 rounded-xl bg-sky-50 p-4 dark:bg-sky-950/40">
       <JellyBlobMascot mood={mood} eyeStyle="v2" />
-      <BlobSpeech>{mood === 'happy' ? 'Que bom ver você!' : mood === 'sleepy' ? 'Só mais cinco minutinhos…' : mood === 'angry' ? 'Ei! Com cuidado!' : 'Experimente mudar minha expressão.'}</BlobSpeech>
+      <BlobSpeech mood={mood} messages={{ happy: 'Que bom ver você!', sleepy: 'Só mais cinco minutinhos…', angry: 'Ei! Com cuidado!', curious: 'Experimente mudar minha expressão.' }} />
     </div>
     <label className="mt-4 block text-sm font-medium" htmlFor="feraui-blob-mood">Expressão</label>
     <select id="feraui-blob-mood" value={mood} onChange={e => setMood(e.target.value as JellyBlobMood)} className="mt-2 w-full rounded-xl border border-zinc-200 bg-white p-2 text-sm dark:border-white/10 dark:bg-zinc-900">

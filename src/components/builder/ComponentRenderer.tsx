@@ -247,6 +247,12 @@ import { VgpuBlackHole } from '../godui/VgpuBlackHole';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
+import { Mascot2D, ParticleField2D, LiquidBlob2D, LayeredIllustration2D, IsometricCity, IsometricFarm, IsometricInterior, IsometricFactory, IsometricSceneComposer, LiquidGlassShader, GlitchShader, AuroraShader, NetworkVisualization, SpriteStage2D } from '../godui/CreativeVisuals';
+const LazyProductObject3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.ProductObject3D })));
+const LazyDiorama3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Diorama3D })));
+const LazyHolographic3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Holographic3D })));
+const LazyUploadedModelViewer3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.UploadedModelViewer3D })));
+const LazyFluidSurface3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.FluidSurface3D })));
 import { FusionWrapper } from '../godui/fusion';
 import { FusionTargetSlot } from '../../types/builder';
 
@@ -1972,6 +1978,63 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             defaultAnnual={Boolean(props.defaultAnnual ?? true)}
           />
         );
+
+      case 'creative-2d-sprite-stage':
+        return <SpriteStage2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Compositor de sprites 2D')} />;
+
+      case 'creative-2d-mascot':
+        return <Mascot2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Mascote vetorial interativo')}     />;
+
+      case 'creative-2d-particles':
+        return <ParticleField2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Campo de partículas')} count={Number(props.count ?? 56)} speed={Number(props.speed ?? 1)}   />;
+
+      case 'creative-2d-liquid':
+        return <LiquidBlob2D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Formas líquidas orgânicas')}   intensity={Number(props.intensity ?? 0.8)}  />;
+
+      case 'creative-2d-cutaway':
+        return <LayeredIllustration2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Ilustração vetorial em camadas')}     />;
+
+      case 'creative-isometric-composer':
+        return <IsometricSceneComposer accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Compositor isométrico')} />;
+
+      case 'creative-3d-model-viewer':
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando visualizador 3D" />}><LazyUploadedModelViewer3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Visualizador de modelo 3D')} /></React.Suspense>;
+
+      case 'creative-3d-fluid':
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando superfície 3D" />}><LazyFluidSurface3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Superfície fluida 3D')} /></React.Suspense>;
+
+      case 'creative-3d-product':
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyProductObject3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Vitrine de objeto 3D')} /></React.Suspense>;
+
+      case 'creative-3d-diorama':
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyDiorama3D accent={String(props.accent || '#4ade80')} label={String(props.label || 'Diorama 3D')} /></React.Suspense>;
+
+      case 'creative-3d-hologram':
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyHolographic3D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Holograma geométrico 3D')} /></React.Suspense>;
+
+      case 'creative-isometric-city':
+        return <IsometricCity accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Cidade isométrica')}     />;
+
+      case 'creative-isometric-farm':
+        return <IsometricFarm accent={String(props.accent || '#4ade80')} label={String(props.label || 'Fazenda isométrica')}     />;
+
+      case 'creative-isometric-interior':
+        return <IsometricInterior accent={String(props.accent || '#c084fc')} label={String(props.label || 'Interior isométrico')}     />;
+
+      case 'creative-isometric-factory':
+        return <IsometricFactory accent={String(props.accent || '#fbbf24')} label={String(props.label || 'Fábrica isométrica')}     />;
+
+      case 'creative-shader-liquid-glass':
+        return <LiquidGlassShader accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Superfície líquida WebGL')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+
+      case 'creative-shader-glitch':
+        return <GlitchShader accent={String(props.accent || '#f472b6')} label={String(props.label || 'Distorção digital glitch')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+
+      case 'creative-shader-aurora':
+        return <AuroraShader accent={String(props.accent || '#34d399')} label={String(props.label || 'Aurora procedural')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+
+      case 'creative-data-network':
+        return <NetworkVisualization accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Rede interativa de nós')} count={Number(props.count ?? 42)}    />;
 
       case 'vgpu-black-hole':
         return (

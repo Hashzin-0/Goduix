@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MorphIcon } from 'morphicons/react';
 import { Menu, X, Search, Mic, Volume2, Check, ArrowRight, Sparkles } from 'lucide';
+import { Sparkles as SparklesIcon } from 'lucide-react';
 
 const ICON_STATES = [
   { name: 'Menu ↔ Fechar', from: Menu, to: X },
@@ -31,7 +32,7 @@ export const MorphiconsShowcase: React.FC<MorphiconsShowcaseProps> = ({
           <p className="text-sm font-semibold">{label}</p>
           <p className="mt-1 text-xs text-zinc-400">Transições vetoriais com física de mola</p>
         </div>
-        <Sparkles size={16} color={color} aria-hidden="true" />
+        <SparklesIcon size={16} color={color} aria-hidden="true" />
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {ICON_STATES.map((item, index) => (

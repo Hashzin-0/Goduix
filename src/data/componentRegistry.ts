@@ -2320,4 +2320,32 @@ export const COMPONENT_REGISTRY: Record<string, ComponentRegistration> = {
     sampleCode: GODUI_CATALOG['gradient-background'].sampleCode,
     registryName: GODUI_CATALOG['gradient-background'].registryName,
   },
+
+  ...Object.fromEntries(
+    Object.values(GODUI_CATALOG)
+      .filter((meta) => meta.type.startsWith('creative-'))
+      .map((meta) => {
+        const match = meta.sampleCode.match(/import \{ (\w+) \}/);
+        const layers = CARD_LAYERS;
+        return [meta.type, {
+          type: meta.type,
+          name: match?.[1] || meta.name,
+          namePt: meta.name,
+          category: meta.category,
+          description: meta.description,
+          descriptionPt: meta.description,
+          icon: meta.iconName,
+          badge: meta.badge,
+          layers,
+          layerEffectMap: CARD_LAYER_EFFECTS,
+          dependencies: meta.dependencies,
+          defaultComposition: buildDefaultComposition(meta.type, layers),
+          propFields: meta.propFields,
+          defaultProps: meta.defaultProps,
+          sampleCode: meta.sampleCode,
+          registryName: meta.registryName,
+        }];
+      })
+  ),
+
 };
