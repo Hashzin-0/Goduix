@@ -79,12 +79,13 @@ export function ParticleField2D({ accent = '#67e8f9', label = 'Campo de partícu
 }
 
 export function LiquidBlob2D({ accent = '#a78bfa', label = 'Formas líquidas orgânicas', intensity = .8 }: BaseProps & { intensity?: number }) {
+  const reducedMotion = useReducedMotion();
   const amount = Math.max(.2, Math.min(1.5, intensity));
   return <section className={frame}><VisualHeader eyebrow="2D / ORGANIC MOTION" title={label} description="Composição vetorial de formas orgânicas animadas; a intensidade altera a escala e o contraste do movimento."/>
     <div className="relative mx-3 mb-3 mt-3 flex h-64 items-center justify-center overflow-hidden rounded-xl bg-[#10172a]">
       <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px)', backgroundSize: '24px 24px' }}/>
-      <motion.div className="absolute h-44 w-44 rounded-[38%_62%_64%_36%/41%_43%_57%_59%] blur-[1px]" style={{ background: `radial-gradient(circle at 30% 25%,#fff8,${accent} 24%,#6366f1 75%)`, filter: 'drop-shadow(0 0 35px ' + accent + '66)' }} animate={{ borderRadius: ['38% 62% 64% 36% / 41% 43% 57% 59%', '61% 39% 42% 58% / 56% 61% 39% 44%', '45% 55% 61% 39% / 35% 49% 51% 65%'], rotate: [0, 90, 180], scale: [amount, amount * 1.12, amount] }} transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}/>
-      <motion.div className="absolute h-24 w-24 rounded-[60%_40%_35%_65%]" style={{ background: 'linear-gradient(135deg,#f0abfc,#818cf8)', mixBlendMode: 'screen' }} animate={{ x: [-65, 65, -65], y: [32, -35, 32], rotate: [0, 180, 360] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}/>
+      <motion.div className="absolute h-44 w-44 rounded-[38%_62%_64%_36%/41%_43%_57%_59%] blur-[1px]" style={{ background: `radial-gradient(circle at 30% 25%,#fff8,${accent} 24%,#6366f1 75%)`, filter: 'drop-shadow(0 0 35px ' + accent + '66)' }} animate={reducedMotion ? { scale: amount } : { borderRadius: ['38% 62% 64% 36% / 41% 43% 57% 59%', '61% 39% 42% 58% / 56% 61% 39% 44%', '45% 55% 61% 39% / 35% 49% 51% 65%'], rotate: [0, 90, 180], scale: [amount, amount * 1.12, amount] }} transition={{ duration: 9, repeat: reducedMotion ? 0 : Infinity, ease: 'easeInOut' }}/>
+      <motion.div className="absolute h-24 w-24 rounded-[60%_40%_35%_65%]" style={{ background: 'linear-gradient(135deg,#f0abfc,#818cf8)', mixBlendMode: 'screen' }} animate={reducedMotion ? { x: 0, y: 0 } : { x: [-65, 65, -65], y: [32, -35, 32], rotate: [0, 180, 360] }} transition={{ duration: 8, repeat: reducedMotion ? 0 : Infinity, ease: 'easeInOut' }}/>
       <div className="absolute bottom-3 left-3 rounded-full border border-white/15 bg-black/25 px-3 py-1 text-[10px] uppercase tracking-widest text-white/60">SVG + spring motion</div>
     </div>
   </section>;
