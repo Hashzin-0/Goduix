@@ -30,14 +30,14 @@ export const SemanticMergeIsland: React.FC = () => {
     const direct = safeCandidates.filter(candidate => candidate.kind === 'copy-prop' && target.props[candidate.sourceKey] !== undefined);
     if (!direct.length) {
       store.setDraggingItem(null);
-      store.setActiveToast({ message: 'Seleção reconhecida. Este destino ainda precisa de um adaptador visual para aplicar essas regiões; nenhuma alteração foi feita.', type: 'warning' });
+      
       setRequest(null);
       return;
     }
     const nextProps = { ...target.props };
     for (const candidate of direct) nextProps[candidate.sourceKey] = candidate.sourceValue;
     store.updateComponentProps(target.id, nextProps);
-    store.setActiveToast({ message: `Mesclagem aplicada a ${direct.length} propriedade(s) compatível(is). Estrutura e comportamento preservados.`, type: 'success' });
+    
     setRequest(null);
   };
   const toggle = (id: string) => setSelected(current => current.includes(id) ? current.filter(item => item !== id) : [...current, id]);
