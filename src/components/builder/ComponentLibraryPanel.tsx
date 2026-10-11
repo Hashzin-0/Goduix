@@ -502,6 +502,12 @@ export const ComponentLibraryPanel: React.FC = () => {
           isVisible: true,
           fusions: configuredInstance.fusions || [],
           props: { ...configuredInstance.props },
+          animations: {
+            entrance: 'none' as const,
+            exit: 'none' as const,
+            looping: 'none' as const,
+            ...configuredInstance.animations,
+          },
         } : {
           id: `interactive-preview-${previewItem.type}`,
           type: previewItem.type,
@@ -511,8 +517,8 @@ export const ComponentLibraryPanel: React.FC = () => {
           fusions: [],
           animations: { entrance: 'none' as const, exit: 'none' as const, looping: 'none' as const },
         };
-        const hasReplayableAnimation = previewInstance.animations?.entrance !== 'none' || previewInstance.animations?.exit !== 'none';
-        const replayType = previewInstance.animations?.entrance && previewInstance.animations.entrance !== 'none' ? 'entrance' as const : 'exit' as const;
+        const hasReplayableAnimation = Boolean(previewInstance.animations?.entrance && previewInstance.animations.entrance !== 'none');
+        const replayType = 'entrance' as const;
 
         return (
           <div
