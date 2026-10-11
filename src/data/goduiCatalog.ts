@@ -668,6 +668,23 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     ],
     "defaultProps": { "accent": "#67e8f9", "label": "Compositor de sprites 2D" },
     "sampleCode": "import { SpriteStage2D } from '@/components/godui/CreativeVisuals';\n\nexport function SpriteStage2DExample() {\n  return <SpriteStage2D accent='#67e8f9' label='Compositor de sprites 2D' />;\n}"
+  },
+
+  {
+    "type": "creative-3d-fluid",
+    "name": "Superfície Fluida 3D",
+    "category": "Creative & Shaders",
+    "description": "Malha Three.js com deslocamento de vértices e normais recalculadas em tempo real; respeita movimento reduzido.",
+    "iconName": "Waves",
+    "badge": "Three.js / Vertex Motion",
+    "registryName": "godui/Creative3DVisuals",
+    "dependencies": ["react", "three", "motion/react"],
+    "propFields": [
+      { "key": "accent", "label": "Cor de destaque", "type": "color", "defaultValue": "#67e8f9" },
+      { "key": "label", "label": "Legenda acessível", "type": "text", "defaultValue": "Superfície fluida 3D" }
+    ],
+    "defaultProps": { "accent": "#67e8f9", "label": "Superfície fluida 3D" },
+    "sampleCode": "import { FluidSurface3D } from '@/components/godui/Creative3DVisuals';\\n\\nexport function FluidSurface3DExample() {\\n  return <FluidSurface3D accent='#67e8f9' label='Superfície fluida 3D' />;\\n}"
   }
 ];
 
