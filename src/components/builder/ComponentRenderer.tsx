@@ -1983,16 +1983,16 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         return <SpriteStage2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Compositor de sprites 2D')} />;
 
       case 'creative-2d-mascot':
-        return <Mascot2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Mascot2 D')}     />;
+        return <Mascot2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Mascote vetorial interativo')}     />;
 
       case 'creative-2d-particles':
-        return <ParticleField2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Particle Field2 D')} count={Number(props.count ?? 56)} speed={Number(props.speed ?? 1)}   />;
+        return <ParticleField2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Campo de partículas')} count={Number(props.count ?? 56)} speed={Number(props.speed ?? 1)}   />;
 
       case 'creative-2d-liquid':
-        return <LiquidBlob2D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Liquid Blob2 D')}   intensity={Number(props.intensity ?? 0.8)}  />;
+        return <LiquidBlob2D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Formas líquidas orgânicas')}   intensity={Number(props.intensity ?? 0.8)}  />;
 
       case 'creative-2d-cutaway':
-        return <LayeredIllustration2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Layered Illustration2 D')}     />;
+        return <LayeredIllustration2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Ilustração vetorial em camadas')}     />;
 
       case 'creative-isometric-composer':
         return <IsometricSceneComposer accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Compositor isométrico')} />;
@@ -2013,28 +2013,28 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyHolographic3D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Holograma geométrico 3D')} /></React.Suspense>;
 
       case 'creative-isometric-city':
-        return <IsometricCity accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Isometric City')}     />;
+        return <IsometricCity accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Cidade isométrica')}     />;
 
       case 'creative-isometric-farm':
-        return <IsometricFarm accent={String(props.accent || '#4ade80')} label={String(props.label || 'Isometric Farm')}     />;
+        return <IsometricFarm accent={String(props.accent || '#4ade80')} label={String(props.label || 'Fazenda isométrica')}     />;
 
       case 'creative-isometric-interior':
-        return <IsometricInterior accent={String(props.accent || '#c084fc')} label={String(props.label || 'Isometric Interior')}     />;
+        return <IsometricInterior accent={String(props.accent || '#c084fc')} label={String(props.label || 'Interior isométrico')}     />;
 
       case 'creative-isometric-factory':
-        return <IsometricFactory accent={String(props.accent || '#fbbf24')} label={String(props.label || 'Isometric Factory')}     />;
+        return <IsometricFactory accent={String(props.accent || '#fbbf24')} label={String(props.label || 'Fábrica isométrica')}     />;
 
       case 'creative-shader-liquid-glass':
-        return <LiquidGlassShader accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Liquid Glass Shader')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+        return <LiquidGlassShader accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Superfície líquida WebGL')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
 
       case 'creative-shader-glitch':
-        return <GlitchShader accent={String(props.accent || '#f472b6')} label={String(props.label || 'Glitch Shader')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+        return <GlitchShader accent={String(props.accent || '#f472b6')} label={String(props.label || 'Distorção digital glitch')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
 
       case 'creative-shader-aurora':
-        return <AuroraShader accent={String(props.accent || '#34d399')} label={String(props.label || 'Aurora Shader')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+        return <AuroraShader accent={String(props.accent || '#34d399')} label={String(props.label || 'Aurora procedural')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
 
       case 'creative-data-network':
-        return <NetworkVisualization accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Network Visualization')} count={Number(props.count ?? 42)}    />;
+        return <NetworkVisualization accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Rede interativa de nós')} count={Number(props.count ?? 42)}    />;
 
       case 'vgpu-black-hole':
         return (
