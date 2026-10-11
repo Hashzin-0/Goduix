@@ -27,7 +27,7 @@ import { PAGE_TEMPLATES } from '../../data/templates';
 import { ComponentCategory, GodUIComponentType } from '../../types/builder';
 import { THEMES } from '../../data/themes';
 import { FUSION_DONORS } from '../../data/fusionCatalog';
-import { ComponentHoverPopover } from './ComponentHoverPopover';
+import { ComponentRenderer } from './ComponentRenderer';
 import { cn } from '../../lib/utils';
 
 // Pointer Drag State for mobile/touch DnD
@@ -46,6 +46,54 @@ interface PointerDragState {
   } | null;
 }
 
+const ComponentCardPreview: React.FC<{ item: (typeof GODUI_CATALOG)[GodUIComponentType] }> = ({ item }) => {
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const node = previewRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+    const root = node.closest('[data-component-library-scroll]') as HTMLElement | null;
+    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), {
+      root,
+      rootMargin: '100px 0px',
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const sampleInstance = {
+    id: `library-preview-${item.type}`,
+    type: item.type,
+    name: item.name,
+    props: { ...item.defaultProps },
+    isVisible: true,
+    fusions: [],
+    animations: { entrance: 'none' as const, exit: 'none' as const, looping: 'none' as const },
+  };
+
+  return (
+    <div ref={previewRef} className="relative h-24 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80" aria-label={`Preview de ${item.name}`}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.08),transparent_70%)]" />
+      {isVisible ? (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="origin-top-left scale-[0.38] w-[263%] h-[263%]">
+            <ComponentRenderer instance={sampleInstance} index={0} total={1} isInteractiveOnly />
+          </div>
+        </div>
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
+          <Sparkles className="w-5 h-5" />
+        </div>
+      )}
+      <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/60 border border-white/10 text-[8px] font-mono uppercase tracking-wide text-zinc-400">Preview</span>
+    </div>
+  );
+};
+
 export const ComponentLibraryPanel: React.FC = () => {
   const store = useBuilderStore();
   const theme = THEMES[store.theme] || THEMES['godly-cyan'];
@@ -53,11 +101,6 @@ export const ComponentLibraryPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'library' | 'canvas-tree' | 'templates'>('library');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ComponentCategory | 'All'>('All');
-
-  // Hover-preview states for desktop popover & mobile preview
-  const [hoveredType, setHoveredType] = useState<GodUIComponentType | null>(null);
-  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
-  const [mobilePreviewType, setMobilePreviewType] = useState<GodUIComponentType | null>(null);
 
   // Pointer Drag State for mobile/touch DnD
   const [pointerDrag, setPointerDrag] = useState<PointerDragState>({
@@ -69,16 +112,7 @@ export const ComponentLibraryPanel: React.FC = () => {
     item: null,
   });
 
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragThreshold = 10; // pixels to start drag
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-      if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
-    };
-  }, []);
 
   // Pointer event handlers for mobile DnD
   const handlePointerDragStart = (
@@ -155,36 +189,6 @@ export const ComponentLibraryPanel: React.FC = () => {
     });
     store.setDraggingItem(null);
     store.setActiveHoverDropZone(null);
-  };
-
-  const handleCardMouseEnter = (type: GodUIComponentType, e: React.MouseEvent<HTMLDivElement>) => {
-    // Only trigger floating hover on desktop screens
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
-
-    if (leaveTimerRef.current) {
-      clearTimeout(leaveTimerRef.current);
-      leaveTimerRef.current = null;
-    }
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-
-    hoverTimerRef.current = setTimeout(() => {
-      setHoveredType(type);
-      setAnchorRect(rect);
-    }, 120);
-  };
-
-  const handleCardMouseLeave = () => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-
-    leaveTimerRef.current = setTimeout(() => {
-      setHoveredType(null);
-      setAnchorRect(null);
-    }, 180);
   };
 
   const categories: (ComponentCategory | 'All')[] = [
@@ -383,7 +387,7 @@ export const ComponentLibraryPanel: React.FC = () => {
           </div>
 
           {/* Components list */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
+          <div data-component-library-scroll className="flex-1 overflow-y-auto p-3 space-y-2.5">
             <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 px-1">
               Componentes Reais de godui.design ({filteredCatalog.length})
             </div>
@@ -391,11 +395,10 @@ export const ComponentLibraryPanel: React.FC = () => {
             {filteredCatalog.map((item) => (
               <div
                 key={item.type}
-                onMouseEnter={(e) => handleCardMouseEnter(item.type, e)}
-                onMouseLeave={handleCardMouseLeave}
                 className="group relative p-3 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/15 transition-all duration-200"
               >
-                <div className="flex items-start justify-between gap-2">
+                <ComponentCardPreview item={item} />
+                <div className="flex items-start justify-between gap-2 mt-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-semibold text-white group-hover:text-cyan-400 transition-colors">
@@ -414,15 +417,6 @@ export const ComponentLibraryPanel: React.FC = () => {
                 {/* Quick actions: Preview, Add to Canvas & View Docs */}
                 <div className="mt-3 flex items-center justify-between pt-2 border-t border-white/5 text-xs gap-1.5">
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setMobilePreviewType(item.type)}
-                      className="text-[11px] text-zinc-400 hover:text-cyan-400 flex items-center gap-1 cursor-pointer transition-colors py-1 px-1.5 rounded-lg hover:bg-white/5"
-                      title="Visualizar Componente em Ação"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Preview</span>
-                    </button>
-
                     <button
                       onClick={() => store.setInspectingDocType(item.type)}
                       className="text-[11px] text-zinc-400 hover:text-cyan-400 flex items-center gap-1 cursor-pointer transition-colors py-1 px-1.5 rounded-lg hover:bg-white/5"
@@ -601,44 +595,6 @@ export const ComponentLibraryPanel: React.FC = () => {
           ))}
         </div>
       )}
-
-      {/* Desktop Floating Hover-Preview Popover */}
-      <AnimatePresence>
-        {hoveredType && !mobilePreviewType && (
-          <div
-            onMouseEnter={() => {
-              if (leaveTimerRef.current) {
-                clearTimeout(leaveTimerRef.current);
-                leaveTimerRef.current = null;
-              }
-            }}
-            onMouseLeave={handleCardMouseLeave}
-          >
-            <ComponentHoverPopover
-              componentType={hoveredType}
-              anchorRect={anchorRect}
-              onClose={() => setHoveredType(null)}
-              onAdd={(type) => store.addComponent(type)}
-              onViewDocs={(type) => store.setInspectingDocType(type)}
-              isMobileModal={false}
-            />
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Mobile Interactive Preview Sheet / Modal */}
-      <AnimatePresence>
-        {mobilePreviewType && (
-          <ComponentHoverPopover
-            componentType={mobilePreviewType}
-            anchorRect={null}
-            onClose={() => setMobilePreviewType(null)}
-            onAdd={(type) => store.addComponent(type)}
-            onViewDocs={(type) => store.setInspectingDocType(type)}
-            isMobileModal={true}
-          />
-        )}
-      </AnimatePresence>
 
       {/* Mobile Pointer Drag Ghost Element */}
       {pointerDrag.active && pointerDrag.item && (
