@@ -244,3 +244,81 @@ export function IsometricSceneComposer({ accent = '#67e8f9', label = 'Compositor
     </div>
   </section>;
 }
+
+
+type SpriteAsset = { id: number; src: string; name: string; x: number; y: number; scale: number; rotation: number; width: number; height: number };
+export function SpriteStage2D({ accent = '#67e8f9', label = 'Compositor de sprites 2D' }: BaseProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const urlsRef = useRef<Set<string>>(new Set());
+  const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
+  const dragRef = useRef<{ id: number; dx: number; dy: number } | null>(null);
+  const [sprites, setSprites] = useState<SpriteAsset[]>([]);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [nextId, setNextId] = useState(1);
+  const [revision, setRevision] = useState(0);
+  const [message, setMessage] = useState('');
+  useEffect(() => {
+    const canvas = canvasRef.current; const ctx = canvas?.getContext('2d'); if (!canvas || !ctx) return;
+    const draw = () => {
+      const rect = canvas.getBoundingClientRect(); const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * ratio)); canvas.height = Math.max(1, Math.round(rect.width * 9 / 16 * ratio));
+      ctx.setTransform(canvas.width / 640, 0, 0, canvas.height / 360, 0, 0);
+      ctx.fillStyle = '#0b1220'; ctx.fillRect(0,0,640,360);
+      ctx.strokeStyle = 'rgba(148,163,184,.1)'; ctx.lineWidth = .7;
+      for(let x=0;x<=640;x+=24){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,360);ctx.stroke();}
+      for(let y=0;y<=360;y+=24){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(640,y);ctx.stroke();}
+      sprites.forEach(sprite => {
+        let img = imagesRef.current.get(sprite.src);
+        if(!img){img=new Image();imagesRef.current.set(sprite.src,img);img.onload=()=>{setSprites(current=>current.map(item=>item.src===sprite.src?{...item,width:img!.naturalWidth,height:img!.naturalHeight}:item));setRevision(v=>v+1);};img.onerror=()=>setMessage(`Não foi possível ler ${sprite.name}`);img.src=sprite.src;}
+        if(!img.complete || !img.naturalWidth) return;
+        const fit = Math.min(150 / Math.max(img.naturalWidth,img.naturalHeight),1);
+        const w=img.naturalWidth*fit*sprite.scale,h=img.naturalHeight*fit*sprite.scale;
+        ctx.save();ctx.translate(sprite.x,sprite.y);ctx.rotate(sprite.rotation*Math.PI/180);
+        if(selected===sprite.id){ctx.strokeStyle=accent;ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.strokeRect(-w/2-6,-h/2-6,w+12,h+12);ctx.setLineDash([]);}
+        ctx.shadowColor=selected===sprite.id?accent:'transparent';ctx.shadowBlur=selected===sprite.id?14:0;
+        ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();
+      });
+      if(sprites.length===0){ctx.fillStyle='rgba(226,232,240,.7)';ctx.font='500 14px system-ui';ctx.textAlign='center';ctx.fillText('Adicione seus próprios arquivos de imagem para começar',320,174);ctx.fillStyle='rgba(148,163,184,.55)';ctx.font='11px system-ui';ctx.fillText('PNG · JPG · WEBP · SVG',320,196);}
+    };
+    draw();
+    const observer = new ResizeObserver(draw); observer.observe(canvas);
+    return () => observer.disconnect();
+  }, [sprites, selected, accent, revision]);
+  useEffect(() => () => { urlsRef.current.forEach(url=>URL.revokeObjectURL(url)); }, []);
+  const upload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []).filter(file=>file.type.startsWith('image/'));
+    if(files.length===0){setMessage('Selecione arquivos de imagem compatíveis.');return;}
+    const additions=files.map((file,index)=>{const src=URL.createObjectURL(file);urlsRef.current.add(src);return {id:nextId+index,src,name:file.name,x:320+(index%3-1)*72,y:180+Math.floor(index/3)*52,scale:1,rotation:0,width:100,height:100} as SpriteAsset;});
+    setSprites(current=>[...current,...additions]);setNextId(value=>value+additions.length);setSelected(additions[0]?.id??null);setMessage('');
+    event.target.value='';
+  };
+  const pointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const rect=event.currentTarget.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width*640,y=(event.clientY-rect.top)/rect.height*360;
+    const hit=[...sprites].reverse().find(sprite=>{const img=imagesRef.current.get(sprite.src);const w=(img?.naturalWidth||sprite.width)*Math.min(150/Math.max(img?.naturalWidth||sprite.width,img?.naturalHeight||sprite.height),1)*sprite.scale;const h=(img?.naturalHeight||sprite.height)*Math.min(150/Math.max(img?.naturalWidth||sprite.width,img?.naturalHeight||sprite.height),1)*sprite.scale;return x>=sprite.x-w/2-8&&x<=sprite.x+w/2+8&&y>=sprite.y-h/2-8&&y<=sprite.y+h/2+8;});
+    if(!hit){setSelected(null);dragRef.current=null;return;}
+    setSelected(hit.id);dragRef.current={id:hit.id,dx:x-hit.x,dy:y-hit.y};event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const pointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {if(!dragRef.current)return;const rect=event.currentTarget.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width*640,y=(event.clientY-rect.top)/rect.height*360;const drag=dragRef.current;setSprites(current=>current.map(sprite=>sprite.id===drag.id?{...sprite,x:Math.max(0,Math.min(640,x-drag.dx)),y:Math.max(0,Math.min(360,y-drag.dy))}:sprite));};
+  const selectedSprite=sprites.find(sprite=>sprite.id===selected);
+  const updateSelected=(patch:Partial<Pick<SpriteAsset,'scale'|'rotation'>>) => setSprites(current=>current.map(sprite=>sprite.id===selected?{...sprite,...patch}:sprite));
+  const removeSelected=()=>{const item=sprites.find(sprite=>sprite.id===selected);if(item){URL.revokeObjectURL(item.src);urlsRef.current.delete(item.src);imagesRef.current.delete(item.src);}setSprites(current=>current.filter(sprite=>sprite.id!==selected));setSelected(null);};
+  const exportPng=()=>{const canvas=canvasRef.current;if(!canvas)return;canvas.toBlob(blob=>{if(!blob){setMessage('Não foi possível exportar a composição.');return;}const url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download='goduix-sprite-stage.png';anchor.click();URL.revokeObjectURL(url);},'image/png');};
+  return <section className={frame}><VisualHeader eyebrow="2D / LOCAL ASSET STAGE" title={label} description="Importe arquivos de imagem reais, arraste-os, ajuste escala e rotação e exporte a composição como PNG. A cena começa vazia."/>
+    <div className="mx-3 mb-3 mt-3 overflow-hidden rounded-xl border border-white/10">
+      <canvas ref={canvasRef} className="block aspect-video w-full touch-none cursor-crosshair" aria-label={label} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={()=>{dragRef.current=null;}} onPointerCancel={()=>{dragRef.current=null;}}/>
+      <div className="flex flex-wrap items-center gap-2 border-t border-white/10 bg-black/15 p-3">
+        <input ref={inputRef} type="file" accept="image/*" multiple className="sr-only" onChange={upload} aria-label="Adicionar arquivos de imagem"/>
+        <button type="button" onClick={()=>inputRef.current?.click()} className="rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium hover:bg-white/15">Adicionar imagens</button>
+        <button type="button" onClick={exportPng} disabled={sprites.length===0} className="rounded-xl border border-white/15 px-3 py-2 text-xs disabled:opacity-30">Exportar PNG</button>
+        <button type="button" onClick={removeSelected} disabled={selected===null} className="rounded-xl border border-white/15 px-3 py-2 text-xs disabled:opacity-30">Remover selecionado</button>
+        <span className="ml-auto text-[10px] text-white/45">{sprites.length} imagem(ns)</span>
+      </div>
+      {selectedSprite && <div className="grid grid-cols-1 gap-3 border-t border-white/10 p-3 sm:grid-cols-2">
+        <label className="text-xs text-white/60">Escala <span className="text-white">{selectedSprite.scale.toFixed(2)}×</span><input aria-label="Escala da imagem selecionada" type="range" min=".25" max="2.5" step=".05" value={selectedSprite.scale} onChange={event=>updateSelected({scale:Number(event.target.value)})} className="mt-2 block w-full accent-cyan-300"/></label>
+        <label className="text-xs text-white/60">Rotação <span className="text-white">{selectedSprite.rotation}°</span><input aria-label="Rotação da imagem selecionada" type="range" min="-180" max="180" step="5" value={selectedSprite.rotation} onChange={event=>updateSelected({rotation:Number(event.target.value)})} className="mt-2 block w-full accent-cyan-300"/></label>
+      </div>}
+      {message && <p className="px-3 pb-3 text-xs text-amber-200" role="status">{message}</p>}
+    </div>
+  </section>;
+}
