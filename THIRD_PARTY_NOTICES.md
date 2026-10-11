@@ -68,3 +68,10 @@ This file records the upstream projects used by GodUI integrations. Keep each no
 - License: MIT (per the upstream README).
 - Usage: independent React implementation of the pricing-section pattern, with demonstration prices and no checkout or payment processing.
 - Attribution: WeArePixelFlow.
+
+## Vercel vgpu — WebGPU shader reference
+
+- Source: https://github.com/vercel-labs/vgpu
+- License: MIT (verified from the upstream repository metadata and `LICENSE` file).
+- Usage: `VgpuBlackHole` is an independent WGSL/WebGPU implementation inspired by the visual possibilities of vgpu's real-time GPU examples. No upstream shader or source file is copied. The component uses the browser WebGPU API directly and falls back to CSS when WebGPU is unavailable.
+- Attribution: Vercel vgpu contributors.

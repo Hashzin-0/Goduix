@@ -192,7 +192,8 @@ export type GodUIComponentType =
   | 'hairline-rebuild'
   | 'hairline-stack'
   | 'pixelflow-folder-hover'
-  | 'pixelflow-pricing-cards';
+  | 'pixelflow-pricing-cards'
+  | 'vgpu-black-hole';
 
 export type ComponentCategory =
   | 'Navigation & Overlays'

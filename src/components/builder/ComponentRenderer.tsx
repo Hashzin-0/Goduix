@@ -243,6 +243,7 @@ import { CompleteShelf } from '../godui/CompleteShelf';
 import { BrandLogoExplorer } from '../godui/BrandLogoExplorer';
 import { PixelFlowFolderHover } from '../godui/PixelFlowFolderHover';
 import { PixelFlowPricingCards } from '../godui/PixelFlowPricingCards';
+import { VgpuBlackHole } from '../godui/VgpuBlackHole';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
@@ -1969,6 +1970,15 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             description={String(props.description || '')}
             accent={String(props.accent || '#818cf8')}
             defaultAnnual={Boolean(props.defaultAnnual ?? true)}
+          />
+        );
+
+      case 'vgpu-black-hole':
+        return (
+          <VgpuBlackHole
+            title={String(props.title || 'Event Horizon')}
+            description={String(props.description || 'Um campo gravitacional luminoso renderizado em tempo real com WebGPU.')}
+            intensity={Number(props.intensity ?? 0.85)}
           />
         );
 
