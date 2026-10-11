@@ -9,7 +9,7 @@ function VisualHeader({ eyebrow, title, description }: { eyebrow: string; title:
   return <div className="relative z-10 px-4 pt-4 sm:px-5"><p className={fieldLabel}>{eyebrow}</p><h3 className="mt-1 text-base font-semibold tracking-tight">{title}</h3><p className="mt-1 max-w-xl text-xs leading-relaxed text-white/55">{description}</p></div>;
 }
 
-type SceneKind = 'product' | 'diorama' | 'hologram';
+type SceneKind = 'product' | 'diorama' | 'hologram' | 'fluid';
 function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; accent?: string; label: string }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
@@ -27,6 +27,8 @@ function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; acce
     const camera = new THREE.PerspectiveCamera(35, host.clientWidth / Math.max(1, host.clientHeight), .1, 100);
     camera.position.set(0, 2.6, 7.6);
     const root = new THREE.Group(); scene.add(root);
+    let fluidGeometry: THREE.PlaneGeometry | null = null;
+    let fluidBase: Float32Array | null = null;
     scene.add(new THREE.HemisphereLight(0xdceeff, 0x15192e, 2.2));
     const key = new THREE.DirectionalLight(0xffffff, 3.2); key.position.set(4, 7, 5); scene.add(key);
     const rim = new THREE.PointLight(new THREE.Color(accent), 20, 14); rim.position.set(-3, 2, -2); scene.add(rim);
@@ -47,6 +49,14 @@ function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; acce
       add(new THREE.BoxGeometry(.8, .7, .8), mat('#64748b', .15, .65), [.65, -.35, .35]);
       for (let i = 0; i < 5; i++) { const x = -1.6 + i * .78; add(new THREE.CylinderGeometry(.045, .055, .55, 8), mat('#a16207', .05, .9), [x, -.28, 1.05]); add(new THREE.SphereGeometry(.27, 12, 10), mat(i % 2 ? '#34d399' : '#86efac', .05, .8), [x, .08, 1.05]); }
       add(new THREE.TorusGeometry(.4, .045, 8, 48), mat('#fbbf24', .55, .2), [1.3, .3, .65]).rotation.x = Math.PI / 2;
+    } else if (kind === 'fluid') {
+      fluidGeometry = new THREE.PlaneGeometry(4.4, 3.2, 80, 60);
+      fluidGeometry.rotateX(-Math.PI / 2);
+      fluidBase = (fluidGeometry.attributes.position.array as Float32Array).slice();
+      const surface = add(fluidGeometry, new THREE.MeshStandardMaterial({ color: accent, metalness: .48, roughness: .2, side: THREE.DoubleSide }), [0, -.2, 0]);
+      surface.receiveShadow = true;
+      add(new THREE.TorusGeometry(1.45, .018, 8, 96), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .55 }), [0, -.12, 0]).rotation.x = Math.PI / 2;
+      add(new THREE.TorusGeometry(1.9, .012, 8, 96), new THREE.MeshBasicMaterial({ color: '#a5f3fc', transparent: true, opacity: .28 }), [0, -.14, 0]).rotation.x = Math.PI / 2;
     } else {
       const geometry = new THREE.IcosahedronGeometry(1.35, 3);
       const wire = new THREE.MeshBasicMaterial({ color: accent, wireframe: true, transparent: true, opacity: .8 });
@@ -56,7 +66,8 @@ function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; acce
     }
     const floor = new THREE.Mesh(new THREE.CircleGeometry(2.7, 64), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .07 })); floor.rotation.x = -Math.PI / 2; floor.position.y = -1.03; scene.add(floor);
     let frameId = 0, dragging = false, lastX = 0, lastY = 0, rotateX = -.08, rotateY = .18;
-    const render = () => { if (!dragging && !reducedMotion) rotateY += .0025; root.rotation.y = rotateY; root.rotation.x = rotateX; renderer.render(scene, camera); if (!reducedMotion) frameId = requestAnimationFrame(render); };
+    const startedAt = performance.now();
+    const render = () => { if (kind === 'fluid' && fluidGeometry && fluidBase && !reducedMotion) { const position = fluidGeometry.attributes.position as THREE.BufferAttribute; const t = (performance.now() - startedAt) * .001; for (let i = 0; i < position.count; i++) position.setY(i, Math.sin(fluidBase[i * 3] * 1.8 + t) * Math.cos(fluidBase[i * 3 + 2] * 1.5 - t * .7) * .16); position.needsUpdate = true; fluidGeometry.computeVertexNormals(); } if (!dragging && !reducedMotion) rotateY += .0025; root.rotation.y = rotateY; root.rotation.x = rotateX; renderer.render(scene, camera); if (!reducedMotion) frameId = requestAnimationFrame(render); };
     render();
     const resize = () => { if (!host) return; camera.aspect = host.clientWidth / Math.max(1, host.clientHeight); camera.updateProjectionMatrix(); renderer.setSize(host.clientWidth, host.clientHeight); if (reducedMotion) renderer.render(scene, camera); };
     const observer = new ResizeObserver(resize); observer.observe(host);
@@ -72,6 +83,7 @@ function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; acce
 export function ProductObject3D({ accent = '#67e8f9', label = 'Vitrine de objeto 3D' }: BaseProps) { return <ThreeScene kind="product" accent={accent} label={label}/>; }
 export function Diorama3D({ accent = '#4ade80', label = 'Diorama 3D' }: BaseProps) { return <ThreeScene kind="diorama" accent={accent} label={label}/>; }
 export function Holographic3D({ accent = '#a78bfa', label = 'Holograma geométrico 3D' }: BaseProps) { return <ThreeScene kind="hologram" accent={accent} label={label}/>; }
+export function FluidSurface3D({ accent = '#67e8f9', label = 'Superfície fluida 3D' }: BaseProps) { return <ThreeScene kind="fluid" accent={accent} label={label}/>; }
 
 
 export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizador de modelo 3D' }: BaseProps) {
