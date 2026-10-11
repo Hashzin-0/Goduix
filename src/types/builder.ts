@@ -210,6 +210,7 @@ export type GodUIComponentType =
   | 'creative-data-network'
   | 'creative-isometric-composer'
   | 'creative-3d-model-viewer'
+  | 'creative-2d-sprite-stage'
   | 'vgpu-black-hole';
 
 export type ComponentCategory =
