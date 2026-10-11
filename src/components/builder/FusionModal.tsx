@@ -12,7 +12,6 @@ import {
   Clock, 
   Zap, 
   Check, 
-  ArrowRight,
   Info,
   Sliders,
   Palette,
@@ -22,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { THEMES } from '../../data/themes';
-import { FUSION_DONORS, FUSION_PRESETS, FUSION_TRIGGERS, FUSION_SLOT_DEFINITIONS } from '../../data/fusionCatalog';
+import { FUSION_DONORS, FUSION_TRIGGERS, FUSION_SLOT_DEFINITIONS } from '../../data/fusionCatalog';
 import { FusionEffectType, FusionTargetSlot, FusionTriggerType } from '../../types/builder';
 import { cn } from '../../lib/utils';
 
@@ -43,9 +42,6 @@ export const FusionModal: React.FC = () => {
 
   const donorMeta = FUSION_DONORS[selectedEffect];
   const compatibleSlots = donorMeta?.compatibleSlots || [];
-
-  // Filter presets compatible with this component
-  const componentPresets = FUSION_PRESETS.filter(p => p.targetComponentType === targetComponent.type);
 
   const handleApply = () => {
     store.addFusion(targetComponent.id, {
@@ -119,47 +115,6 @@ export const FusionModal: React.FC = () => {
 
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-          {/* Quick Presets for this component if any */}
-          {componentPresets.length > 0 && (
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>Fusões Recomendadas para {targetComponent.name}:</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {componentPresets.map((preset) => (
-                  <button
-                    key={preset.id}
-                    onClick={() => {
-                      store.applyFusionPreset(targetComponent.id, preset.id);
-                      store.closeFusionModal();
-                    }}
-                    className="p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-500/40 text-left transition-all group cursor-pointer flex items-center justify-between"
-                  >
-                    <div className="space-y-1 pr-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-zinc-200 group-hover:text-cyan-300 transition-colors">
-                          {preset.name}
-                        </span>
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-cyan-500/20 text-cyan-300">
-                          {preset.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-zinc-400 leading-snug">
-                        {preset.description}
-                      </p>
-                    </div>
-                    <div 
-                      className="w-7 h-7 rounded-xl flex items-center justify-center text-zinc-950 font-bold shrink-0 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all"
-                      style={{ backgroundColor: theme.primary }}
-                    >
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* STEP 1: Choose Donor Component & Effect */}
           <div className="space-y-3">
