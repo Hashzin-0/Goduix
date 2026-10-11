@@ -21,7 +21,7 @@ import {
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
 import { THEMES } from '../../data/themes';
-import { FUSION_DONORS, FUSION_PRESETS } from '../../data/fusionCatalog';
+import { FUSION_DONORS } from '../../data/fusionCatalog';
 import { ThemePalette } from '../../types';
 import { EntranceAnimationType, ExitAnimationType, LoopingAnimationType } from '../../types/builder';
 import { cn } from '../../lib/utils';
