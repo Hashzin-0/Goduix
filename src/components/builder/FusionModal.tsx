@@ -116,6 +116,7 @@ export const FusionModal: React.FC = () => {
 
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+          <p className="text-xs text-zinc-400 rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5">Nada é aplicado automaticamente. Selecione manualmente o efeito, o local e o gatilho; os parâmetros começam neutros.</p>
 
           {/* STEP 1: Choose Donor Component & Effect */}
           <div className="space-y-3">
