@@ -2325,7 +2325,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentRegistration> = {
     Object.values(GODUI_CATALOG)
       .filter((meta) => meta.type.startsWith('creative-'))
       .map((meta) => {
-        const match = meta.sampleCode.match(/import \\{ (\\w+) \\}/);
+        const match = meta.sampleCode.match(/import \{ (\w+) \}/);
         const layers = CARD_LAYERS;
         return [meta.type, {
           type: meta.type,
