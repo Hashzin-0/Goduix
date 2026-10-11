@@ -584,7 +584,74 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
       "count": 42
     },
     "sampleCode": "import { NetworkVisualization } from \"@/components/godui/CreativeVisuals\";\n\nexport function NetworkVisualizationExample() {\n  return <NetworkVisualization accent={\"#67e8f9\"} label={\"Rede interativa de nós\"} count={42} />;\n}"
+  },
+
+  {
+    "type": "creative-isometric-composer",
+    "name": "Editor de Cena Isométrica",
+    "category": "Visualizations",
+    "description": "Editor de cena isométrica com colocação, arraste, seleção e remoção de objetos vetoriais.",
+    "iconName": "Grid3X3",
+    "badge": "Interactive / SVG",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Compositor isométrico"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Compositor isométrico"
+    },
+    "sampleCode": "import { IsometricSceneComposer } from \"@/components/godui/CreativeVisuals\";\n\nexport function IsometricSceneComposerExample() {\n  return <IsometricSceneComposer accent={\"#67e8f9\"} label={\"Compositor isométrico\"} />;\n}"
+  },
+  {
+    "type": "creative-3d-model-viewer",
+    "name": "Visualizador de Modelo GLB",
+    "category": "Creative & Shaders",
+    "description": "Visualizador Three.js que carrega modelos GLB reais enviados pelo usuário, com órbita, zoom e limpeza de recursos.",
+    "iconName": "Box",
+    "badge": "GLB / Three.js",
+    "registryName": "godui/Creative3DVisuals",
+    "dependencies": [
+      "react",
+      "three",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Visualizador de modelo 3D"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Visualizador de modelo 3D"
+    },
+    "sampleCode": "import { UploadedModelViewer3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function UploadedModelViewer3DExample() {\n  return <UploadedModelViewer3D accent={\"#67e8f9\"} label={\"Visualizador de modelo 3D\"} />;\n}"
   }
+
 ];
 
 export const GODUI_CATALOG: Record<GodUIComponentType, GodUIMeta> = {
