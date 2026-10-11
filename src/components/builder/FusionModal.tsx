@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { 
   X, 
   Sparkles, 
@@ -12,7 +12,6 @@ import {
   Clock, 
   Zap, 
   Check, 
-  ArrowRight,
   Info,
   Sliders,
   Palette,
@@ -22,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { THEMES } from '../../data/themes';
-import { FUSION_DONORS, FUSION_PRESETS, FUSION_TRIGGERS, FUSION_SLOT_DEFINITIONS } from '../../data/fusionCatalog';
+import { FUSION_DONORS, FUSION_TRIGGERS, FUSION_SLOT_DEFINITIONS } from '../../data/fusionCatalog';
 import { FusionEffectType, FusionTargetSlot, FusionTriggerType } from '../../types/builder';
 import { cn } from '../../lib/utils';
 
@@ -32,22 +31,20 @@ export const FusionModal: React.FC = () => {
 
   const targetComponent = store.components.find(c => c.id === store.activeFusionComponentId);
 
-  const [selectedEffect, setSelectedEffect] = useState<FusionEffectType>('liquid-glass');
-  const [selectedSlot, setSelectedSlot] = useState<FusionTargetSlot>('active-item');
-  const [selectedTrigger, setSelectedTrigger] = useState<FusionTriggerType>('hover');
-  const [intensity, setIntensity] = useState<number>(0.9);
-  const [withShimmer, setWithShimmer] = useState<boolean>(true);
-  const [withGlow, setWithGlow] = useState<boolean>(true);
+  const [selectedEffect, setSelectedEffect] = useState<FusionEffectType | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<FusionTargetSlot | null>(null);
+  const [selectedTrigger, setSelectedTrigger] = useState<FusionTriggerType | null>(null);
+  const [intensity, setIntensity] = useState<number>(0.5);
+  const [withShimmer, setWithShimmer] = useState<boolean>(false);
+  const [withGlow, setWithGlow] = useState<boolean>(false);
 
   if (!store.isFusionModalOpen || !targetComponent) return null;
 
-  const donorMeta = FUSION_DONORS[selectedEffect];
+  const donorMeta = selectedEffect ? FUSION_DONORS[selectedEffect] : null;
   const compatibleSlots = donorMeta?.compatibleSlots || [];
 
-  // Filter presets compatible with this component
-  const componentPresets = FUSION_PRESETS.filter(p => p.targetComponentType === targetComponent.type);
-
   const handleApply = () => {
+    if (!selectedEffect || !selectedSlot || !selectedTrigger || !donorMeta) return;
     store.addFusion(targetComponent.id, {
       sourceEffect: selectedEffect,
       sourceComponentName: donorMeta.name,
@@ -119,47 +116,7 @@ export const FusionModal: React.FC = () => {
 
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-          {/* Quick Presets for this component if any */}
-          {componentPresets.length > 0 && (
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>Fusões Recomendadas para {targetComponent.name}:</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {componentPresets.map((preset) => (
-                  <button
-                    key={preset.id}
-                    onClick={() => {
-                      store.applyFusionPreset(targetComponent.id, preset.id);
-                      store.closeFusionModal();
-                    }}
-                    className="p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-500/40 text-left transition-all group cursor-pointer flex items-center justify-between"
-                  >
-                    <div className="space-y-1 pr-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-zinc-200 group-hover:text-cyan-300 transition-colors">
-                          {preset.name}
-                        </span>
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-cyan-500/20 text-cyan-300">
-                          {preset.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-zinc-400 leading-snug">
-                        {preset.description}
-                      </p>
-                    </div>
-                    <div 
-                      className="w-7 h-7 rounded-xl flex items-center justify-center text-zinc-950 font-bold shrink-0 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all"
-                      style={{ backgroundColor: theme.primary }}
-                    >
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          <p className="text-xs text-zinc-400 rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5">Nada é aplicado automaticamente. Selecione manualmente o efeito, o local e o gatilho; os parâmetros começam neutros.</p>
 
           {/* STEP 1: Choose Donor Component & Effect */}
           <div className="space-y-3">
@@ -385,7 +342,8 @@ export const FusionModal: React.FC = () => {
             </button>
             <button
               onClick={handleApply}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-zinc-950 hover:brightness-110 transition-all cursor-pointer shadow-lg flex items-center gap-2"
+              disabled={!selectedEffect || !selectedSlot || !selectedTrigger}
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-zinc-950 hover:brightness-110 transition-all cursor-pointer shadow-lg flex items-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed"
               style={{ backgroundColor: theme.primary }}
             >
               <Zap className="w-4 h-4" />

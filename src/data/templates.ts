@@ -45,31 +45,12 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
       },
       {
         type: 'floating-toolbar',
-        name: 'Floating Toolbar (Mesclada)',
+        name: 'Floating Toolbar',
         props: {
           ...GODUI_CATALOG['floating-toolbar'].defaultProps,
           badgeText: 'GodUI Fusion Active',
         },
         isVisible: true,
-        fusions: [
-          {
-            id: 'fusion-default-1',
-            sourceEffect: 'liquid-glass',
-            sourceComponentName: 'Liquid Glass Button',
-            targetSlot: 'active-item',
-            intensity: 0.9,
-            withShimmer: true,
-            active: true,
-          },
-          {
-            id: 'fusion-default-2',
-            sourceEffect: 'gooey-liquid',
-            sourceComponentName: 'Gooey FAB',
-            targetSlot: 'active-item',
-            intensity: 0.8,
-            active: true,
-          }
-        ],
       },
       {
         type: 'liquid-glass-button',
