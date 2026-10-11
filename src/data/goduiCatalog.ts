@@ -167,7 +167,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "description": "Vitrine 3D com geometria, materiais PBR, iluminação e controle de órbita.",
     "iconName": "Box",
     "badge": "Three.js / 3D",
-    "registryName": "godui/CreativeVisuals",
+    "registryName": "godui/Creative3DVisuals",
     "dependencies": [
       "react",
       "three",
@@ -191,7 +191,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
       "accent": "#67e8f9",
       "label": "Vitrine de objeto 3D"
     },
-    "sampleCode": "import { ProductObject3D } from \"@/components/godui/CreativeVisuals\";\n\nexport function ProductObject3DExample() {\n  return <ProductObject3D accent={\"#67e8f9\"} label={\"Vitrine de objeto 3D\"} />;\n}"
+    "sampleCode": "import { ProductObject3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function ProductObject3DExample() {\n  return <ProductObject3D accent={\"#67e8f9\"} label={\"Vitrine de objeto 3D\"} />;\n}"
   },
   {
     "type": "creative-3d-diorama",
@@ -200,7 +200,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "description": "Cena 3D em miniatura composta por malhas reais, materiais e luzes.",
     "iconName": "Box",
     "badge": "Three.js / 3D",
-    "registryName": "godui/CreativeVisuals",
+    "registryName": "godui/Creative3DVisuals",
     "dependencies": [
       "react",
       "three",
@@ -224,7 +224,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
       "accent": "#4ade80",
       "label": "Diorama 3D"
     },
-    "sampleCode": "import { Diorama3D } from \"@/components/godui/CreativeVisuals\";\n\nexport function Diorama3DExample() {\n  return <Diorama3D accent={\"#4ade80\"} label={\"Diorama 3D\"} />;\n}"
+    "sampleCode": "import { Diorama3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function Diorama3DExample() {\n  return <Diorama3D accent={\"#4ade80\"} label={\"Diorama 3D\"} />;\n}"
   },
   {
     "type": "creative-3d-hologram",
@@ -233,7 +233,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "description": "Malha icosaédrica, pontos e órbitas luminosas renderizados em WebGL.",
     "iconName": "Orbit",
     "badge": "Three.js / 3D",
-    "registryName": "godui/CreativeVisuals",
+    "registryName": "godui/Creative3DVisuals",
     "dependencies": [
       "react",
       "three",
@@ -257,7 +257,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
       "accent": "#a78bfa",
       "label": "Holograma geométrico 3D"
     },
-    "sampleCode": "import { Holographic3D } from \"@/components/godui/CreativeVisuals\";\n\nexport function Holographic3DExample() {\n  return <Holographic3D accent={\"#a78bfa\"} label={\"Holograma geométrico 3D\"} />;\n}"
+    "sampleCode": "import { Holographic3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function Holographic3DExample() {\n  return <Holographic3D accent={\"#a78bfa\"} label={\"Holograma geométrico 3D\"} />;\n}"
   },
   {
     "type": "creative-isometric-city",
