@@ -212,6 +212,10 @@ export type GodUIComponentType =
   | 'creative-3d-model-viewer'
   | 'creative-2d-sprite-stage'
   | 'creative-3d-fluid'
+  | 'creative-svg-vector-studio'
+  | 'creative-image-texture-lab'
+  | 'creative-kinetic-typography'
+  | 'creative-isometric-tilemap'
   | 'vgpu-black-hole';
 
 export type ComponentCategory =
