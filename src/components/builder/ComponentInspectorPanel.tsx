@@ -41,13 +41,6 @@ export const ComponentInspectorPanel: React.FC = () => {
             <Palette className="w-4 h-4 text-cyan-400" />
             <span>Configurações Globais</span>
           </div>
-          {/* Mobile quick switch back to canvas */}
-          <button
-            onClick={() => store.setMobileTab('canvas')}
-            className="lg:hidden p-1.5 rounded-xl bg-white/10 text-zinc-300 text-xs font-medium flex items-center gap-1 cursor-pointer"
-          >
-            <span>Ver Canvas</span>
-          </button>
         </div>
 
         {/* Global Theme Picker */}
