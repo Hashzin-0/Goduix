@@ -208,6 +208,8 @@ export type GodUIComponentType =
   | 'creative-shader-glitch'
   | 'creative-shader-aurora'
   | 'creative-data-network'
+  | 'creative-isometric-composer'
+  | 'creative-3d-model-viewer'
   | 'vgpu-black-hole';
 
 export type ComponentCategory =
