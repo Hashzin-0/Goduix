@@ -667,7 +667,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
       { "key": "label", "label": "Legenda acessível", "type": "text", "defaultValue": "Compositor de sprites 2D" }
     ],
     "defaultProps": { "accent": "#67e8f9", "label": "Compositor de sprites 2D" },
-    "sampleCode": "import { SpriteStage2D } from \"@/components/godui/CreativeVisuals\";\\n\\nexport function SpriteStage2DExample() {\\n  return <SpriteStage2D accent={\\"#67e8f9\\"} label={\\"Compositor de sprites 2D\\"} />;\\n}"
+    "sampleCode": "import { SpriteStage2D } from '@/components/godui/CreativeVisuals';\n\nexport function SpriteStage2DExample() {\n  return <SpriteStage2D accent='#67e8f9' label='Compositor de sprites 2D' />;\n}"
   }
 ];
 
