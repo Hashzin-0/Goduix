@@ -29,10 +29,12 @@ export function planSupportedSemanticMerge(source: BuilderComponentInstance, tar
     const targetField = targetFields.get(key);
     // Only expose a choice if the destination has a real, catalogued prop to render it.
     if (!field || !targetField || typeof value === 'object') continue;
-    const region = REGION_KEY(key) ?? 'whole-component';
+    const region = REGION_KEY(key);
+    // A catalogued prop alone is not enough: omit it unless it maps to a supported visual region.
+    if (!region) continue;
     candidates.push({
       id: key + ':' + region, label: field.label + ' → ' + (targetField.label || LABELS[region]),
-      sourceKey: key, sourceValue: value, region, kind: /shimmer|shine|glow/i.test(key) ? 'visual-effect' : 'copy-prop',
+      sourceKey: key, sourceValue: value, region, kind: 'copy-prop',
       confidence: 0.99, reason: 'A propriedade existe no catálogo do componente de destino e pode ser aplicada sem modificar a sua estrutura.',
       destructive: false
     });
