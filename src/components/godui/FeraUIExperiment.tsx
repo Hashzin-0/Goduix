@@ -1,4 +1,17 @@
 import React, { useState } from 'react';
+import { PullCord as PullCordOriginal } from 'pullcord';
+import 'pullcord/pullcord.css';
+import { ClawCaptcha as ClawCaptchaOriginal } from 'playcaptcha';
+import 'playcaptcha/clawcaptcha.css';
+import { DeskFolio as DeskFolioOriginal } from 'deskfolio';
+import 'deskfolio/styles.css';
+import { JellyBlobMascot, BlobSpeech, type JellyBlobMood } from 'feral-blob';
+import 'feral-blob/blob.css';
+import { AniMaps as AniMapsOriginal } from 'animaps-react';
+import 'animaps-react/style.css';
+import { Fur as FurOriginal } from 'feral-fur';
+import 'feral-fur/fur.css';
+
 import { AnimatePresence, motion } from 'motion/react';
 import {
   ArrowLeft, ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight,
@@ -22,35 +35,24 @@ const button = 'inline-flex items-center justify-center gap-2 rounded-xl border 
 const primary = 'inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200';
 
 function PullCord() {
-  const [on, setOn] = useState(false);
-  const [pull, setPull] = useState(false);
-  return <section className={panel + ' p-5'} aria-label="Interruptor de cordão">
-    <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">PullCord</p><h3 className="mt-1 text-lg font-semibold">Puxe para alternar a luz</h3><p className="mt-1 text-sm text-zinc-500">Uma interação tátil para mudar o estado da cena.</p></div><span className={'rounded-full px-3 py-1 text-xs font-medium ' + (on ? 'bg-amber-100 text-amber-800' : 'bg-zinc-100 text-zinc-600')}>{on ? 'Luz acesa' : 'Luz apagada'}</span></div>
-    <button type="button" aria-label={on ? 'Apagar luz puxando o cordão' : 'Acender luz puxando o cordão'} onPointerDown={() => setPull(true)} onPointerUp={() => { if (pull) setOn(v => !v); setPull(false); }} onPointerLeave={() => setPull(false)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOn(v => !v); } }} className={'mt-4 flex h-48 w-full flex-col items-center justify-start rounded-xl border transition-colors ' + (on ? 'border-amber-200 bg-amber-50' : 'border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-zinc-900')}>
-      <div className={'h-8 w-10 rounded-b-full transition-colors ' + (on ? 'bg-amber-300' : 'bg-zinc-400')} />
-      <svg viewBox="0 0 120 115" className="h-28 w-28 overflow-visible" aria-hidden="true"><path d={pull ? 'M60 0 Q58 34 73 58 T60 91' : 'M60 0 Q65 32 60 61 T60 83'} stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/><rect x="49" y={pull ? 86 : 78} width="22" height="28" rx="8" fill={on ? '#d97706' : '#71717a'} /></svg>
-      <span className="sr-only">Puxe ou pressione Enter para alternar a luz</span>
-    </button>
-  </section>;
-}
-
-function ClawCaptcha() {
-  const [target, setTarget] = useState(2);
-  const [claw, setClaw] = useState(1);
-  const [won, setWon] = useState(false);
-  const toys = ['🐸', '🐙', '🦊', '🐻', '🐼'];
+  const [pulled, setPulled] = useState(false);
   return <section className={panel + ' p-5'}>
-    <div className="flex items-start justify-between"><div><p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">ClawCaptcha</p><h3 className="mt-1 text-lg font-semibold">Máquina de brinquedos</h3><p className="mt-1 text-sm text-zinc-500">Mini jogo demonstrativo, não é um mecanismo de segurança.</p></div><Trophy className="h-5 w-5 text-amber-500" /></div>
-    <div className="relative mt-4 overflow-hidden rounded-xl border border-sky-100 bg-gradient-to-b from-sky-50 to-indigo-100 p-3 dark:border-white/10 dark:from-slate-900 dark:to-indigo-950">
-      <div className="absolute left-1/2 top-2 h-5 w-1 -translate-x-1/2 bg-zinc-400" style={{ transform: 'translateX(' + ((claw - 2) * 48) + 'px)' }} />
-      <div className="grid h-28 grid-cols-5 items-end gap-1 border-b-4 border-zinc-300 pb-2">{toys.map((toy, i) => <button type="button" key={toy} aria-label={'Selecionar brinquedo ' + toy} onClick={() => { setClaw(i); setWon(false); }} className={'rounded-lg p-1 text-2xl transition ' + (claw === i ? 'bg-white shadow ring-2 ring-sky-400' : 'hover:bg-white/60')}>{toy}</button>)}</div>
-      <div className="mt-3 flex justify-center gap-2"><button type="button" className={button} onClick={() => setClaw(v => Math.max(0, v - 1))} aria-label="Mover garra para a esquerda"><ChevronLeft size={16}/></button><button type="button" className={primary} onClick={() => setWon(claw === target)}><Trophy size={15}/> Baixar a garra</button><button type="button" className={button} onClick={() => setClaw(v => Math.min(toys.length - 1, v + 1))} aria-label="Mover garra para a direita"><ChevronRight size={16}/></button></div>
+    <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Pull Cord · original</p>
+    <h3 className="mt-1 text-lg font-semibold">Corda física interativa</h3>
+    <p className="mt-1 text-sm text-zinc-500">Puxe a corda ou use o teclado para alternar o estado.</p>
+    <div className="relative mt-4 min-h-72 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-950 dark:border-white/10">
+      <PullCordOriginal pulled={pulled} onPull={() => setPulled(v => !v)} ariaLabel="Alternar estado da corda" />
+      <span className="absolute bottom-3 left-3 rounded-full bg-white/10 px-3 py-1 text-xs text-white" role="status">{pulled ? 'Ativado' : 'Desativado'}</span>
     </div>
-    <p role="status" className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">{won ? 'Você pegou o brinquedo. Desafio concluído!' : 'Encontre o brinquedo-alvo: ' + toys[target] + ' e mova a garra até ele.'}</p>
   </section>;
-}
-
-function GradientBuilder() {
+}function ClawCaptcha() {
+  const [verified, setVerified] = useState(false);
+  return <section className={panel + ' p-5'}>
+    <div className="mb-4"><p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">PlayCaptcha · original</p><h3 className="mt-1 text-lg font-semibold">Máquina de garra</h3><p className="mt-1 text-sm text-zinc-500">Demonstração interativa. Não substitui verificações de segurança no servidor.</p></div>
+    <ClawCaptchaOriginal title="Pegue o brinquedo solicitado" onVerify={() => setVerified(true)} />
+    {verified && <p className="mt-3 text-sm font-medium text-emerald-600" role="status">Desafio concluído nesta pré-visualização.</p>}
+  </section>;
+}function GradientBuilder() {
   const [colors, setColors] = useState(['#f7b267', '#f79d65', '#5b8e7d']);
   const [kind, setKind] = useState('radial');
   const css = kind === 'linear' ? 'linear-gradient(125deg, ' + colors.join(', ') + ')' : 'radial-gradient(ellipse at 25% 20%, ' + colors[0] + ' 0%, transparent 55%), radial-gradient(ellipse at 80% 70%, ' + colors[1] + ' 0%, transparent 50%), ' + colors[2];
@@ -75,39 +77,50 @@ function Screenery() {
 }
 
 function DeskFolio() {
-  const [page, setPage] = useState(0);
-  const pages = [{ heading: 'Olá, eu sou Alex.', body: 'Designer e desenvolvedor de experiências digitais.', mark: 'AF' }, { heading: 'O que faço', body: 'Interfaces, protótipos e sistemas de design com foco no uso real.', mark: '01' }, { heading: 'Projetos', body: 'Produtos digitais que equilibram clareza, personalidade e desempenho.', mark: '02' }, { heading: 'Vamos conversar', body: 'Transforme uma ideia em uma experiência útil.', mark: '✳' }];
-  const p = pages[page];
-  return <section className={panel + ' p-5'}><p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">DeskFolio</p><h3 className="mt-1 text-lg font-semibold">Portfólio em formato de livro</h3>
-    <div className="mt-4 flex min-h-56 items-stretch justify-center perspective-[900px]"><motion.div key={page} initial={{ rotateY: -22, opacity: .5, x: 16 }} animate={{ rotateY: 0, opacity: 1, x: 0 }} transition={{ type: 'spring', stiffness: 180, damping: 20 }} className="flex w-full max-w-sm flex-col justify-between rounded-r-2xl border-y border-r border-amber-900/20 bg-[#f5eddf] p-6 text-zinc-800 shadow-[inset_8px_0_12px_-12px_#000]"><div className="flex items-center justify-between text-xs uppercase tracking-widest text-zinc-500"><span>Alex Ferreira</span><span>{p.mark}</span></div><div><h4 className="text-2xl font-semibold">{p.heading}</h4><p className="mt-3 text-sm leading-relaxed text-zinc-600">{p.body}</p></div><div className="text-xs text-zinc-400">PÁGINA {page + 1}</div></motion.div></div>
-    <div className="mt-3 flex justify-between"><button className={button} type="button" onClick={() => setPage(v => Math.max(0, v - 1))} disabled={page === 0}><ArrowLeft size={15}/> Voltar</button><button className={button} type="button" onClick={() => setPage(v => Math.min(pages.length - 1, v + 1))} disabled={page === pages.length - 1}>Virar página <ArrowRight size={15}/></button></div>
+  return <section className={panel + ' p-3 sm:p-5'}>
+    <p className="px-2 pt-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">DeskFolio · original</p>
+    <h3 className="px-2 pt-1 text-lg font-semibold">Portfólio de mesa</h3>
+    <div className="mt-3 min-h-[480px] overflow-visible rounded-xl"><DeskFolioOriginal /></div>
   </section>;
-}
-
-function Blob() {
-  const [mood, setMood] = useState<'curious' | 'happy' | 'sleepy'>('curious');
-  return <section className={panel + ' p-5'}><p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Blob</p><h3 className="mt-1 text-lg font-semibold">Mascote elástico</h3><p className="mt-1 text-sm text-zinc-500">Clique no personagem para mudar seu humor.</p>
-    <button type="button" onClick={() => setMood(v => v === 'curious' ? 'happy' : v === 'happy' ? 'sleepy' : 'curious')} aria-label="Mudar expressão do mascote" className="mt-4 flex h-48 w-full items-center justify-center rounded-xl bg-sky-50 dark:bg-sky-950/40"><motion.div animate={{ scaleX: mood === 'happy' ? 1.16 : mood === 'sleepy' ? .92 : 1, scaleY: mood === 'happy' ? .88 : mood === 'sleepy' ? 1.12 : 1, rotate: mood === 'happy' ? -7 : mood === 'sleepy' ? 6 : 0 }} transition={{ type: 'spring', stiffness: 260, damping: 12 }} className="relative flex h-28 w-36 items-center justify-center rounded-[48%_52%_44%_56%/56%_45%_55%_44%] bg-gradient-to-br from-cyan-300 to-blue-500 shadow-[inset_-10px_-12px_20px_#1d4ed866,0_16px_28px_#0284c733]"><span className="absolute left-10 top-10 h-3 w-2 rounded-full bg-zinc-900"/><span className="absolute right-10 top-10 h-3 w-2 rounded-full bg-zinc-900"/><span className="absolute top-[4.3rem] text-sm font-bold text-zinc-900">{mood === 'happy' ? '⌣' : mood === 'sleepy' ? '﹏' : 'ᴗ'}</span></motion.div></button>
-    <p role="status" className="mt-3 text-center text-sm text-zinc-600 dark:text-zinc-300">{mood === 'happy' ? 'O mascote está feliz.' : mood === 'sleepy' ? 'O mascote está com sono.' : 'O mascote está curioso.'}</p>
+}function Blob() {
+  const [mood, setMood] = useState<JellyBlobMood>('curious');
+  const moods: JellyBlobMood[] = ['neutral', 'happy', 'sad', 'angry', 'hmm', 'sideEye', 'password', 'curious', 'surprised', 'sleepy', 'shy', 'love', 'wave'];
+  return <section className={panel + ' p-5'}>
+    <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Feral Blob · original</p>
+    <h3 className="mt-1 text-lg font-semibold">Mascote com expressões reais</h3>
+    <div className="mt-4 flex min-h-56 flex-col items-center justify-center gap-3 rounded-xl bg-sky-50 p-4 dark:bg-sky-950/40">
+      <JellyBlobMascot mood={mood} eyeStyle="v2" />
+      <BlobSpeech>{mood === 'happy' ? 'Que bom ver você!' : mood === 'sleepy' ? 'Só mais cinco minutinhos…' : mood === 'angry' ? 'Ei! Com cuidado!' : 'Experimente mudar minha expressão.'}</BlobSpeech>
+    </div>
+    <label className="mt-4 block text-sm font-medium" htmlFor="feraui-blob-mood">Expressão</label>
+    <select id="feraui-blob-mood" value={mood} onChange={e => setMood(e.target.value as JellyBlobMood)} className="mt-2 w-full rounded-xl border border-zinc-200 bg-white p-2 text-sm dark:border-white/10 dark:bg-zinc-900">
+      {moods.map(value => <option key={value} value={value}>{value}</option>)}
+    </select>
   </section>;
-}
-
-function AniMaps() {
-  const [playing, setPlaying] = useState(true);
-  return <section className={panel + ' p-5'}><div className="flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">AniMaps</p><h3 className="mt-1 text-lg font-semibold">Rota animada</h3></div><button type="button" aria-pressed={playing} className={button} onClick={() => setPlaying(v => !v)}>{playing ? 'Pausar' : 'Reproduzir'} <CirclePlay size={15}/></button></div>
-    <svg viewBox="0 0 340 190" className="mt-4 w-full rounded-xl bg-[#e8efe5] dark:bg-emerald-950" role="img" aria-label="Mapa ilustrativo com uma rota entre três pontos"><path d="M0 40 Q80 10 140 60 T340 20 M0 140 Q90 110 160 150 T340 110 M55 0 Q80 80 45 190 M220 0 Q180 90 260 190" fill="none" stroke="#c4d3bd" strokeWidth="13"/><path d="M25 150 C60 120 85 135 120 90 S200 105 220 60 S290 60 315 28" fill="none" stroke="#fff" strokeWidth="7" strokeLinecap="round"/><path d="M25 150 C60 120 85 135 120 90 S200 105 220 60 S290 60 315 28" fill="none" stroke="#0f766e" strokeWidth="3" strokeDasharray="5 7" strokeLinecap="round"/>{[[25,150],[120,90],[220,60],[315,28]].map(([x,y],i)=><g key={i}><circle cx={x} cy={y} r="7" fill="#0f766e" stroke="white" strokeWidth="3"/></g>)}<motion.g animate={playing ? { offsetDistance: ['0%', '100%'] } : {}} transition={{ duration: 5, repeat: Infinity, ease: 'linear' }} style={{ offsetPath: "path('M25 150 C60 120 85 135 120 90 S200 105 220 60 S290 60 315 28')" } as React.CSSProperties}><circle r="7" fill="#f97316" stroke="white" strokeWidth="3"/></motion.g></svg>
-    <div className="mt-3 flex items-center justify-between text-sm"><span className="text-zinc-500">Ponto A · Centro · Ponto B</span><span className="font-medium">Rota demonstrativa</span></div>
+}function AniMaps() {
+  return <section className={panel + ' p-3 sm:p-5'}>
+    <p className="px-2 pt-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">AniMaps · original</p>
+    <h3 className="px-2 pt-1 text-lg font-semibold">Editor de rotas animadas</h3>
+    <div className="mt-3 min-h-[520px] overflow-hidden rounded-xl"><AniMapsOriginal /></div>
   </section>;
-}
-
-function Fur() {
-  const [point, setPoint] = useState({ x: 50, y: 50 });
-  return <section className={panel + ' p-5'}><p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Fur</p><h3 className="mt-1 text-lg font-semibold">Textura sensível ao toque</h3><p className="mt-1 text-sm text-zinc-500">Mova o ponteiro ou toque na área para orientar os fios.</p>
-    <div onPointerMove={e => { const r = e.currentTarget.getBoundingClientRect(); setPoint({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 }); }} onTouchMove={e => { const r = e.currentTarget.getBoundingClientRect(); const t = e.touches[0]; setPoint({ x: ((t.clientX-r.left)/r.width)*100, y: ((t.clientY-r.top)/r.height)*100 }); }} className="relative mt-4 h-48 touch-pan-y overflow-hidden rounded-xl bg-gradient-to-br from-amber-100 to-orange-200 dark:from-amber-950 dark:to-orange-900" aria-label="Área interativa de textura"><svg viewBox="0 0 320 180" preserveAspectRatio="none" className="h-full w-full">{Array.from({length: 240}, (_,i) => { const x=(i%24)*14+4; const y=Math.floor(i/24)*18+8; const dx=x-point.x*3.2; const dy=y-point.y*1.8; const a=Math.atan2(dy,dx); const near=Math.max(0,1-Math.sqrt(dx*dx+dy*dy)/75); return <path key={i} d={'M'+x+' '+y+' q'+(Math.cos(a)*5+near*10)+' '+(Math.sin(a)*5)+' '+(Math.cos(a)*9+near*15)+' '+(Math.sin(a)*10)} stroke={i%3===0?'#92400e':i%3===1?'#b45309':'#d97706'} strokeWidth="1.5" strokeLinecap="round" fill="none" opacity=".8"/>; })}</svg></div>
+}function Fur() {
+  const [color, setColor] = useState('#f5a8c9');
+  const [shape, setShape] = useState<'folder' | 'card' | 'heart'>('folder');
+  const [density, setDensity] = useState(1);
+  return <section className={panel + ' p-5'}>
+    <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Feral Fur · original</p>
+    <h3 className="mt-1 text-lg font-semibold">Textura de pelos interativa</h3>
+    <p className="mt-1 text-sm text-zinc-500">Arraste sobre a superfície para acariciar os fios.</p>
+    <div className="mt-4 flex min-h-56 items-center justify-center overflow-visible rounded-xl bg-amber-50 p-6 dark:bg-amber-950/30">
+      <FurOriginal shape={shape} color={color} density={density} style={{ width: 'min(100%, 320px)', aspectRatio: '29 / 24' }} />
+    </div>
+    <div className="mt-4 grid gap-3 sm:grid-cols-3">
+      <label className="text-sm">Formato<select value={shape} onChange={e => setShape(e.target.value as typeof shape)} className="mt-1 w-full rounded-lg border border-zinc-200 bg-white p-2 dark:border-white/10 dark:bg-zinc-900"><option value="folder">Pasta</option><option value="card">Cartão</option><option value="heart">Coração</option></select></label>
+      <label className="text-sm">Cor<input type="color" value={color} onChange={e => setColor(e.target.value)} className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white p-1 dark:border-white/10 dark:bg-zinc-900" /></label>
+      <label className="text-sm">Densidade<input type="range" min="0.4" max="2" step="0.2" value={density} onChange={e => setDensity(Number(e.target.value))} className="mt-3 w-full" /></label>
+    </div>
   </section>;
-}
-
-function Vacuum() {
+}function Vacuum() {
   const [tiles, setTiles] = useState(['Rascunho', 'Imagem', 'Anotação', 'Link', 'Bloco', 'Nota']);
   const [sucking, setSucking] = useState(false);
   const clear = () => { setSucking(true); window.setTimeout(() => { setTiles([]); setSucking(false); }, 450); };
