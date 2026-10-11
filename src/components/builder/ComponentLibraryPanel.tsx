@@ -425,8 +425,9 @@ export const ComponentLibraryPanel: React.FC = () => {
                     <details className="mt-1 group/description">
                       <summary className="cursor-pointer list-none text-[11px] text-zinc-400 leading-relaxed flex items-center gap-1.5 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 rounded">
                         <ChevronRight className="w-3 h-3 shrink-0 transition-transform group-open/description:rotate-90" />
-                        <span>{item.description}</span>
+                        <span>Resumo do componente</span>
                       </summary>
+                      <p className="mt-2 pl-5 text-[11px] leading-relaxed text-zinc-300">{item.description}</p>
                     </details>
                   </div>
                 </div>
