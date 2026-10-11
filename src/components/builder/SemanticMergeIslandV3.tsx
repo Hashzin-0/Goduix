@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Layers, X, Check, ShieldAlert } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { planSupportedSemanticMerge } from '../../engine/supportedSemanticMergePlanner';
@@ -10,6 +10,18 @@ export const SemanticMergeIsland: React.FC = () => {
   const [sourceId, setSourceId] = useState('');
   const [targetId, setTargetId] = useState('');
   const [selected, setSelected] = useState<string[]>([]);
+  useEffect(() => {
+    const handleDrop = (event: Event) => {
+      const detail = (event as CustomEvent<{ sourceId: string; targetId: string }>).detail;
+      if (!detail?.sourceId || !detail?.targetId || detail.sourceId === detail.targetId) return;
+      setSourceId(detail.sourceId);
+      setTargetId(detail.targetId);
+      setSelected([]);
+      setOpen(true);
+    };
+    window.addEventListener('goduix:semantic-merge-drop', handleDrop);
+    return () => window.removeEventListener('goduix:semantic-merge-drop', handleDrop);
+  }, []);
   const source = store.components.find(c => c.id === sourceId);
   const target = store.components.find(c => c.id === targetId);
   const plan = useMemo(() => source && target ? planSupportedSemanticMerge(source, target) : null, [source, target]);
@@ -30,7 +42,7 @@ export const SemanticMergeIsland: React.FC = () => {
     <button onClick={() => setOpen(true)} className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full border border-cyan-300/30 bg-zinc-900 px-4 py-3 text-sm font-semibold text-cyan-100 shadow-xl hover:bg-zinc-800"><Layers size={17}/> Mesclar componentes</button>
     {open && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-3 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="semantic-merge-title">
       <section className="w-full max-w-2xl overflow-hidden rounded-2xl border border-cyan-400/20 bg-zinc-950 shadow-2xl">
-        <header className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><h2 id="semantic-merge-title" className="font-semibold">Mesclagem semântica</h2><p className="mt-1 text-xs text-zinc-400">Somente propriedades que o destino declara e consegue renderizar são exibidas.</p></div><button onClick={() => setOpen(false)} aria-label="Fechar"><X size={18}/></button></header>
+        <header className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><h2 id="semantic-merge-title" className="font-semibold">Mesclagem semântica</h2><p className="mt-1 text-xs text-zinc-400">Arraste um componente sobre outro ou selecione as opções abaixo. Só aparecem propriedades compatíveis.</p></div><button onClick={() => setOpen(false)} aria-label="Fechar"><X size={18}/></button></header>
         <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-2">
           <label className="text-xs text-zinc-400">Componente doador<select value={sourceId} onChange={e => {setSourceId(e.target.value);setSelected([])}} className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-900 p-2 text-sm text-white"><option value="">Escolher componente…</option>{store.components.map(c => <option key={c.id} value={c.id} disabled={c.id===targetId}>{c.name}</option>)}</select></label>
           <label className="text-xs text-zinc-400">Componente de destino<select value={targetId} onChange={e => {setTargetId(e.target.value);setSelected([])}} className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-900 p-2 text-sm text-white"><option value="">Escolher destino…</option>{store.components.map(c => <option key={c.id} value={c.id} disabled={c.id===sourceId}>{c.name}</option>)}</select></label>
