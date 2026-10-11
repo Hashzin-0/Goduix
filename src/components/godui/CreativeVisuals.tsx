@@ -253,6 +253,7 @@ export function SpriteStage2D({ accent = '#67e8f9', label = 'Compositor de sprit
   const urlsRef = useRef<Set<string>>(new Set());
   const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
   const dragRef = useRef<{ id: number; dx: number; dy: number } | null>(null);
+  const drawRef = useRef<() => void>(() => {});
   const [sprites, setSprites] = useState<SpriteAsset[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [nextId, setNextId] = useState(1);
@@ -281,10 +282,16 @@ export function SpriteStage2D({ accent = '#67e8f9', label = 'Compositor de sprit
       });
       if(sprites.length===0){ctx.fillStyle='rgba(226,232,240,.7)';ctx.font='500 14px system-ui';ctx.textAlign='center';ctx.fillText('Adicione seus próprios arquivos de imagem para começar',320,174);ctx.fillStyle='rgba(148,163,184,.55)';ctx.font='11px system-ui';ctx.fillText('PNG · JPG · WEBP · SVG',320,196);}
     };
+    drawRef.current = draw;
     draw();
-    const observer = new ResizeObserver(draw); observer.observe(canvas);
-    return () => observer.disconnect();
   }, [sprites, selected, accent, revision]);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const observer = new ResizeObserver(() => drawRef.current());
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => () => { urlsRef.current.forEach(url=>URL.revokeObjectURL(url)); }, []);
   const upload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from<File>(event.currentTarget.files ?? []).filter(file=>file.type.startsWith('image/'));
