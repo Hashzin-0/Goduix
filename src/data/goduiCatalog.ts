@@ -1,5 +1,592 @@
 import { GodUIMeta, GodUIComponentType } from '../types/builder';
 
+
+const CREATIVE_COMPONENTS: GodUIMeta[] = [
+  {
+    "type": "creative-2d-mascot",
+    "name": "Mascote Vetorial 2D",
+    "category": "Creative & Shaders",
+    "description": "Personagem vetorial interativo com olhar reativo e expressões selecionáveis.",
+    "iconName": "Bot",
+    "badge": "2D / SVG",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Mascote vetorial interativo"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Mascote vetorial interativo"
+    },
+    "sampleCode": "import { Mascot2D } from \"@/components/godui/CreativeVisuals\";\n\nexport function Mascot2DExample() {\n  return <Mascot2D accent={\"#67e8f9\"} label={\"Mascote vetorial interativo\"} />;\n}"
+  },
+  {
+    "type": "creative-2d-particles",
+    "name": "Campo de Partículas 2D",
+    "category": "Creative & Shaders",
+    "description": "Campo de partículas em canvas com conexões e repulsão pelo ponteiro.",
+    "iconName": "Sparkles",
+    "badge": "Canvas / 2D",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Campo de partículas"
+      },
+      {
+        "key": "count",
+        "label": "Quantidade de partículas/nós",
+        "type": "number",
+        "defaultValue": 56,
+        "min": 10,
+        "max": 120,
+        "step": 1
+      },
+      {
+        "key": "speed",
+        "label": "Velocidade",
+        "type": "number",
+        "defaultValue": 1,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Campo de partículas",
+      "count": 56,
+      "speed": 1
+    },
+    "sampleCode": "import { ParticleField2D } from \"@/components/godui/CreativeVisuals\";\n\nexport function ParticleField2DExample() {\n  return <ParticleField2D accent={\"#67e8f9\"} label={\"Campo de partículas\"} count={56} speed={1} />;\n}"
+  },
+  {
+    "type": "creative-2d-liquid",
+    "name": "Formas Orgânicas 2D",
+    "category": "Creative & Shaders",
+    "description": "Formas orgânicas com deformação e movimento vetorial contínuo.",
+    "iconName": "Droplets",
+    "badge": "2D / Motion",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#a78bfa"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Formas líquidas orgânicas"
+      },
+      {
+        "key": "intensity",
+        "label": "Intensidade",
+        "type": "number",
+        "defaultValue": 0.8,
+        "min": 0.1,
+        "max": 1.5,
+        "step": 0.1
+      }
+    ],
+    "defaultProps": {
+      "accent": "#a78bfa",
+      "label": "Formas líquidas orgânicas",
+      "intensity": 0.8
+    },
+    "sampleCode": "import { LiquidBlob2D } from \"@/components/godui/CreativeVisuals\";\n\nexport function LiquidBlob2DExample() {\n  return <LiquidBlob2D accent={\"#a78bfa\"} label={\"Formas líquidas orgânicas\"} intensity={0.8} />;\n}"
+  },
+  {
+    "type": "creative-2d-cutaway",
+    "name": "Ilustração em Camadas",
+    "category": "Visualizations",
+    "description": "Ilustração de corte vetorial com camadas que podem ser isoladas individualmente.",
+    "iconName": "Layers",
+    "badge": "SVG / Layers",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#4ade80"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Ilustração vetorial em camadas"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#4ade80",
+      "label": "Ilustração vetorial em camadas"
+    },
+    "sampleCode": "import { LayeredIllustration2D } from \"@/components/godui/CreativeVisuals\";\n\nexport function LayeredIllustration2DExample() {\n  return <LayeredIllustration2D accent={\"#4ade80\"} label={\"Ilustração vetorial em camadas\"} />;\n}"
+  },
+  {
+    "type": "creative-3d-product",
+    "name": "Objeto de Produto 3D",
+    "category": "Creative & Shaders",
+    "description": "Vitrine 3D com geometria, materiais PBR, iluminação e controle de órbita.",
+    "iconName": "Box",
+    "badge": "Three.js / 3D",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "three",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Vitrine de objeto 3D"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Vitrine de objeto 3D"
+    },
+    "sampleCode": "import { ProductObject3D } from \"@/components/godui/CreativeVisuals\";\n\nexport function ProductObject3DExample() {\n  return <ProductObject3D accent={\"#67e8f9\"} label={\"Vitrine de objeto 3D\"} />;\n}"
+  },
+  {
+    "type": "creative-3d-diorama",
+    "name": "Diorama 3D",
+    "category": "Visualizations",
+    "description": "Cena 3D em miniatura composta por malhas reais, materiais e luzes.",
+    "iconName": "Box",
+    "badge": "Three.js / 3D",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "three",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#4ade80"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Diorama 3D"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#4ade80",
+      "label": "Diorama 3D"
+    },
+    "sampleCode": "import { Diorama3D } from \"@/components/godui/CreativeVisuals\";\n\nexport function Diorama3DExample() {\n  return <Diorama3D accent={\"#4ade80\"} label={\"Diorama 3D\"} />;\n}"
+  },
+  {
+    "type": "creative-3d-hologram",
+    "name": "Holograma Geométrico 3D",
+    "category": "Creative & Shaders",
+    "description": "Malha icosaédrica, pontos e órbitas luminosas renderizados em WebGL.",
+    "iconName": "Orbit",
+    "badge": "Three.js / 3D",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "three",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#a78bfa"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Holograma geométrico 3D"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#a78bfa",
+      "label": "Holograma geométrico 3D"
+    },
+    "sampleCode": "import { Holographic3D } from \"@/components/godui/CreativeVisuals\";\n\nexport function Holographic3DExample() {\n  return <Holographic3D accent={\"#a78bfa\"} label={\"Holograma geométrico 3D\"} />;\n}"
+  },
+  {
+    "type": "creative-isometric-city",
+    "name": "Cidade Isométrica",
+    "category": "Visualizations",
+    "description": "Cenário isométrico vetorial de cidade com prédios e objetos selecionáveis.",
+    "iconName": "Building2",
+    "badge": "SVG / Isometric",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Cidade isométrica"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Cidade isométrica"
+    },
+    "sampleCode": "import { IsometricCity } from \"@/components/godui/CreativeVisuals\";\n\nexport function IsometricCityExample() {\n  return <IsometricCity accent={\"#67e8f9\"} label={\"Cidade isométrica\"} />;\n}"
+  },
+  {
+    "type": "creative-isometric-farm",
+    "name": "Fazenda Isométrica",
+    "category": "Visualizations",
+    "description": "Cena isométrica de fazenda com talhões, galpão e silos selecionáveis.",
+    "iconName": "Sprout",
+    "badge": "SVG / Isometric",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#4ade80"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Fazenda isométrica"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#4ade80",
+      "label": "Fazenda isométrica"
+    },
+    "sampleCode": "import { IsometricFarm } from \"@/components/godui/CreativeVisuals\";\n\nexport function IsometricFarmExample() {\n  return <IsometricFarm accent={\"#4ade80\"} label={\"Fazenda isométrica\"} />;\n}"
+  },
+  {
+    "type": "creative-isometric-interior",
+    "name": "Interior Isométrico",
+    "category": "Visualizations",
+    "description": "Composição isométrica de interior com mobiliário vetorial selecionável.",
+    "iconName": "Armchair",
+    "badge": "SVG / Isometric",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#c084fc"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Interior isométrico"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#c084fc",
+      "label": "Interior isométrico"
+    },
+    "sampleCode": "import { IsometricInterior } from \"@/components/godui/CreativeVisuals\";\n\nexport function IsometricInteriorExample() {\n  return <IsometricInterior accent={\"#c084fc\"} label={\"Interior isométrico\"} />;\n}"
+  },
+  {
+    "type": "creative-isometric-factory",
+    "name": "Fábrica Isométrica",
+    "category": "Visualizations",
+    "description": "Cena industrial isométrica com máquinas, esteiras e equipamentos vetoriais.",
+    "iconName": "Factory",
+    "badge": "SVG / Isometric",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#fbbf24"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Fábrica isométrica"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#fbbf24",
+      "label": "Fábrica isométrica"
+    },
+    "sampleCode": "import { IsometricFactory } from \"@/components/godui/CreativeVisuals\";\n\nexport function IsometricFactoryExample() {\n  return <IsometricFactory accent={\"#fbbf24\"} label={\"Fábrica isométrica\"} />;\n}"
+  },
+  {
+    "type": "creative-shader-liquid-glass",
+    "name": "Shader de Refração Líquida",
+    "category": "Creative & Shaders",
+    "description": "Fragment shader WebGL com refração visual, ondas e realce de superfície.",
+    "iconName": "Waves",
+    "badge": "WebGL Shader",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Refração líquida WebGL"
+      },
+      {
+        "key": "intensity",
+        "label": "Intensidade",
+        "type": "number",
+        "defaultValue": 0.8,
+        "min": 0.1,
+        "max": 1.5,
+        "step": 0.1
+      },
+      {
+        "key": "speed",
+        "label": "Velocidade",
+        "type": "number",
+        "defaultValue": 1,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Refração líquida WebGL",
+      "intensity": 0.8,
+      "speed": 1
+    },
+    "sampleCode": "import { LiquidGlassShader } from \"@/components/godui/CreativeVisuals\";\n\nexport function LiquidGlassShaderExample() {\n  return <LiquidGlassShader accent={\"#67e8f9\"} label={\"Refração líquida WebGL\"} intensity={0.8} speed={1} />;\n}"
+  },
+  {
+    "type": "creative-shader-glitch",
+    "name": "Shader Glitch",
+    "category": "Creative & Shaders",
+    "description": "Shader WebGL com scanlines, bandas de ruído e deslocamento cromático.",
+    "iconName": "Monitor",
+    "badge": "WebGL Shader",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#f472b6"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Distorção digital glitch"
+      },
+      {
+        "key": "intensity",
+        "label": "Intensidade",
+        "type": "number",
+        "defaultValue": 0.8,
+        "min": 0.1,
+        "max": 1.5,
+        "step": 0.1
+      },
+      {
+        "key": "speed",
+        "label": "Velocidade",
+        "type": "number",
+        "defaultValue": 1,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "defaultProps": {
+      "accent": "#f472b6",
+      "label": "Distorção digital glitch",
+      "intensity": 0.8,
+      "speed": 1
+    },
+    "sampleCode": "import { GlitchShader } from \"@/components/godui/CreativeVisuals\";\n\nexport function GlitchShaderExample() {\n  return <GlitchShader accent={\"#f472b6\"} label={\"Distorção digital glitch\"} intensity={0.8} speed={1} />;\n}"
+  },
+  {
+    "type": "creative-shader-aurora",
+    "name": "Aurora Procedural",
+    "category": "Creative & Shaders",
+    "description": "Aurora gerada em tempo real por fragment shader WebGL.",
+    "iconName": "Sparkles",
+    "badge": "WebGL Shader",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#34d399"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Aurora procedural"
+      },
+      {
+        "key": "intensity",
+        "label": "Intensidade",
+        "type": "number",
+        "defaultValue": 0.8,
+        "min": 0.1,
+        "max": 1.5,
+        "step": 0.1
+      },
+      {
+        "key": "speed",
+        "label": "Velocidade",
+        "type": "number",
+        "defaultValue": 1,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "defaultProps": {
+      "accent": "#34d399",
+      "label": "Aurora procedural",
+      "intensity": 0.8,
+      "speed": 1
+    },
+    "sampleCode": "import { AuroraShader } from \"@/components/godui/CreativeVisuals\";\n\nexport function AuroraShaderExample() {\n  return <AuroraShader accent={\"#34d399\"} label={\"Aurora procedural\"} intensity={0.8} speed={1} />;\n}"
+  },
+  {
+    "type": "creative-data-network",
+    "name": "Rede de Nós Interativa",
+    "category": "Visualizations",
+    "description": "Visualização procedural de nós e arestas em canvas, com conexões calculadas em tempo real.",
+    "iconName": "Network",
+    "badge": "Canvas / Graph",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion/react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Rede interativa de nós"
+      },
+      {
+        "key": "count",
+        "label": "Quantidade de partículas/nós",
+        "type": "number",
+        "defaultValue": 42,
+        "min": 10,
+        "max": 120,
+        "step": 1
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Rede interativa de nós",
+      "count": 42
+    },
+    "sampleCode": "import { NetworkVisualization } from \"@/components/godui/CreativeVisuals\";\n\nexport function NetworkVisualizationExample() {\n  return <NetworkVisualization accent={\"#67e8f9\"} label={\"Rede interativa de nós\"} count={42} />;\n}"
+  }
+];
+
 export const GODUI_CATALOG: Record<GodUIComponentType, GodUIMeta> = {
   'dynamic-island': {
     type: 'dynamic-island',
@@ -3914,4 +4501,6 @@ export function BlackHoleDemo() {
   return <VgpuBlackHole title="Event Horizon" intensity={0.85} />;
 }`,
   },
+  ...Object.fromEntries(CREATIVE_COMPONENTS.map((item) => [item.type, item])),
+
 };
