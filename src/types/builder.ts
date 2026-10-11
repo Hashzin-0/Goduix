@@ -193,6 +193,21 @@ export type GodUIComponentType =
   | 'hairline-stack'
   | 'pixelflow-folder-hover'
   | 'pixelflow-pricing-cards'
+  | 'creative-2d-mascot'
+  | 'creative-2d-particles'
+  | 'creative-2d-liquid'
+  | 'creative-2d-cutaway'
+  | 'creative-3d-product'
+  | 'creative-3d-diorama'
+  | 'creative-3d-hologram'
+  | 'creative-isometric-city'
+  | 'creative-isometric-farm'
+  | 'creative-isometric-interior'
+  | 'creative-isometric-factory'
+  | 'creative-shader-liquid-glass'
+  | 'creative-shader-glitch'
+  | 'creative-shader-aurora'
+  | 'creative-data-network'
   | 'vgpu-black-hole';
 
 export type ComponentCategory =
