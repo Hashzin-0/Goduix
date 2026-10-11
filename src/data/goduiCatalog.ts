@@ -4503,4 +4503,4 @@ export function BlackHoleDemo() {
   },
   ...Object.fromEntries(CREATIVE_COMPONENTS.map((item) => [item.type, item])),
 
-};
+} as Record<GodUIComponentType, GodUIMeta>;
