@@ -446,40 +446,6 @@ export const ComponentLibraryPanel: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    {/* Draggable Fusion trigger */}
-                    <div
-                      draggable
-                      onDragStart={(e) => {
-                        store.setDraggingItem({
-                          type: 'component',
-                          effectType: 'liquid-glass',
-                          effectName: item.name,
-                          sourceComponentName: item.name,
-                          sourceComponentType: item.type,
-                        });
-                        e.dataTransfer.setData('text/plain', item.name);
-                        e.dataTransfer.effectAllowed = 'copy';
-                      }}
-                      onDragEnd={() => {
-                        store.setDraggingItem(null);
-                        store.setActiveHoverDropZone(null);
-                      }}
-                      onPointerDown={(e) => handlePointerDragStart(e, {
-                        type: 'component',
-                        effectType: 'liquid-glass',
-                        effectName: item.name,
-                        sourceComponentName: item.name,
-                        sourceComponentType: item.type,
-                      })}
-                      onPointerMove={handlePointerDragMove}
-                      onPointerUp={handlePointerDragEnd}
-                      title="Arraste para mesclar no Canvas"
-                      className="px-2 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-medium text-[10px] flex items-center gap-1 cursor-grab active:cursor-grabbing border border-cyan-500/30 transition-colors touch-none"
-                    >
-                      <Sparkles className="w-3 h-3 text-cyan-400" />
-                      <span>Fundir</span>
-                    </div>
-
                     <button
                       onClick={() => store.addComponent(item.type)}
                       className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
