@@ -45,7 +45,10 @@ interface PointerDragState {
   } | null;
 }
 
-const ComponentCardPreview: React.FC<{ item: (typeof GODUI_CATALOG)[GodUIComponentType] }> = ({ item }) => {
+const ComponentCardPreview: React.FC<{
+  item: (typeof GODUI_CATALOG)[GodUIComponentType];
+  onOpen: () => void;
+}> = ({ item, onOpen }) => {
   const previewRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -75,7 +78,7 @@ const ComponentCardPreview: React.FC<{ item: (typeof GODUI_CATALOG)[GodUICompone
   };
 
   return (
-    <div ref={previewRef} className="relative h-24 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80" aria-label={`Preview de ${item.name}`}>
+    <div ref={previewRef} className="relative h-28 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80" aria-label={`Prévia de ${item.name}`}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.08),transparent_70%)]" />
       {isVisible ? (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -88,7 +91,18 @@ const ComponentCardPreview: React.FC<{ item: (typeof GODUI_CATALOG)[GodUICompone
           <Sparkles className="w-5 h-5" />
         </div>
       )}
-      <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/60 border border-white/10 text-[8px] font-mono uppercase tracking-wide text-zinc-400">Preview</span>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="absolute inset-0 flex items-end justify-center p-2 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity"
+        aria-label={`Abrir prévia interativa de ${item.name}`}
+      >
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-zinc-900/90 px-3 py-1.5 text-[11px] font-medium text-white shadow-lg">
+          <Eye className="h-3.5 w-3.5 text-cyan-300" />
+          Abrir prévia interativa
+        </span>
+      </button>
+      <span className="pointer-events-none absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/60 border border-white/10 text-[8px] font-mono uppercase tracking-wide text-zinc-400">Prévia</span>
     </div>
   );
 };
@@ -100,6 +114,7 @@ export const ComponentLibraryPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'library' | 'canvas-tree' | 'templates'>('library');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ComponentCategory | 'All'>('All');
+  const [previewItem, setPreviewItem] = useState<(typeof GODUI_CATALOG)[GodUIComponentType] | null>(null);
 
   // Pointer Drag State for mobile/touch DnD
   const [pointerDrag, setPointerDrag] = useState<PointerDragState>({
@@ -396,7 +411,7 @@ export const ComponentLibraryPanel: React.FC = () => {
                 key={item.type}
                 className="group relative p-3 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/15 transition-all duration-200"
               >
-                <ComponentCardPreview item={item} />
+                <ComponentCardPreview item={item} onOpen={() => setPreviewItem(item)} />
                 <div className="flex items-start justify-between gap-2 mt-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -407,9 +422,12 @@ export const ComponentLibraryPanel: React.FC = () => {
                         {item.badge}
                       </span>
                     </div>
-                    <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed line-clamp-2">
-                      {item.description}
-                    </p>
+                    <details className="mt-1 group/description">
+                      <summary className="cursor-pointer list-none text-[11px] text-zinc-400 leading-relaxed flex items-center gap-1.5 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 rounded">
+                        <ChevronRight className="w-3 h-3 shrink-0 transition-transform group-open/description:rotate-90" />
+                        <span>{item.description}</span>
+                      </summary>
+                    </details>
                   </div>
                 </div>
 
@@ -474,6 +492,77 @@ export const ComponentLibraryPanel: React.FC = () => {
           </div>
         </div>
       )}
+
+      {previewItem && (() => {
+        const configuredInstance = store.components.find(component => component.type === previewItem.type);
+        const previewInstance = configuredInstance ? {
+          ...configuredInstance,
+          isVisible: true,
+          fusions: configuredInstance.fusions || [],
+          props: { ...configuredInstance.props },
+        } : {
+          id: `interactive-preview-${previewItem.type}`,
+          type: previewItem.type,
+          name: previewItem.name,
+          props: { ...previewItem.defaultProps },
+          isVisible: true,
+          fusions: [],
+          animations: { entrance: 'none' as const, exit: 'none' as const, looping: 'none' as const },
+        };
+        const hasReplayableAnimation = previewInstance.animations?.entrance !== 'none' || previewInstance.animations?.exit !== 'none';
+        const replayType = previewInstance.animations?.entrance && previewInstance.animations.entrance !== 'none' ? 'entrance' as const : 'exit' as const;
+
+        return (
+          <div
+            className="fixed inset-0 z-[100] flex flex-col bg-zinc-950/95 backdrop-blur-xl"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Prévia interativa: ${previewItem.name}`}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') setPreviewItem(null);
+            }}
+          >
+            <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-zinc-950/90 px-4 py-3 sm:px-6">
+              <div className="min-w-0">
+                <h2 className="truncate text-sm font-semibold text-white sm:text-base">{previewItem.name}</h2>
+                <p className="text-xs text-zinc-400">Prévia em tamanho real · interaja com os controles</p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                {hasReplayableAnimation && (
+                  <button
+                    type="button"
+                    onClick={() => store.replayComponentAnimation(previewInstance.id, replayType)}
+                    className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-cyan-400/25 bg-cyan-400/10 px-3 text-xs font-medium text-cyan-200 hover:bg-cyan-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                    aria-label="Reproduzir animação do componente"
+                  >
+                    <Play className="h-4 w-4" />
+                    <span className="hidden sm:inline">Reproduzir animação</span>
+                    <span className="sm:hidden">Replay</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setPreviewItem(null)}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  aria-label="Fechar prévia"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </header>
+            <div className="flex-1 min-h-0 overflow-auto p-3 sm:p-6 lg:p-10">
+              <div className="mx-auto flex min-h-full w-full max-w-[1600px] items-center justify-center rounded-2xl border border-white/10 bg-[#090b10] p-4 sm:p-8 lg:p-12">
+                <div className="w-full min-w-0" onClick={(event) => event.stopPropagation()}>
+                  <ComponentRenderer instance={previewInstance} index={0} total={1} isInteractiveOnly />
+                </div>
+              </div>
+            </div>
+            <footer className="border-t border-white/10 px-4 py-2.5 text-center text-[11px] text-zinc-500">
+              Os controles da prévia são interativos. Ações externas ou navegação podem continuar limitadas ao ambiente de demonstração.
+            </footer>
+          </div>
+        );
+      })()}
 
       {/* TAB 2: CANVAS STRUCTURE TREE */}
       {activeTab === 'canvas-tree' && (
