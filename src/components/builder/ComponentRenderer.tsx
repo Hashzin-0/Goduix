@@ -2036,6 +2036,28 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
   return (
     <div
+      draggable={isBuilderMode}
+      onDragStart={(e) => {
+        if (!isBuilderMode) return;
+        e.dataTransfer.setData('application/x-goduix-component-id', instance.id);
+        e.dataTransfer.effectAllowed = 'copy';
+        e.stopPropagation();
+      }}
+      onDragOver={(e) => {
+        if (!isBuilderMode || !e.dataTransfer.types.includes('application/x-goduix-component-id')) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+      }}
+      onDrop={(e) => {
+        if (!isBuilderMode) return;
+        const sourceId = e.dataTransfer.getData('application/x-goduix-component-id');
+        if (!sourceId || sourceId === instance.id) return;
+        e.preventDefault();
+        e.stopPropagation();
+        window.dispatchEvent(new CustomEvent('goduix:semantic-merge-drop', {
+          detail: { sourceId, targetId: instance.id },
+        }));
+      }}
       onClick={(e) => {
         e.stopPropagation();
         store.selectComponent(instance.id);
