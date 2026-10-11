@@ -247,7 +247,7 @@ import { VgpuBlackHole } from '../godui/VgpuBlackHole';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
-import { Mascot2D, ParticleField2D, LiquidBlob2D, LayeredIllustration2D, IsometricCity, IsometricFarm, IsometricInterior, IsometricFactory, IsometricSceneComposer, LiquidGlassShader, GlitchShader, AuroraShader, NetworkVisualization, SpriteStage2D } from '../godui/CreativeVisuals';
+import { Mascot2D, ParticleField2D, LiquidBlob2D, LayeredIllustration2D, IsometricCity, IsometricFarm, IsometricInterior, IsometricFactory, IsometricSceneComposer, LiquidGlassShader, GlitchShader, AuroraShader, NetworkVisualization, SpriteStage2D, SVGVectorStudio, ImageTextureLab, KineticTypographyLab, IsometricTilemapStudio } from '../godui/CreativeVisuals';
 const LazyProductObject3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.ProductObject3D })));
 const LazyDiorama3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Diorama3D })));
 const LazyHolographic3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Holographic3D })));
@@ -1978,6 +1978,18 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             defaultAnnual={Boolean(props.defaultAnnual ?? true)}
           />
         );
+
+      case 'creative-svg-vector-studio':
+        return <SVGVectorStudio accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Estúdio vetorial SVG')} />;
+
+      case 'creative-image-texture-lab':
+        return <ImageTextureLab accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Laboratório de texturas')} />;
+
+      case 'creative-kinetic-typography':
+        return <KineticTypographyLab accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Laboratório tipográfico cinético')} />;
+
+      case 'creative-isometric-tilemap':
+        return <IsometricTilemapStudio accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Estúdio de mapas isométricos')} />;
 
       case 'creative-2d-sprite-stage':
         return <SpriteStage2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Compositor de sprites 2D')} />;
