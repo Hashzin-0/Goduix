@@ -247,7 +247,10 @@ import { VgpuBlackHole } from '../godui/VgpuBlackHole';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
-import { Mascot2D, ParticleField2D, LiquidBlob2D, LayeredIllustration2D, ProductObject3D, Diorama3D, Holographic3D, IsometricCity, IsometricFarm, IsometricInterior, IsometricFactory, LiquidGlassShader, GlitchShader, AuroraShader, NetworkVisualization } from '../godui/CreativeVisuals';
+import { Mascot2D, ParticleField2D, LiquidBlob2D, LayeredIllustration2D, IsometricCity, IsometricFarm, IsometricInterior, IsometricFactory, LiquidGlassShader, GlitchShader, AuroraShader, NetworkVisualization } from '../godui/CreativeVisuals';
+const LazyProductObject3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.ProductObject3D })));
+const LazyDiorama3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Diorama3D })));
+const LazyHolographic3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Holographic3D })));
 import { FusionWrapper } from '../godui/fusion';
 import { FusionTargetSlot } from '../../types/builder';
 
@@ -1987,13 +1990,13 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         return <LayeredIllustration2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Layered Illustration2 D')}     />;
 
       case 'creative-3d-product':
-        return <ProductObject3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Product Object3 D')}     />;
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyProductObject3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Vitrine de objeto 3D')} /></React.Suspense>;
 
       case 'creative-3d-diorama':
-        return <Diorama3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Diorama3 D')}     />;
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyDiorama3D accent={String(props.accent || '#4ade80')} label={String(props.label || 'Diorama 3D')} /></React.Suspense>;
 
       case 'creative-3d-hologram':
-        return <Holographic3D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Holographic3 D')}     />;
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyHolographic3D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Holograma geométrico 3D')} /></React.Suspense>;
 
       case 'creative-isometric-city':
         return <IsometricCity accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Isometric City')}     />;
