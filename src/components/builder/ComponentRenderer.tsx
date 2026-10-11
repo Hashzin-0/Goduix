@@ -251,6 +251,7 @@ import { Mascot2D, ParticleField2D, LiquidBlob2D, LayeredIllustration2D, Isometr
 const LazyProductObject3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.ProductObject3D })));
 const LazyDiorama3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Diorama3D })));
 const LazyHolographic3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Holographic3D })));
+const LazyUploadedModelViewer3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.UploadedModelViewer3D })));
 import { FusionWrapper } from '../godui/fusion';
 import { FusionTargetSlot } from '../../types/builder';
 
@@ -1988,6 +1989,12 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
       case 'creative-2d-cutaway':
         return <LayeredIllustration2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Layered Illustration2 D')}     />;
+
+      case 'creative-isometric-composer':
+        return <IsometricSceneComposer accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Compositor isométrico')} />;
+
+      case 'creative-3d-model-viewer':
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando visualizador 3D" />}><LazyUploadedModelViewer3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Visualizador de modelo 3D')} /></React.Suspense>;
 
       case 'creative-3d-product':
         return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyProductObject3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Vitrine de objeto 3D')} /></React.Suspense>;
