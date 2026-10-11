@@ -189,6 +189,8 @@ interface BuilderState {
 const initialTemplate = PAGE_TEMPLATES[0];
 const initialComponents: BuilderComponentInstance[] = initialTemplate.components.map((c, index) => ({
   ...c,
+  fusions: [],
+  animations: { entrance: 'none', exit: 'none', looping: 'none' },
   id: `comp-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 5)}`,
 }));
 
