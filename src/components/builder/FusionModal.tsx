@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { 
   X, 
   Sparkles, 
@@ -31,19 +31,20 @@ export const FusionModal: React.FC = () => {
 
   const targetComponent = store.components.find(c => c.id === store.activeFusionComponentId);
 
-  const [selectedEffect, setSelectedEffect] = useState<FusionEffectType>('liquid-glass');
-  const [selectedSlot, setSelectedSlot] = useState<FusionTargetSlot>('active-item');
-  const [selectedTrigger, setSelectedTrigger] = useState<FusionTriggerType>('hover');
-  const [intensity, setIntensity] = useState<number>(0.9);
-  const [withShimmer, setWithShimmer] = useState<boolean>(true);
-  const [withGlow, setWithGlow] = useState<boolean>(true);
+  const [selectedEffect, setSelectedEffect] = useState<FusionEffectType | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<FusionTargetSlot | null>(null);
+  const [selectedTrigger, setSelectedTrigger] = useState<FusionTriggerType | null>(null);
+  const [intensity, setIntensity] = useState<number>(0.5);
+  const [withShimmer, setWithShimmer] = useState<boolean>(false);
+  const [withGlow, setWithGlow] = useState<boolean>(false);
 
   if (!store.isFusionModalOpen || !targetComponent) return null;
 
-  const donorMeta = FUSION_DONORS[selectedEffect];
+  const donorMeta = selectedEffect ? FUSION_DONORS[selectedEffect] : null;
   const compatibleSlots = donorMeta?.compatibleSlots || [];
 
   const handleApply = () => {
+    if (!selectedEffect || !selectedSlot || !selectedTrigger || !donorMeta) return;
     store.addFusion(targetComponent.id, {
       sourceEffect: selectedEffect,
       sourceComponentName: donorMeta.name,
@@ -340,7 +341,8 @@ export const FusionModal: React.FC = () => {
             </button>
             <button
               onClick={handleApply}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-zinc-950 hover:brightness-110 transition-all cursor-pointer shadow-lg flex items-center gap-2"
+              disabled={!selectedEffect || !selectedSlot || !selectedTrigger}
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-zinc-950 hover:brightness-110 transition-all cursor-pointer shadow-lg flex items-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed"
               style={{ backgroundColor: theme.primary }}
             >
               <Zap className="w-4 h-4" />
