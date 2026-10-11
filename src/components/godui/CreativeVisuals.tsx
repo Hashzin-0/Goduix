@@ -186,3 +186,61 @@ export function NetworkVisualization({ accent = '#67e8f9', label = 'Rede interat
   },[accent,count]);
   return <section className={frame}><VisualHeader eyebrow="NETWORK / CANVAS" title={label} description="Grafo visual procedural com nós e arestas calculados em tempo real; mova o ponteiro sobre a área para explorar a rede."/><canvas ref={canvasRef} className="mt-3 block h-64 w-full" aria-label={label}/></section>;
 }
+
+
+export function IsometricSceneComposer({ accent = '#67e8f9', label = 'Compositor isométrico' }: BaseProps) {
+  type SceneObject = { id: number; kind: 'building' | 'tree' | 'road' | 'house'; x: number; y: number };
+  const [objects, setObjects] = useState<SceneObject[]>([]);
+  const [tool, setTool] = useState<SceneObject['kind']>('building');
+  const [selected, setSelected] = useState<number | null>(null);
+  const [nextId, setNextId] = useState(1);
+  const [grid, setGrid] = useState(true);
+  const place = (event: React.PointerEvent<SVGSVGElement>) => {
+    if ((event.target as Element).closest('[data-scene-object]')) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = Math.max(28, Math.min(332, (event.clientX - rect.left) / rect.width * 360));
+    const y = Math.max(48, Math.min(190, (event.clientY - rect.top) / rect.height * 235));
+    setObjects(current => [...current, { id: nextId, kind: tool, x, y }]);
+    setSelected(nextId);
+    setNextId(value => value + 1);
+  };
+  const dragStart = (event: React.PointerEvent<SVGGElement>, id: number) => {
+    event.stopPropagation();
+    setSelected(id);
+    const svg = event.currentTarget.ownerSVGElement;
+    if (!svg) return;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    const move = (moveEvent: PointerEvent) => {
+      const rect = svg.getBoundingClientRect();
+      const x = Math.max(24, Math.min(336, (moveEvent.clientX - rect.left) / rect.width * 360));
+      const y = Math.max(42, Math.min(196, (moveEvent.clientY - rect.top) / rect.height * 235));
+      setObjects(current => current.map(item => item.id === id ? { ...item, x, y } : item));
+    };
+    const finish = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', finish); };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', finish, { once: true });
+  };
+  const removeSelected = () => { setObjects(current => current.filter(item => item.id !== selected)); setSelected(null); };
+  return <section className={frame}>
+    <VisualHeader eyebrow="ISOMETRIC / SCENE EDITOR" title={label} description="Monte sua própria cena: selecione uma peça, clique no terreno para inserir e arraste objetos para reposicioná-los."/>
+    <div className="mx-3 mb-3 mt-3 overflow-hidden rounded-xl border border-white/10 bg-[#0b1220]">
+      <svg viewBox="0 0 360 235" className="block w-full touch-none" role="application" aria-label={label} onPointerDown={place}>
+        {grid && <g stroke="#94a3b8" strokeOpacity=".17" strokeWidth=".65">{Array.from({length:14},(_,i)=><g key={i}><path d={`M${-35+i*33} 35 L180 220`}/><path d={`M${395-i*33} 35 L180 220`}/></g>)}</g>}
+        <polygon points="180,28 340,113 180,205 20,113" fill="#1e293b" stroke="#94a3b8" strokeOpacity=".35"/>
+        <polygon points="180,46 311,114 180,187 49,114" fill="#0f766e" opacity=".14"/>
+        {objects.map(item => <g key={item.id} data-scene-object="true" onPointerDown={event => dragStart(event,item.id)} className="cursor-grab active:cursor-grabbing" role="button" tabIndex={0} aria-label={`${item.kind} ${item.id}`} onKeyDown={event=>{if(event.key==='Delete'||event.key==='Backspace'){setObjects(current=>current.filter(o=>o.id!==item.id));setSelected(null);}}}>
+          <ellipse cx={item.x} cy={item.y+17} rx={item.kind==='road'?22:14} ry="6" fill={accent} opacity={selected===item.id?.35:.12}/>
+          {item.kind==='tree' ? <><path d={`M${item.x} ${item.y+5} V${item.y+22}`} stroke="#a16207" strokeWidth="5"/><path d={`M${item.x-14} ${item.y+4} L${item.x} ${item.y-25} L${item.x+14} ${item.y+4}Z`} fill="#22c55e" stroke={selected===item.id?'#fff':'#86efac'} strokeWidth={selected===item.id?2:1}/></> : item.kind==='road' ? <polygon points={`${item.x-25},${item.y} ${item.x},${item.y-13} ${item.x+25},${item.y} ${item.x},${item.y+13}`} fill="#475569" stroke={selected===item.id?'#fff':'#94a3b8'} strokeWidth={selected===item.id?2:1}/> : <><polygon points={`${item.x-16},${item.y-10} ${item.x},${item.y-20} ${item.x+16},${item.y-10} ${item.x},${item.y}`} fill={item.kind==='house'?'#f59e0b':accent} stroke={selected===item.id?'#fff':'#ffffff44'} strokeWidth={selected===item.id?2:1}/><polygon points={`${item.x-16},${item.y-10} ${item.x},${item.y} ${item.x},${item.y+18} ${item.x-16},${item.y+8}`} fill="#334155" stroke="#ffffff25"/><polygon points={`${item.x},${item.y} ${item.x+16},${item.y-10} ${item.x+16},${item.y+8} ${item.x},${item.y+18}`} fill="#64748b" stroke="#ffffff25"/>{item.kind==='house'&&<path d={`M${item.x-3} ${item.y+12} V${item.y+3} H${item.x+4} V${item.y+14}`} fill="#111827"/>}</>}
+        </g>)}
+        {objects.length===0 && <text x="180" y="118" fill="#94a3b8" fontSize="10" textAnchor="middle">Clique no terreno para adicionar a primeira peça</text>}
+      </svg>
+      <div className="flex flex-wrap items-center gap-2 border-t border-white/10 p-3">
+        {([{id:'building',label:'Edifício'},{id:'house',label:'Casa'},{id:'tree',label:'Árvore'},{id:'road',label:'Piso'}] as const).map(item=><button key={item.id} type="button" aria-pressed={tool===item.id} onClick={()=>setTool(item.id)} className={`rounded-full border px-3 py-1.5 text-xs ${tool===item.id?'border-cyan-200/60 bg-cyan-300/15 text-cyan-100':'border-white/10 text-white/60'}`}>{item.label}</button>)}
+        <button type="button" onClick={()=>setGrid(v=>!v)} className={control}>{grid?'Ocultar grade':'Mostrar grade'}</button>
+        <button type="button" disabled={selected===null} onClick={removeSelected} className={control+' disabled:opacity-30'}>Excluir selecionado</button>
+        <button type="button" onClick={()=>{setObjects([]);setSelected(null);}} disabled={objects.length===0} className={control+' disabled:opacity-30'}>Limpar cena</button>
+      </div>
+      <p className="px-3 pb-3 text-[10px] text-white/40">{objects.length} objeto(s) na cena · {selected===null?'nenhum selecionado':`objeto #${selected} selecionado`}</p>
+    </div>
+  </section>;
+}
