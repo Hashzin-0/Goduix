@@ -287,7 +287,7 @@ export function SpriteStage2D({ accent = '#67e8f9', label = 'Compositor de sprit
   }, [sprites, selected, accent, revision]);
   useEffect(() => () => { urlsRef.current.forEach(url=>URL.revokeObjectURL(url)); }, []);
   const upload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []).filter(file=>file.type.startsWith('image/'));
+    const files = Array.from<File>(event.currentTarget.files ?? []).filter(file=>file.type.startsWith('image/'));
     if(files.length===0){setMessage('Selecione arquivos de imagem compatíveis.');return;}
     const additions=files.map((file,index)=>{const src=URL.createObjectURL(file);urlsRef.current.add(src);return {id:nextId+index,src,name:file.name,x:320+(index%3-1)*72,y:180+Math.floor(index/3)*52,scale:1,rotation:0,width:100,height:100} as SpriteAsset;});
     setSprites(current=>[...current,...additions]);setNextId(value=>value+additions.length);setSelected(additions[0]?.id??null);setMessage('');
