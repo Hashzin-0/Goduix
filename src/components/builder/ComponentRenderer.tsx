@@ -247,7 +247,7 @@ import { VgpuBlackHole } from '../godui/VgpuBlackHole';
 import { MetalFx } from '../godui/MetalFx';
 import { ImageGeneration } from '../godui/ImageGeneration';
 import { IsometricFigure } from '../godui/IsometricFigure';
-import { Mascot2D, ParticleField2D, LiquidBlob2D, LayeredIllustration2D, IsometricCity, IsometricFarm, IsometricInterior, IsometricFactory, LiquidGlassShader, GlitchShader, AuroraShader, NetworkVisualization } from '../godui/CreativeVisuals';
+import { Mascot2D, ParticleField2D, LiquidBlob2D, LayeredIllustration2D, IsometricCity, IsometricFarm, IsometricInterior, IsometricFactory, IsometricSceneComposer, LiquidGlassShader, GlitchShader, AuroraShader, NetworkVisualization } from '../godui/CreativeVisuals';
 const LazyProductObject3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.ProductObject3D })));
 const LazyDiorama3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Diorama3D })));
 const LazyHolographic3D = React.lazy(() => import('../godui/Creative3DVisuals').then(module => ({ default: module.Holographic3D })));
