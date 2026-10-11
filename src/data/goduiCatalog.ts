@@ -685,7 +685,136 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     ],
     "defaultProps": { "accent": "#67e8f9", "label": "Superfície fluida 3D" },
     "sampleCode": "import { FluidSurface3D } from '@/components/godui/Creative3DVisuals';\n\nexport function FluidSurface3DExample() {\n  return <FluidSurface3D accent='#67e8f9' label='Superfície fluida 3D' />;\n}"
+  },
+  {
+    "type": "creative-svg-vector-studio",
+    "name": "Estúdio Vetorial SVG",
+    "category": "Creative & Shaders",
+    "description": "Editor de formas vetoriais com seleção, arraste, preenchimento, contorno e exportação SVG; prancheta vazia por padrão.",
+    "iconName": "PenTool",
+    "badge": "Interactive / Exportable",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Estúdio vetorial SVG"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Estúdio vetorial SVG"
+    },
+    "sampleCode": "import { SVGVectorStudio } from \"@/components/godui/CreativeVisuals\";\n\nexport function SVGVectorStudioExample() {\n  return <SVGVectorStudio accent={\"#67e8f9\"} label={\"Estúdio vetorial SVG\"} />;\n}"
+  },
+  {
+    "type": "creative-image-texture-lab",
+    "name": "Laboratório de Texturas",
+    "category": "Creative & Shaders",
+    "description": "Importa uma imagem real do usuário, aplica filtros Canvas ajustáveis e exporta PNG; sem imagem de demonstração embutida.",
+    "iconName": "Image",
+    "badge": "Interactive / Exportable",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Laboratório de texturas"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Laboratório de texturas"
+    },
+    "sampleCode": "import { ImageTextureLab } from \"@/components/godui/CreativeVisuals\";\n\nexport function ImageTextureLabExample() {\n  return <ImageTextureLab accent={\"#67e8f9\"} label={\"Laboratório de texturas\"} />;\n}"
+  },
+  {
+    "type": "creative-kinetic-typography",
+    "name": "Tipografia Cinética",
+    "category": "Creative & Shaders",
+    "description": "Laboratório de tipografia editável com tratamentos de gradiente, contorno, profundidade e brilho; respeita movimento reduzido.",
+    "iconName": "Type",
+    "badge": "Interactive / Exportable",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Laboratório tipográfico cinético"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Laboratório tipográfico cinético"
+    },
+    "sampleCode": "import { KineticTypographyLab } from \"@/components/godui/CreativeVisuals\";\n\nexport function KineticTypographyLabExample() {\n  return <KineticTypographyLab accent={\"#67e8f9\"} label={\"Laboratório tipográfico cinético\"} />;\n}"
+  },
+  {
+    "type": "creative-isometric-tilemap",
+    "name": "Editor de Tilemap Isométrico",
+    "category": "Creative & Shaders",
+    "description": "Editor de terreno tile a tile com paleta de materiais e exportação SVG; mapa inicialmente vazio.",
+    "iconName": "Grid3X3",
+    "badge": "Interactive / Exportable",
+    "registryName": "godui/CreativeVisuals",
+    "dependencies": [
+      "react",
+      "motion"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Estúdio de mapas isométricos"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Estúdio de mapas isométricos"
+    },
+    "sampleCode": "import { IsometricTilemapStudio } from \"@/components/godui/CreativeVisuals\";\n\nexport function IsometricTilemapStudioExample() {\n  return <IsometricTilemapStudio accent={\"#67e8f9\"} label={\"Estúdio de mapas isométricos\"} />;\n}"
   }
+
 ];
 
 export const GODUI_CATALOG: Record<GodUIComponentType, GodUIMeta> = {
