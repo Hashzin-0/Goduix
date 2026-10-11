@@ -6,7 +6,6 @@ import { RealtimeCanvas } from './components/builder/RealtimeCanvas';
 import { ComponentInspectorPanel } from './components/builder/ComponentInspectorPanel';
 import { ComponentDocsModal } from './components/builder/ComponentDocsModal';
 import { ExportPageModal } from './components/builder/ExportPageModal';
-import { FusionModal } from './components/builder/FusionModal';
 import { SemanticMergeIsland } from './components/builder/SemanticMergeIslandV3';
 import { ComposerView } from './components/composer/ComposerView';
 import { useBuilderStore } from './store/useBuilderStore';
@@ -83,7 +82,6 @@ export default function App() {
       </div>
 
       <ComponentDocsModal />
-      <FusionModal />
       <SemanticMergeIsland />
       <ExportPageModal
         isOpen={isExportModalOpen}
