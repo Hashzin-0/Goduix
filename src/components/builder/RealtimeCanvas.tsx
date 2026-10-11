@@ -18,6 +18,7 @@ import { ComponentRenderer } from './ComponentRenderer';
 import { PAGE_TEMPLATES } from '../../data/templates';
 import { cn } from '../../lib/utils';
 import { THEMES } from '../../data/themes';
+import { GODUI_CATALOG } from '../../data/goduiCatalog';
 
 export const RealtimeCanvas: React.FC = () => {
   const store = useBuilderStore();
@@ -34,11 +35,54 @@ export const RealtimeCanvas: React.FC = () => {
   return (
     <div
       onClick={() => store.selectComponent(null)}
+      onDragOver={(e) => {
+        if (e.dataTransfer.types.includes('application/x-goduix-new-component-type')) e.preventDefault();
+      }}
+      onDrop={(e) => {
+        const type = e.dataTransfer.getData('application/x-goduix-new-component-type');
+        if (!type) return;
+        e.preventDefault();
+        e.stopPropagation();
+        store.addComponent(type as keyof typeof GODUI_CATALOG);
+      }}
       className="relative flex-1 h-full overflow-y-auto bg-zinc-950 flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8"
       style={{
         backgroundImage: `radial-gradient(ellipse at 50% 0%, ${theme.glow}, transparent 65%)`,
       }}
     >
+      {/* Hero: swipeable component queue lives on the Canvas, not in a separate selection page. */}
+      <section className="w-full max-w-6xl mb-4 rounded-2xl border border-white/10 bg-zinc-900/55 p-3 sm:p-4" onClick={(e) => e.stopPropagation()} aria-label="Escolha rápida de componentes">
+        <div className="mb-3 flex items-end justify-between gap-3">
+          <div>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">Canvas · biblioteca rápida</div>
+            <h2 className="mt-1 text-sm font-semibold text-white sm:text-base">Arraste componentes para o Canvas</h2>
+            <p className="mt-1 text-[11px] text-zinc-400">Deslize na horizontal, toque para adicionar ou arraste um componente existente sobre outro para abrir o Merge semântico.</p>
+          </div>
+          <span className="shrink-0 rounded-full border border-white/10 px-2.5 py-1 text-[10px] text-zinc-400">{Object.keys(GODUI_CATALOG).length} componentes</span>
+        </div>
+        <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-2 [scrollbar-width:thin]">
+          {Object.values(GODUI_CATALOG).map((item) => (
+            <button
+              key={item.type}
+              type="button"
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('application/x-goduix-new-component-type', item.type);
+                e.dataTransfer.effectAllowed = 'copy';
+              }}
+              onClick={() => store.addComponent(item.type)}
+              title={`Adicionar ${item.name} ao Canvas`}
+              className="group flex w-40 shrink-0 snap-start flex-col items-start rounded-xl border border-white/10 bg-black/20 p-3 text-left transition hover:border-cyan-300/40 hover:bg-cyan-300/[0.06] active:scale-[0.98] cursor-grab"
+            >
+              <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-300/20 bg-cyan-300/10 text-sm font-semibold text-cyan-200 transition group-hover:bg-cyan-300/20">+</span>
+              <span className="line-clamp-1 text-xs font-semibold text-white">{item.name}</span>
+              <span className="mt-1 line-clamp-2 min-h-8 text-[10px] leading-relaxed text-zinc-500">{item.description}</span>
+              <span className="mt-3 text-[10px] font-medium text-cyan-300">+ Adicionar</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* Toast Notification for real-time interactions */}
       <AnimatePresence>
         {store.activeToast && (
