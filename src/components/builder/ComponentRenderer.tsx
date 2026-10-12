@@ -297,8 +297,18 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         }
       } else if (hit?.closest('[data-goduix-new-component-drop-target]')) {
         const sourceIndex = useBuilderStore.getState().components.findIndex(component => component.id === instance.id);
-        const lastIndex = useBuilderStore.getState().components.length - 1;
-        if (sourceIndex >= 0 && sourceIndex !== lastIndex) store.reorderComponents(sourceIndex, lastIndex);
+        const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-goduix-component-card]'));
+        let desiredIndex = useBuilderStore.getState().components.length;
+        for (const card of cards) {
+          const rect = card.getBoundingClientRect();
+          const index = Number(card.dataset.componentIndex);
+          if (event.clientY < rect.top + rect.height / 2) {
+            desiredIndex = Number.isFinite(index) ? index : desiredIndex;
+            break;
+          }
+        }
+        const adjustedIndex = sourceIndex < desiredIndex ? desiredIndex - 1 : desiredIndex;
+        if (sourceIndex >= 0 && sourceIndex !== adjustedIndex) store.reorderComponents(sourceIndex, adjustedIndex);
       }
     }
     try {
