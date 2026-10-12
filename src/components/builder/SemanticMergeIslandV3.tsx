@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowRightLeft, Check, X, AlertCircle, Plus, Trash2, RefreshCw, Layers, Type, Box } from 'lucide-react';
+import { ArrowRightLeft, Check, X, AlertCircle, RefreshCw, Layers, Type, Box } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
 import { classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorValue, readSemanticTargets, SemanticPropertyKind } from './semanticLayerAdapter';
 
 type DropDetail = { sourceId: string; targetId: string };
-type Mapping = { id: string; sourceKey: string; targetKey: string; enabled: boolean };
 type Layer = { path: string; tag: string; label: string; text: string; depth: number; kind: string; leaf: boolean };
 type LayerChoice = { layerPath: string; propertyKey: string; label: string; kind: SemanticPropertyKind; value: string; cssProperty: string };
 type StyleOverrides = Record<string, Record<string, string | undefined>>;
@@ -81,7 +80,6 @@ export const SemanticMergeIsland: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [sourceId, setSourceId] = useState('');
   const [targetId, setTargetId] = useState('');
-  const [mappings, setMappings] = useState<Mapping[]>([]);
   const [error, setError] = useState('');
   const [sourceLayers, setSourceLayers] = useState<Layer[]>([]);
   const [targetLayers, setTargetLayers] = useState<Layer[]>([]);
@@ -107,7 +105,7 @@ export const SemanticMergeIsland: React.FC = () => {
       const state = useBuilderStore.getState();
       if (!state.components.some(c => c.id === detail.sourceId) || !state.components.some(c => c.id === detail.targetId)) return;
       setSourceId(detail.sourceId); setTargetId(detail.targetId);
-      setMappings([]); setSourcePath(''); setTargetPath(''); setSourceProperty(''); setTargetProperty('');
+      setSourcePath(''); setTargetPath(''); setSourceProperty(''); setTargetProperty('');
       setError(''); setOpen(true);
     };
     window.addEventListener('goduix:semantic-merge-drop', handleDrop);
@@ -136,21 +134,6 @@ export const SemanticMergeIsland: React.FC = () => {
   const selectedSourceLayer = sourceLayers.find(l => l.path === sourcePath);
   const selectedTargetLayer = targetLayers.find(l => l.path === targetPath);
 
-  const sourceFields = useMemo(() => {
-    if (!source || !sourceMeta) return [];
-    const catalogued = sourceMeta.propFields.filter(field => Object.prototype.hasOwnProperty.call(source.props ?? {}, field.key) && source.props[field.key] !== undefined && typeof source.props[field.key] !== 'function');
-    const extras = Object.keys(source.props ?? {}).filter(key => !key.startsWith('__') && !catalogued.some(field => field.key === key) && typeof source.props[key] !== 'function').map(key => ({ key, label: key, type: 'text' as const, defaultValue: source.props[key] }));
-    return [...catalogued, ...extras];
-  }, [source, sourceMeta]);
-  const targetFields = useMemo(() => {
-    if (!target || !targetMeta) return [];
-    const catalogued = targetMeta.propFields.filter(field => field.key in (target.props ?? {}));
-    const extras = Object.keys(target.props ?? {}).filter(key => !key.startsWith('__') && !catalogued.some(field => field.key === key) && typeof target.props[key] !== 'function').map(key => ({ key, label: key, type: 'text' as const, defaultValue: target.props[key] }));
-    return [...catalogued, ...extras];
-  }, [target, targetMeta]);
-
-  const updateMapping = (id: string, patch: Partial<Mapping>) => setMappings(items => items.map(item => item.id === id ? { ...item, ...patch } : item));
-  const addMapping = () => setMappings(items => [...items, { id: `${Date.now()}-${items.length}`, sourceKey: '', targetKey: '', enabled: true }]);
   const close = () => { setOpen(false); setError(''); };
   const applyLayerMerge = () => {
     if (!source || !target || !sourceRoot || !targetRoot || !selectedSourceLayer || !selectedTargetLayer || !chosenSource || !targetProperty) {
@@ -197,20 +180,7 @@ export const SemanticMergeIsland: React.FC = () => {
     store.selectComponent(target.id);
     close();
   };
-  const apply = () => {
-    if (!source || !target) return;
-    const active = mappings.filter(m => m.enabled && m.sourceKey && m.targetKey);
-    if (!active.length) { setError('Selecione pelo menos uma transferência de propriedade.'); return; }
-    const duplicateTargets = active.map(m => m.targetKey).filter((key, index, all) => all.indexOf(key) !== index);
-    if (duplicateTargets.length) { setError(`Cada propriedade de destino pode aparecer uma vez: ${[...new Set(duplicateTargets)].join(', ')}.`); return; }
-    const next: Record<string, unknown> = { ...target.props };
-    for (const mapping of active) {
-      const value = source.props[mapping.sourceKey];
-      if (value === undefined || typeof value === 'function') { setError(`A propriedade ${mapping.sourceKey} não pode ser transferida.`); return; }
-      next[mapping.targetKey] = value;
-    }
-    store.updateComponentProps(target.id, next); store.selectComponent(target.id); close();
-  };
+
 
   if (!open) return null;
   return <aside className="fixed bottom-3 right-3 z-[100] flex max-h-[88dvh] w-[min(760px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-cyan-300/25 bg-zinc-950/95 shadow-2xl shadow-black/50 backdrop-blur-xl" role="region" aria-labelledby="semantic-merge-title">
