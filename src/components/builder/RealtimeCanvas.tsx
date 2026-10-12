@@ -229,10 +229,9 @@ export const RealtimeCanvas: React.FC = () => {
               title={`Adicionar ${item.name} ao Canvas`}
               className="group flex w-40 shrink-0 snap-start flex-col items-start rounded-xl border border-white/10 bg-black/20 p-3 text-left transition hover:border-cyan-300/40 hover:bg-cyan-300/[0.06] active:scale-[0.98] cursor-grab touch-pan-x"
             >
-              <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-300/20 bg-cyan-300/10 text-sm font-semibold text-cyan-200 transition group-hover:bg-cyan-300/20">+</span>
-              <span className="line-clamp-1 text-xs font-semibold text-white">{item.name}</span>
+              <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-cyan-300/70">Componente</span>
+              <span className="mt-2 line-clamp-1 text-xs font-semibold text-white">{item.name}</span>
               <span className="mt-1 line-clamp-2 min-h-8 text-[10px] leading-relaxed text-zinc-500">{item.description}</span>
-              
             </button>
           ))}
         </div>
