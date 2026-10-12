@@ -16,6 +16,7 @@ import {
 import { BuilderComponentInstance, EntranceAnimationType, ExitAnimationType } from '../../types/builder';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { THEMES } from '../../data/themes';
+import { GODUI_CATALOG } from '../../data/goduiCatalog';
 import { cn } from '../../lib/utils';
 import { AnimatedTestimonials } from '../godui/AnimatedTestimonials';
 import { AppShowcase } from '../godui/AppShowcase';
@@ -273,6 +274,48 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   const theme = THEMES[store.theme] || THEMES['godly-cyan'];
   const isSelected = store.selectedId === instance.id;
   const isBuilderMode = store.viewMode === 'builder' && !isInteractiveOnly;
+  const canvasPointerDragRef = React.useRef<{ pointerId: number } | null>(null);
+
+  const finishCanvasPointerDrag = (event: React.PointerEvent<HTMLDivElement>, cancelled = false) => {
+    const drag = canvasPointerDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (!cancelled) {
+      const hit = document.elementFromPoint(event.clientX, event.clientY);
+      const target = hit?.closest<HTMLElement>('[data-goduix-component-card]');
+      if (target && target.dataset.componentId && target.dataset.componentId !== instance.id) {
+        const targetId = target.dataset.componentId;
+        const targetIndex = Number(target.dataset.componentIndex ?? 0);
+        const rect = target.getBoundingClientRect();
+        const nearEdge = event.clientY < rect.top + rect.height * 0.24 || event.clientY > rect.bottom - rect.height * 0.24;
+        if (!nearEdge) {
+          window.dispatchEvent(new CustomEvent('goduix:semantic-merge-drop', { detail: { sourceId: instance.id, targetId } }));
+        } else {
+          const desiredIndex = event.clientY > rect.top + rect.height / 2 ? targetIndex + 1 : targetIndex;
+          const sourceIndex = useBuilderStore.getState().components.findIndex(component => component.id === instance.id);
+          const adjustedIndex = sourceIndex < desiredIndex ? desiredIndex - 1 : desiredIndex;
+          if (sourceIndex >= 0 && sourceIndex !== adjustedIndex) store.reorderComponents(sourceIndex, adjustedIndex);
+        }
+      } else if (hit?.closest('[data-goduix-new-component-drop-target]')) {
+        const sourceIndex = useBuilderStore.getState().components.findIndex(component => component.id === instance.id);
+        const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-goduix-component-card]'));
+        let desiredIndex = useBuilderStore.getState().components.length;
+        for (const card of cards) {
+          const rect = card.getBoundingClientRect();
+          const index = Number(card.dataset.componentIndex);
+          if (event.clientY < rect.top + rect.height / 2) {
+            desiredIndex = Number.isFinite(index) ? index : desiredIndex;
+            break;
+          }
+        }
+        const adjustedIndex = sourceIndex < desiredIndex ? desiredIndex - 1 : desiredIndex;
+        if (sourceIndex >= 0 && sourceIndex !== adjustedIndex) store.reorderComponents(sourceIndex, adjustedIndex);
+      }
+    }
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch { /* Pointer capture may already be released by the browser. */ }
+    canvasPointerDragRef.current = null;
+  };
 
   if (!instance.isVisible) {
     if (!isBuilderMode) return null;
@@ -2099,28 +2142,61 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
   return (
     <div
+      data-goduix-component-card
+      data-component-id={instance.id}
+      data-component-index={index}
       draggable={isBuilderMode}
       onDragStart={(e) => {
         if (!isBuilderMode) return;
         e.dataTransfer.setData('application/x-goduix-component-id', instance.id);
-        e.dataTransfer.effectAllowed = 'copy';
+        e.dataTransfer.effectAllowed = 'move';
         e.stopPropagation();
       }}
       onDragOver={(e) => {
-        if (!isBuilderMode || !e.dataTransfer.types.includes('application/x-goduix-component-id')) return;
+        if (!isBuilderMode) return;
+        const types = Array.from(e.dataTransfer.types);
+        if (!types.includes('application/x-goduix-component-id') && !types.includes('application/x-goduix-new-component-type')) return;
         e.preventDefault();
-        e.dataTransfer.dropEffect = 'copy';
+        e.dataTransfer.dropEffect = types.includes('application/x-goduix-new-component-type') ? 'copy' : 'move';
       }}
       onDrop={(e) => {
         if (!isBuilderMode) return;
+        const newType = e.dataTransfer.getData('application/x-goduix-new-component-type');
         const sourceId = e.dataTransfer.getData('application/x-goduix-component-id');
-        if (!sourceId || sourceId === instance.id) return;
+        if (!newType && (!sourceId || sourceId === instance.id)) return;
         e.preventDefault();
         e.stopPropagation();
-        window.dispatchEvent(new CustomEvent('goduix:semantic-merge-drop', {
-          detail: { sourceId, targetId: instance.id },
-        }));
+        const rect = e.currentTarget.getBoundingClientRect();
+        const nearEdge = e.clientY < rect.top + rect.height * 0.24 || e.clientY > rect.bottom - rect.height * 0.24;
+        if (nearEdge) {
+          const desiredIndex = e.clientY > rect.top + rect.height / 2 ? index + 1 : index;
+          if (newType && GODUI_CATALOG[newType as keyof typeof GODUI_CATALOG]) {
+            store.addComponent(newType as keyof typeof GODUI_CATALOG, desiredIndex);
+          } else {
+            const sourceIndex = useBuilderStore.getState().components.findIndex(component => component.id === sourceId);
+            const adjustedIndex = sourceIndex < desiredIndex ? desiredIndex - 1 : desiredIndex;
+            if (sourceIndex >= 0 && sourceIndex !== adjustedIndex) store.reorderComponents(sourceIndex, adjustedIndex);
+          }
+          return;
+        }
+        if (newType && GODUI_CATALOG[newType as keyof typeof GODUI_CATALOG]) {
+          store.addComponent(newType as keyof typeof GODUI_CATALOG);
+          const addedId = useBuilderStore.getState().selectedId;
+          if (addedId && addedId !== instance.id) {
+            window.dispatchEvent(new CustomEvent('goduix:semantic-merge-drop', { detail: { sourceId: addedId, targetId: instance.id } }));
+          }
+        } else if (sourceId) {
+          window.dispatchEvent(new CustomEvent('goduix:semantic-merge-drop', { detail: { sourceId, targetId: instance.id } }));
+        }
       }}
+      onPointerDown={(e) => {
+        if (!isBuilderMode || e.pointerType === 'mouse' || !(e.target as HTMLElement).closest('[data-goduix-drag-handle]')) return;
+        e.preventDefault();
+        canvasPointerDragRef.current = { pointerId: e.pointerId };
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* Capture is not available in every browser. */ }
+      }}
+      onPointerUp={(e) => finishCanvasPointerDrag(e)}
+      onPointerCancel={(e) => finishCanvasPointerDrag(e, true)}
       onClick={(e) => {
         e.stopPropagation();
         store.selectComponent(instance.id);
@@ -2145,6 +2221,17 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
           {instance.name}
         </span>
+
+        <button
+          type="button"
+          data-goduix-drag-handle
+          title="Arrastar para reposicionar ou mesclar"
+          aria-label={`Arrastar ${instance.name} para reposicionar ou mesclar`}
+          onClick={(e) => e.stopPropagation()}
+          className="touch-none cursor-grab rounded p-1 text-cyan-300 hover:bg-white/10 hover:text-white active:cursor-grabbing"
+        >
+          <GripVertical className="h-3.5 w-3.5" />
+        </button>
 
         {/* Move up */}
         <button

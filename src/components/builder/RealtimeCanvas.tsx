@@ -43,6 +43,7 @@ export const RealtimeCanvas: React.FC = () => {
     y: number;
     name: string;
     overCanvas: boolean;
+    dropMode: 'insert' | 'merge';
   } | null>(null);
 
   const handleQuickDragStart = (
@@ -90,15 +91,17 @@ export const RealtimeCanvas: React.FC = () => {
     }
 
     event.preventDefault();
-    const dropTarget = document
-      .elementFromPoint(event.clientX, event.clientY)
-      ?.closest('[data-goduix-new-component-drop-target]');
-
+    const hit = document.elementFromPoint(event.clientX, event.clientY);
+    const componentTarget = hit?.closest<HTMLElement>('[data-goduix-component-card]');
+    const canvasTarget = hit?.closest('[data-goduix-new-component-drop-target]');
+    const rect = componentTarget?.getBoundingClientRect();
+    const edge = rect && (event.clientY < rect.top + rect.height * 0.24 || event.clientY > rect.bottom - rect.height * 0.24);
     setQuickDrag({
       x: event.clientX,
       y: event.clientY,
       name: drag.name,
-      overCanvas: Boolean(dropTarget),
+      overCanvas: Boolean(componentTarget || canvasTarget),
+      dropMode: componentTarget && !edge ? 'merge' : 'insert',
     });
   };
 
@@ -111,12 +114,26 @@ export const RealtimeCanvas: React.FC = () => {
 
     if (drag.active && !cancelled) {
       event.preventDefault();
-      const dropTarget = document
-        .elementFromPoint(event.clientX, event.clientY)
-        ?.closest('[data-goduix-new-component-drop-target]');
-
-      if (dropTarget) {
-        store.addComponent(drag.type);
+      const hit = document.elementFromPoint(event.clientX, event.clientY);
+      const componentTarget = hit?.closest<HTMLElement>('[data-goduix-component-card]');
+      const canvasTarget = hit?.closest('[data-goduix-new-component-drop-target]');
+      if (componentTarget) {
+        const targetId = componentTarget.dataset.componentId;
+        const targetIndex = Number(componentTarget.dataset.componentIndex ?? store.components.length);
+        const rect = componentTarget.getBoundingClientRect();
+        const nearEdge = event.clientY < rect.top + rect.height * 0.24 || event.clientY > rect.bottom - rect.height * 0.24;
+        if (targetId && !nearEdge) {
+          store.addComponent(drag.type);
+          const sourceId = useBuilderStore.getState().selectedId;
+          if (sourceId && sourceId !== targetId) {
+            window.dispatchEvent(new CustomEvent('goduix:semantic-merge-drop', { detail: { sourceId, targetId } }));
+          }
+        } else {
+          const targetPosition = event.clientY > rect.top + rect.height / 2 ? targetIndex + 1 : targetIndex;
+          store.addComponent(drag.type, targetPosition);
+        }
+      } else if (canvasTarget) {
+        store.addComponent(drag.type, getCanvasInsertionIndex(event.clientY));
       }
       suppressQuickClickUntilRef.current = Date.now() + 700;
     } else if (drag.cancelled || cancelled) {
@@ -131,6 +148,16 @@ export const RealtimeCanvas: React.FC = () => {
     setQuickDrag(null);
   };
 
+  const getCanvasInsertionIndex = (clientY: number) => {
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-goduix-component-card]'));
+    for (const card of cards) {
+      const rect = card.getBoundingClientRect();
+      const index = Number(card.dataset.componentIndex);
+      if (clientY < rect.top + rect.height / 2) return Number.isFinite(index) ? index : 0;
+    }
+    return store.components.length;
+  };
+
   const viewportWidths = {
     desktop: 'w-full max-w-6xl',
     tablet: 'w-[768px] max-w-full',
@@ -141,14 +168,25 @@ export const RealtimeCanvas: React.FC = () => {
     <div
       onClick={() => store.selectComponent(null)}
       onDragOver={(e) => {
-        if (e.dataTransfer.types.includes('application/x-goduix-new-component-type')) e.preventDefault();
+        const types = Array.from(e.dataTransfer.types);
+        if (types.includes('application/x-goduix-new-component-type') || types.includes('application/x-goduix-component-id')) e.preventDefault();
       }}
       onDrop={(e) => {
         const type = e.dataTransfer.getData('application/x-goduix-new-component-type');
-        if (!type) return;
+        const sourceId = e.dataTransfer.getData('application/x-goduix-component-id');
+        if (!type && !sourceId) return;
         e.preventDefault();
         e.stopPropagation();
-        store.addComponent(type as keyof typeof GODUI_CATALOG);
+        if (type && GODUI_CATALOG[type as keyof typeof GODUI_CATALOG]) {
+          store.addComponent(type as keyof typeof GODUI_CATALOG, getCanvasInsertionIndex(e.clientY));
+          return;
+        }
+        if (sourceId) {
+          const sourceIndex = store.components.findIndex(component => component.id === sourceId);
+          const desiredIndex = getCanvasInsertionIndex(e.clientY);
+          const adjustedIndex = sourceIndex < desiredIndex ? desiredIndex - 1 : desiredIndex;
+          if (sourceIndex >= 0 && sourceIndex !== adjustedIndex) store.reorderComponents(sourceIndex, adjustedIndex);
+        }
       }}
       className="relative flex-1 h-full overflow-y-auto bg-zinc-950 flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8"
       style={{
@@ -160,8 +198,8 @@ export const RealtimeCanvas: React.FC = () => {
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
             <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">Canvas · biblioteca rápida</div>
-            <h2 className="mt-1 text-sm font-semibold text-white sm:text-base">Arraste componentes para o Canvas</h2>
-            <p className="mt-1 text-[11px] text-zinc-400">Deslize na horizontal, toque para adicionar ou arraste um componente existente sobre outro para abrir o Merge semântico.</p>
+            <h2 className="mt-1 text-sm font-semibold text-white sm:text-base">Escolha e posicione componentes</h2>
+            <p className="mt-1 text-[11px] text-zinc-400">Toque para adicionar ao final. Arraste para inserir entre componentes ou solte no centro de outro para abrir o Merge semântico.</p>
           </div>
           <span className="shrink-0 rounded-full border border-white/10 px-2.5 py-1 text-[10px] text-zinc-400">{Object.keys(GODUI_CATALOG).length} componentes</span>
         </div>
@@ -191,10 +229,9 @@ export const RealtimeCanvas: React.FC = () => {
               title={`Adicionar ${item.name} ao Canvas`}
               className="group flex w-40 shrink-0 snap-start flex-col items-start rounded-xl border border-white/10 bg-black/20 p-3 text-left transition hover:border-cyan-300/40 hover:bg-cyan-300/[0.06] active:scale-[0.98] cursor-grab touch-pan-x"
             >
-              <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-300/20 bg-cyan-300/10 text-sm font-semibold text-cyan-200 transition group-hover:bg-cyan-300/20">+</span>
-              <span className="line-clamp-1 text-xs font-semibold text-white">{item.name}</span>
+              <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-cyan-300/70">Componente</span>
+              <span className="mt-2 line-clamp-1 text-xs font-semibold text-white">{item.name}</span>
               <span className="mt-1 line-clamp-2 min-h-8 text-[10px] leading-relaxed text-zinc-500">{item.description}</span>
-              <span className="mt-3 text-[10px] font-medium text-cyan-300">+ Adicionar</span>
             </button>
           ))}
         </div>
@@ -206,12 +243,14 @@ export const RealtimeCanvas: React.FC = () => {
           className={cn(
             "pointer-events-none fixed z-[100] max-w-[min(75vw,18rem)] -translate-y-1/2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-2xl backdrop-blur-md",
             quickDrag.overCanvas
-              ? "border-cyan-300 bg-cyan-400/20 text-cyan-100"
+              ? quickDrag.dropMode === 'merge'
+                ? "border-violet-300 bg-violet-400/20 text-violet-100"
+                : "border-cyan-300 bg-cyan-400/20 text-cyan-100"
               : "border-white/20 bg-zinc-900/95 text-white"
           )}
           style={{ left: Math.min(quickDrag.x + 14, window.innerWidth - 220), top: quickDrag.y }}
         >
-          {quickDrag.overCanvas ? "Solte para adicionar" : "Arraste para o Canvas"} · {quickDrag.name}
+          {quickDrag.overCanvas ? (quickDrag.dropMode === 'merge' ? "Solte para fazer Merge" : "Solte para inserir") : "Arraste para o Canvas"} · {quickDrag.name}
         </div>
       )}
 
