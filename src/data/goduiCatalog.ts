@@ -813,8 +813,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
       "label": "Estúdio de mapas isométricos"
     },
     "sampleCode": "import { IsometricTilemapStudio } from \"@/components/godui/CreativeVisuals\";\n\nexport function IsometricTilemapStudioExample() {\n  return <IsometricTilemapStudio accent={\"#67e8f9\"} label={\"Estúdio de mapas isométricos\"} />;\n}"
-  }
-
+  },
   {
     "type": "creative-spritesheet-animation-studio",
     "name": "Estúdio de Animação por Spritesheet",
