@@ -68,6 +68,15 @@ function ThreeScene({ kind, accent = '#67e8f9', label, geometryScale = 1, rotati
     const floor = new THREE.Mesh(new THREE.CircleGeometry(2.7, 64), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .07 })); floor.rotation.x = -Math.PI / 2; floor.position.y = -1.03; scene.add(floor);
     let frameId = 0, dragging = false, lastX = 0, lastY = 0, rotateX = -.08, rotateY = .18;
     root.scale.setScalar(Math.max(0.25, Math.min(3, geometryScale)));
+    root.traverse(object => {
+      if (!(object instanceof THREE.Mesh) && !(object instanceof THREE.Points)) return;
+      const materials = Array.isArray(object.material) ? object.material : [object.material];
+      materials.forEach(material => {
+        if (material instanceof THREE.MeshStandardMaterial) { material.metalness = metalness; material.roughness = roughness; }
+        if (wireframe && 'wireframe' in material) (material as THREE.MeshStandardMaterial).wireframe = true;
+        material.needsUpdate = true;
+      });
+    });
     const startedAt = performance.now();
     const render = () => { if (kind === 'fluid' && fluidGeometry && fluidBase && !reducedMotion) { const position = fluidGeometry.attributes.position as THREE.BufferAttribute; const t = (performance.now() - startedAt) * .001; for (let i = 0; i < position.count; i++) position.setY(i, Math.sin(fluidBase[i * 3] * 1.8 + t * fluidSpeed) * Math.cos(fluidBase[i * 3 + 2] * 1.5 - t * .7 * fluidSpeed) * fluidAmplitude); position.needsUpdate = true; fluidGeometry.computeVertexNormals(); } if (!dragging && !reducedMotion) rotateY += rotationSpeed; root.rotation.y = rotateY; root.rotation.x = rotateX; renderer.render(scene, camera); if (!reducedMotion) frameId = requestAnimationFrame(render); };
     render();
@@ -130,13 +139,18 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
         model.scale.setScalar((2.2/maxAxis) * Math.max(0.1, Math.min(4, modelScale)));
         model.position.sub(center.multiplyScalar(2.2/maxAxis));
         root.add(model);
+        model.traverse(object => {
+          if (!(object instanceof THREE.Mesh)) return;
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          materials.forEach(material => { if (wireframe && 'wireframe' in material) { (material as THREE.MeshStandardMaterial).wireframe = true; material.needsUpdate = true; } });
+        });
         setLoaded(true);
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) renderer.render(scene,camera);
       }, undefined, () => setError('Não foi possível abrir este GLB. Verifique se o arquivo é válido e tente novamente.'));
     }).catch(() => setError('Não foi possível iniciar o carregador GLB.'));
     const floor = new THREE.GridHelper(4, 20, new THREE.Color(accent), new THREE.Color('#334155')); floor.position.y = -1.15; scene.add(floor);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const draw = () => { if (!dragging && !reduce && model) rotY += rotationSpeed; root.rotation.set(rotX,rotY,0); if (wireframe && model) model.traverse(object => { if (object instanceof THREE.Mesh) { const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(material => { if ('wireframe' in material) (material as THREE.MeshStandardMaterial).wireframe = true; }); } }); renderer.render(scene,camera); if (!reduce) raf=requestAnimationFrame(draw); };
+    const draw = () => { if (!dragging && !reduce && model) rotY += rotationSpeed; root.rotation.set(rotX,rotY,0); renderer.render(scene,camera); if (!reduce) raf=requestAnimationFrame(draw); };
     draw();
     const resize=()=>{camera.aspect=host.clientWidth/Math.max(1,host.clientHeight);camera.updateProjectionMatrix();renderer.setSize(host.clientWidth,host.clientHeight);if(reduce)renderer.render(scene,camera);};
     const observer=new ResizeObserver(resize);observer.observe(host);
