@@ -19,8 +19,44 @@ const labels: Record<string, string> = {
   div: 'Contêiner', figure: 'Figura', blockquote: 'Citação'
 };
 
+export type LayerArchetype = 'border-animation' | 'beam-animation' | 'bevel-animation' | 'mirror-animation' | 'shimmer-animation' | 'glow-animation' | 'button-highlight' | 'button' | 'text' | 'card' | 'container' | 'icon' | 'image' | 'navigation' | 'generic';
+export type LayerSemanticInfo = { label: string; archetype: LayerArchetype; effectLayer: boolean; effectName?: string };
+
+export function classifyLayerElement(element: HTMLElement, tag: string, text: string, depth: number, parentTag?: string): LayerSemanticInfo {
+  const clean = text.trim().replace(/\\s+/g, ' ').slice(0, 34);
+  const tokens = [element.className, element.id, element.getAttribute('data-testid'), element.getAttribute('aria-label'), element.getAttribute('title')].filter(v => typeof v === 'string').join(' ').toLowerCase();
+  const animationTokens = tokens + ' ' + Array.from(element.attributes).filter(a => a.name.startsWith('data-')).map(a => a.value).join(' ').toLowerCase();
+  const hasAnimation = /animate|animation|motion|keyframe|shimmer|beam|neon|glow|shine|sweep|bevel|mirror|hologram|pulse|ripple|border-flow|borderbeam|border-beam|spotlight/.test(animationTokens);
+  const effectName = /border.?beam|beam/.test(animationTokens) ? 'Beam' :
+    /bevel|chamfer/.test(animationTokens) ? 'Bevel' :
+    /mirror|reflect/.test(animationTokens) ? 'Espelho' :
+    /shimmer|shine|sweep/.test(animationTokens) ? 'Shimmer' :
+    /neon|border.?flow|border.?animation/.test(animationTokens) ? 'Borda neon' :
+    /spotlight/.test(animationTokens) ? 'Spotlight' :
+    /hologram/.test(animationTokens) ? 'Holograma' :
+    /glow|pulse/.test(animationTokens) ? 'Brilho pulsante' : 'Animação';
+  const style = getComputedStyle(element);
+  const pseudoContent = ['::before','::after'].some(pseudo => { try { const s = getComputedStyle(element,pseudo); return s.content !== 'none' && s.content !== 'normal' && (s.animationName !== 'none' || /gradient|beam|shine|glow/.test(s.backgroundImage)); } catch { return false; } });
+  const animatedPseudo = pseudoContent || style.animationName !== 'none' || style.transitionDuration.split(',').some(v => parseFloat(v) > 0);
+  const dedicatedEffect = hasAnimation && (animatedPseudo || /beam|shimmer|shine|sweep|neon|glow|bevel|mirror|spotlight|hologram|border.?flow/.test(animationTokens));
+  if (dedicatedEffect) return { label: `Animação de ${effectName}`, archetype: /beam/.test(effectName.toLowerCase()) ? 'beam-animation' : /bevel/i.test(effectName) ? 'bevel-animation' : /espelho/i.test(effectName) ? 'mirror-animation' : /shimmer/i.test(effectName) ? 'shimmer-animation' : /neon/i.test(effectName) ? 'border-animation' : /glow|brilho/i.test(effectName) ? 'glow-animation' : 'generic', effectLayer: true, effectName };
+  const parent = element.parentElement;
+  const parentTokens = parent ? [parent.className, parent.id].join(' ').toLowerCase() : '';
+  if ((tag === 'div' || tag === 'span') && /nav|navigation|menu/.test(parentTokens) && (style.backgroundColor !== 'rgba(0, 0, 0, 0)' || style.boxShadow !== 'none' || /active|selected|current|highlight/.test(tokens))) return { label: /active|selected|current|highlight/.test(tokens) ? 'Destaque do item selecionado' : 'Destaque da navegação', archetype: 'button-highlight', effectLayer: false };
+  if (tag === 'button' || element.getAttribute('role') === 'button') return { label: clean ? `Botão: ${clean}` : 'Botão', archetype: 'button', effectLayer: false };
+  if (tag === 'a' && /nav|menu/.test(parentTokens)) return { label: clean ? `Item de navegação: ${clean}` : 'Item de navegação', archetype: 'navigation', effectLayer: false };
+  if (tag === 'div' && depth === 0) return { label: 'Contêiner principal', archetype: 'container', effectLayer: false };
+  if (tag === 'article' || /card|tile|panel/.test(tokens)) return { label: clean ? `Card: ${clean}` : 'Card', archetype: 'card', effectLayer: false };
+  if ((tag === 'span' || tag === 'p' || tag === 'label') && parentTag === 'button') return { label: clean ? `Texto do botão: ${clean}` : 'Texto do botão', archetype: 'text', effectLayer: false };
+  if ((tag === 'span' || tag === 'p') && parentTag === 'a') return { label: clean ? `Texto do link: ${clean}` : 'Texto do link', archetype: 'text', effectLayer: false };
+  if ((tag === 'span' || tag === 'p') && clean) return { label: `Texto: ${clean}`, archetype: 'text', effectLayer: false };
+  if (tag === 'div' && clean) return { label: `Contêiner: ${clean}`, archetype: 'container', effectLayer: false };
+  const base = labels[tag] ?? 'Elemento';
+  return { label: clean && ['p','h1','h2','h3','label','button','a'].includes(tag) ? `${base}: ${clean}` : base, archetype: tag === 'svg' ? 'icon' : ['img','canvas','video'].includes(tag) ? 'image' : 'generic', effectLayer: false };
+}
+
 export function humanizeLayer(tag: string, text: string, depth: number, parentTag?: string): string {
-  const clean = text.trim().replace(/\s+/g, ' ').slice(0, 34);
+  const clean = text.trim().replace(/\\s+/g, ' ').slice(0, 34);
   if (tag === 'div' && depth === 0) return 'Contêiner principal';
   if (tag === 'div' && parentTag === 'button') return 'Estrutura do botão';
   if ((tag === 'span' || tag === 'p') && parentTag === 'button') return 'Texto do botão';
