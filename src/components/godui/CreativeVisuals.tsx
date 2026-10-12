@@ -167,7 +167,7 @@ function ShaderCanvas({ kind, accent = '#67e8f9', label, speed = 1, intensity = 
     const draw = (now: number) => { gl.uniform1f(timeLoc, reduced ? 0 : (now-start)/1000*speed); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); if (!reduced) raf=requestAnimationFrame(draw); };
     draw(start);
     return () => { cancelAnimationFrame(raf); observer.disconnect(); gl.deleteBuffer(buffer); gl.deleteProgram(program); gl.deleteShader(vertex); gl.deleteShader(fragment); };
-  }, [kind, accent, speed, intensity]);
+  }, [kind, accent, speed, intensity, pixelRatio]);
   return <section className={frame}><VisualHeader eyebrow="REALTIME / WEBGL SHADER" title={label} description="Fragment shader executado em WebGL com controles de intensidade e movimento; não é uma imagem pré-renderizada."/><canvas ref={canvasRef} className="mt-3 block h-64 w-full" role="img" aria-label={label}/></section>;
 }
 export function LiquidGlassShader({ accent = '#67e8f9', label = 'Refração líquida WebGL', intensity = .8, speed = 1, pixelRatio = 1.5 }: BaseProps & { intensity?: number; speed?: number; pixelRatio?: number }) { return <ShaderCanvas kind="liquid" accent={accent} label={label} intensity={intensity} speed={speed} pixelRatio={pixelRatio}/>; }
