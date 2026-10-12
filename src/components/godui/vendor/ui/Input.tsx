@@ -1,7 +1,7 @@
 // Adapted from Lucas Bassetti's GodUI (MIT); upstream: packages/components/src/ui/input.tsx
 // Kept isolated from the builder until its inspector schema and Merge slots are registered.
 import type * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 export type GodUIInputProps = React.ComponentProps<"input">;
 
