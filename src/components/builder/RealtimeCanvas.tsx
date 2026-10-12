@@ -133,7 +133,7 @@ export const RealtimeCanvas: React.FC = () => {
           store.addComponent(drag.type, targetPosition);
         }
       } else if (canvasTarget) {
-        store.addComponent(drag.type);
+        store.addComponent(drag.type, getCanvasInsertionIndex(event.clientY));
       }
       suppressQuickClickUntilRef.current = Date.now() + 700;
     } else if (drag.cancelled || cancelled) {
@@ -146,6 +146,16 @@ export const RealtimeCanvas: React.FC = () => {
     }
     quickDragRef.current = null;
     setQuickDrag(null);
+  };
+
+  const getCanvasInsertionIndex = (clientY: number) => {
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-goduix-component-card]'));
+    for (const card of cards) {
+      const rect = card.getBoundingClientRect();
+      const index = Number(card.dataset.componentIndex);
+      if (clientY < rect.top + rect.height / 2) return Number.isFinite(index) ? index : 0;
+    }
+    return store.components.length;
   };
 
   const viewportWidths = {
@@ -168,13 +178,14 @@ export const RealtimeCanvas: React.FC = () => {
         e.preventDefault();
         e.stopPropagation();
         if (type && GODUI_CATALOG[type as keyof typeof GODUI_CATALOG]) {
-          store.addComponent(type as keyof typeof GODUI_CATALOG);
+          store.addComponent(type as keyof typeof GODUI_CATALOG, getCanvasInsertionIndex(e.clientY));
           return;
         }
         if (sourceId) {
           const sourceIndex = store.components.findIndex(component => component.id === sourceId);
-          const endIndex = store.components.length - 1;
-          if (sourceIndex >= 0 && sourceIndex !== endIndex) store.reorderComponents(sourceIndex, endIndex);
+          const desiredIndex = getCanvasInsertionIndex(e.clientY);
+          const adjustedIndex = sourceIndex < desiredIndex ? desiredIndex - 1 : desiredIndex;
+          if (sourceIndex >= 0 && sourceIndex !== adjustedIndex) store.reorderComponents(sourceIndex, adjustedIndex);
         }
       }}
       className="relative flex-1 h-full overflow-y-auto bg-zinc-950 flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8"
