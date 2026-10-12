@@ -144,7 +144,29 @@ export const ComponentLayerEditor: React.FC<{ component: BuilderComponentInstanc
     const next = {...current};
     const destStyle = {...(current[mergeTargetPath] ?? {})};
     if (computed) {
-      if (mergeKind === 'border') {
+      const sourceNode = sourceElement;
+      const effectTokens = sourceNode ? [sourceNode.className, sourceNode.id, sourceNode.getAttribute('data-testid')].filter(Boolean).join(' ').toLowerCase() : '';
+      const isDedicatedEffect = Boolean(selected.effectLayer) || /beam|bevel|shimmer|neon|mirror|spotlight|hologram|glow|border.?flow/.test(effectTokens);
+      if (isDedicatedEffect) {
+        const before = sourceNode ? getComputedStyle(sourceNode, '::before') : null;
+        const after = sourceNode ? getComputedStyle(sourceNode, '::after') : null;
+        const pseudo = [before, after].find(style => style && style.content !== 'none' && style.content !== 'normal' && (style.backgroundImage !== 'none' || style.animationName !== 'none'));
+        const gradient = pseudo?.backgroundImage && pseudo.backgroundImage !== 'none' ? pseudo.backgroundImage : computed.backgroundImage;
+        const animation = pseudo?.animationName && pseudo.animationName !== 'none'
+          ? `${pseudo.animationName} ${pseudo.animationDuration} ${pseudo.animationTimingFunction} ${pseudo.animationIterationCount}`
+          : computed.animationName !== 'none' ? computed.animation : '';
+        destStyle.position = destStyle.position || (getComputedStyle(destination).position === 'static' ? 'relative' : getComputedStyle(destination).position);
+        if (gradient && gradient !== 'none') destStyle.backgroundImage = gradient;
+        if (animation) destStyle.animation = animation;
+        if (computed.boxShadow !== 'none') destStyle.boxShadow = computed.boxShadow;
+        if (computed.filter !== 'none') destStyle.filter = computed.filter;
+        if (computed.borderTopStyle !== 'none' && computed.borderTopWidth !== '0px') {
+          destStyle.borderStyle = computed.borderTopStyle;
+          destStyle.borderWidth = computed.borderTopWidth;
+          destStyle.borderColor = computed.borderTopColor;
+        }
+        destStyle['--goduix-merged-effect'] = selected.effectName || 'visual-effect';
+      } else if (mergeKind === 'border') {
         const color = computed.borderTopColor || '#00d4ff';
         destStyle.borderStyle = computed.borderTopStyle !== 'none' ? computed.borderTopStyle : 'solid';
         destStyle.borderWidth = computed.borderTopWidth !== '0px' ? computed.borderTopWidth : '2px';
