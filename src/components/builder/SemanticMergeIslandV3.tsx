@@ -1,24 +1,78 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowRightLeft, Check, X, Grip, AlertCircle, Plus, Trash2, Eye } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ArrowRightLeft, Check, X, AlertCircle, RefreshCw, Layers, Type, Box } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
+import { classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorValue, readSemanticTargets, SemanticPropertyKind } from './semanticLayerAdapter';
 
 type DropDetail = { sourceId: string; targetId: string };
-type Mapping = { id: string; sourceKey: string; targetKey: string; enabled: boolean };
+type Layer = { path: string; tag: string; label: string; text: string; depth: number; kind: string; leaf: boolean };
+type LayerChoice = { layerPath: string; propertyKey: string; label: string; kind: SemanticPropertyKind; value: string; cssProperty: string };
+type StyleOverrides = Record<string, Record<string, string | undefined>>;
 
 function formatValue(value: unknown): string {
   if (typeof value === 'string') return value;
   try { return JSON.stringify(value, null, 2) ?? String(value); } catch { return String(value); }
 }
-
-function isolatedPreview(value: unknown, label: string) {
-  if (typeof value === 'string' && /^#([\da-f]{3}|[\da-f]{6}|[\da-f]{8})$/i.test(value)) {
-    return <div className="flex items-center gap-2"><span className="h-7 w-7 rounded-md border border-white/20" style={{ background: value }} /><code>{value}</code></div>;
+function humanColor(value: string): string | null {
+  return parseColorValue(value) ?? null;
+}
+function findRoot(id: string): HTMLElement | null {
+  const escaped = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(id) : id.replace(/[^a-zA-Z0-9_-]/g, '');
+  const selectors = [
+    `[data-goduix-component-id="${escaped}"] [data-goduix-layer-root]`,
+    `[data-component-id="${escaped}"] [data-goduix-layer-root]`,
+    `[data-goduix-layer-root][data-component-id="${escaped}"]`,
+    `[data-component-id="${escaped}"]`
+  ];
+  for (const selector of selectors) {
+    const root = document.querySelector<HTMLElement>(selector);
+    if (root) return root;
   }
-  if (typeof value === 'boolean') return <span className={`inline-flex rounded-full px-2 py-1 text-xs ${value ? 'bg-emerald-300/15 text-emerald-200' : 'bg-zinc-700 text-zinc-300'}`}>{value ? 'Ativado' : 'Desativado'}</span>;
-  if (typeof value === 'number') return <div className="space-y-1"><div className="h-2 overflow-hidden rounded-full bg-zinc-800"><div className="h-full rounded-full bg-cyan-300" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} /></div><span className="text-xs">{value}</span></div>;
-  if (typeof value === 'string') return <div className="rounded-lg border border-white/10 bg-zinc-900 p-2 text-sm" style={{ fontFamily: label.toLowerCase().includes('font') ? value : undefined }}>{value || 'Texto vazio'}</div>;
-  return <pre className="max-h-24 overflow-auto whitespace-pre-wrap break-words text-[10px] text-zinc-300">{formatValue(value)}</pre>;
+  return null;
+}
+function scan(root: HTMLElement): Layer[] {
+  const out: Layer[] = [];
+  const ignored = 'script,style,svg defs,defs,title,desc,[data-goduix-editor-chrome]';
+  const walk = (el: HTMLElement, path: string, depth: number, parentTag?: string) => {
+    if (el.matches(ignored)) return;
+    const tag = el.tagName.toLowerCase();
+    const children = Array.from(el.children).filter(c => !c.matches('svg,path,defs,linearGradient,stop,title,desc,[data-goduix-editor-chrome]'));
+    const text = Array.from(el.childNodes).filter(n => n.nodeType === Node.TEXT_NODE).map(n => n.textContent?.trim() || '').filter(Boolean).join(' ');
+    const hint = text || el.getAttribute('aria-label') || el.getAttribute('title') || el.getAttribute('alt') || el.getAttribute('placeholder') || '';
+    out.push({ path, tag, label: humanizeLayer(tag, hint, depth, parentTag), text, depth, kind: ['button','input','textarea','select','a'].includes(tag) ? 'controle' : ['img','video','canvas'].includes(tag) ? 'mídia' : tag === 'svg' ? 'ícone' : text && !children.length ? 'texto' : 'contêiner', leaf: children.length === 0 });
+    children.forEach((child, i) => walk(child as HTMLElement, path ? path + '.' + i : String(i), depth + 1, tag));
+  };
+  walk(root, '', 0);
+  return out.slice(0, 240);
+}
+function atPath(root: HTMLElement, path: string): HTMLElement | null {
+  if (!path) return root;
+  let node: Element = root;
+  for (const part of path.split('.')) {
+    const children = Array.from(node.children).filter(c => !c.matches('svg,path,defs,linearGradient,stop,title,desc,[data-goduix-editor-chrome]'));
+    const next = children[Number(part)];
+    if (!next) return null;
+    node = next;
+  }
+  return node as HTMLElement;
+}
+function choicesFor(root: HTMLElement | null, layers: Layer[]): LayerChoice[] {
+  if (!root) return [];
+  const result: LayerChoice[] = [];
+  for (const layer of layers) {
+    const el = atPath(root, layer.path);
+    if (!el) continue;
+    for (const target of readSemanticTargets(el)) {
+      result.push({ layerPath: layer.path, propertyKey: target.key, label: target.label, kind: target.kind, value: target.value, cssProperty: target.cssProperty });
+    }
+  }
+  return result;
+}
+function preview(value: unknown, label: string) {
+  const color = typeof value === 'string' ? humanColor(value) : null;
+  if (color) return <div className="flex items-center gap-2"><span className="h-6 w-6 rounded-md border border-white/20" style={{ background: color }}/><code className="text-[10px]">{color}</code></div>;
+  if (typeof value === 'boolean') return <span className="text-xs">{value ? 'Ativado' : 'Desativado'}</span>;
+  return <div className="truncate rounded-md bg-black/20 px-2 py-1 text-[10px] text-zinc-300">{value === '' || value == null ? 'Não definido (pode ser criado)' : formatValue(value)}</div>;
 }
 
 export const SemanticMergeIsland: React.FC = () => {
@@ -26,8 +80,23 @@ export const SemanticMergeIsland: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [sourceId, setSourceId] = useState('');
   const [targetId, setTargetId] = useState('');
-  const [mappings, setMappings] = useState<Mapping[]>([]);
   const [error, setError] = useState('');
+  const [sourceLayers, setSourceLayers] = useState<Layer[]>([]);
+  const [targetLayers, setTargetLayers] = useState<Layer[]>([]);
+  const [sourcePath, setSourcePath] = useState('');
+  const [targetPath, setTargetPath] = useState('');
+  const [sourceProperty, setSourceProperty] = useState('');
+  const [targetProperty, setTargetProperty] = useState('');
+  const [mergeCategory, setMergeCategory] = useState<SemanticPropertyKind>('border');
+  const [scanVersion, setScanVersion] = useState(0);
+
+  const refreshLayers = useCallback(() => {
+    const sRoot = sourceId ? findRoot(sourceId) : null;
+    const tRoot = targetId ? findRoot(targetId) : null;
+    setSourceLayers(sRoot ? scan(sRoot) : []);
+    setTargetLayers(tRoot ? scan(tRoot) : []);
+    setScanVersion(v => v + 1);
+  }, [sourceId, targetId]);
 
   useEffect(() => {
     const handleDrop = (event: Event) => {
@@ -35,78 +104,116 @@ export const SemanticMergeIsland: React.FC = () => {
       if (!detail?.sourceId || !detail?.targetId || detail.sourceId === detail.targetId) return;
       const state = useBuilderStore.getState();
       if (!state.components.some(c => c.id === detail.sourceId) || !state.components.some(c => c.id === detail.targetId)) return;
-      setSourceId(detail.sourceId);
-      setTargetId(detail.targetId);
-      setMappings([{ id: `${Date.now()}-0`, sourceKey: '', targetKey: '', enabled: true }]);
-      setError('');
-      setOpen(true);
+      setSourceId(detail.sourceId); setTargetId(detail.targetId);
+      setSourcePath(''); setTargetPath(''); setSourceProperty(''); setTargetProperty('');
+      setError(''); setOpen(true);
     };
     window.addEventListener('goduix:semantic-merge-drop', handleDrop);
     return () => window.removeEventListener('goduix:semantic-merge-drop', handleDrop);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const frame = window.requestAnimationFrame(refreshLayers);
+    const observer = new MutationObserver(() => refreshLayers());
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
+  }, [open, refreshLayers]);
+
   const source = store.components.find(c => c.id === sourceId);
   const target = store.components.find(c => c.id === targetId);
   const sourceMeta = source ? GODUI_CATALOG[source.type] : undefined;
   const targetMeta = target ? GODUI_CATALOG[target.type] : undefined;
-  const sourceFields = useMemo(() => {
-    if (!source || !sourceMeta) return [];
-    const catalogued = sourceMeta.propFields.filter(field => Object.prototype.hasOwnProperty.call(source.props ?? {}, field.key) && source.props[field.key] !== undefined && typeof source.props[field.key] !== 'function');
-    const extras = Object.keys(source.props ?? {}).filter(key => !key.startsWith('__') && !catalogued.some(field => field.key === key) && typeof source.props[key] !== 'function').map(key => ({ key, label: key, type: 'text' as const, defaultValue: source.props[key] }));
-    return [...catalogued, ...extras];
-  }, [source, sourceMeta]);
-  const targetFields = useMemo(() => {
-    if (!target || !targetMeta) return [];
-    const catalogued = targetMeta.propFields.filter(field => field.key in (target.props ?? {}));
-    const extras = Object.keys(target.props ?? {}).filter(key => !key.startsWith('__') && !catalogued.some(field => field.key === key) && typeof target.props[key] !== 'function').map(key => ({ key, label: key, type: 'text' as const, defaultValue: target.props[key] }));
-    return [...catalogued, ...extras];
-  }, [target, targetMeta]);
+  const sourceRoot = source ? findRoot(source.id) : null;
+  const targetRoot = target ? findRoot(target.id) : null;
+  const sourceChoices = useMemo(() => choicesFor(sourceRoot, sourceLayers), [sourceRoot, sourceLayers, scanVersion]);
+  const targetChoices = useMemo(() => choicesFor(targetRoot, targetLayers), [targetRoot, targetLayers, scanVersion]);
+  const chosenSource = sourceChoices.find(c => c.layerPath === sourcePath && c.propertyKey === sourceProperty);
+  const sourceKind = chosenSource?.kind ?? mergeCategory;
+  const compatibleDestinations = targetChoices.filter(choice => isSemanticallyCompatible(sourceKind, choice.kind));
+  const selectedSourceLayer = sourceLayers.find(l => l.path === sourcePath);
+  const selectedTargetLayer = targetLayers.find(l => l.path === targetPath);
 
-  const updateMapping = (id: string, patch: Partial<Mapping>) => setMappings(items => items.map(item => item.id === id ? { ...item, ...patch } : item));
-  const addMapping = () => setMappings(items => [...items, { id: `${Date.now()}-${items.length}`, sourceKey: '', targetKey: '', enabled: true }]);
   const close = () => { setOpen(false); setError(''); };
-  const apply = () => {
-    if (!source || !target) return;
-    const active = mappings.filter(m => m.enabled && m.sourceKey && m.targetKey);
-    if (!active.length) { setError('Selecione pelo menos uma transferência de propriedade.'); return; }
-    const duplicateTargets = active.map(m => m.targetKey).filter((key, index, all) => all.indexOf(key) !== index);
-    if (duplicateTargets.length) { setError(`Cada propriedade de destino pode aparecer uma vez: ${[...new Set(duplicateTargets)].join(', ')}.`); return; }
-    const next: Record<string, unknown> = { ...target.props };
-    for (const mapping of active) {
-      const value = source.props[mapping.sourceKey];
-      if (value === undefined || typeof value === 'function') { setError(`A propriedade ${mapping.sourceKey} não pode ser transferida.`); return; }
-      next[mapping.targetKey] = value;
+  const applyLayerMerge = () => {
+    if (!source || !target || !sourceRoot || !targetRoot || !selectedSourceLayer || !selectedTargetLayer || !chosenSource || !targetProperty) {
+      setError('Selecione uma camada de origem, uma propriedade e uma camada de destino compatível.'); return;
     }
-    store.updateComponentProps(target.id, next);
+    const dest = atPath(targetRoot, selectedTargetLayer.path);
+    if (!dest) { setError('A camada de destino não está mais disponível. Atualize a árvore e tente novamente.'); return; }
+    const styleMap: Record<string, string> = {
+      border: 'border', borderColor: 'borderColor', borderWidth: 'borderWidth', borderStyle: 'borderStyle', borderRadius: 'borderRadius',
+      outline: 'outline', backgroundColor: 'backgroundColor', color: 'color', boxShadow: 'boxShadow', textShadow: 'textShadow',
+      fontSize: 'fontSize', fontWeight: 'fontWeight', letterSpacing: 'letterSpacing', padding: 'padding', width: 'width', height: 'height',
+      opacity: 'opacity', transform: 'transform', fill: 'fill', stroke: 'stroke', strokeWidth: 'strokeWidth', animation: 'animation'
+    };
+    const sourceValue = chosenSource.value;
+    const sourceEl = atPath(sourceRoot, selectedSourceLayer.path);
+    const computed = sourceEl ? getComputedStyle(sourceEl) : null;
+    const styles = (target.props.__layerStyles ?? {}) as StyleOverrides;
+    const nextStyles: StyleOverrides = { ...styles };
+    const layerStyle = { ...(styles[selectedTargetLayer.path] ?? {}) };
+    const cssKey = styleMap[targetProperty] ?? targetProperty;
+    let value = sourceValue;
+    if (!value && computed) value = (computed as any)[chosenSource.cssProperty] || '';
+    if (mergeCategory === 'border' || chosenSource.kind === 'border' || chosenSource.kind === 'outline') {
+      if (targetProperty === 'borderColor' || targetProperty === 'border') layerStyle.borderColor = sourceValue || computed?.borderTopColor || '#00d4ff';
+      layerStyle.borderStyle = layerStyle.borderStyle || (computed && computed.borderTopStyle !== 'none' ? computed.borderTopStyle : 'solid');
+      layerStyle.borderWidth = layerStyle.borderWidth || (computed && computed.borderTopWidth !== '0px' ? computed.borderTopWidth : '2px');
+      if (chosenSource.kind === 'animation') layerStyle.animation = sourceValue;
+    } else if (chosenSource.kind === 'stroke' && !['svg','path','line'].includes(selectedTargetLayer.tag)) {
+      const color = parseColorValue(sourceValue) || parseColorValue(computed?.color) || '#00d4ff';
+      layerStyle.WebkitTextStroke = `${sourceValue || '1px'} ${color}`;
+      layerStyle.stroke = color;
+      layerStyle.strokeWidth = '1px';
+    } else if (chosenSource.kind === 'background' || chosenSource.kind === 'fill') {
+      layerStyle.backgroundColor = sourceValue || value || computed?.backgroundColor || '';
+    } else if (chosenSource.kind === 'color') {
+      layerStyle.color = sourceValue || value || computed?.color || '';
+    } else if (chosenSource.kind === 'shadow') {
+      layerStyle.boxShadow = sourceValue || computed?.boxShadow || '';
+    } else {
+      layerStyle[cssKey] = sourceValue || value || '';
+    }
+    nextStyles[selectedTargetLayer.path] = layerStyle;
+    store.updateComponentProps(target.id, { __layerStyles: nextStyles });
     store.selectComponent(target.id);
     close();
   };
 
+
   if (!open) return null;
-  return (
-    <aside className="fixed bottom-3 right-3 z-[100] flex max-h-[88dvh] w-[min(760px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-cyan-300/25 bg-zinc-950/95 shadow-2xl shadow-black/50 backdrop-blur-xl" role="region" aria-labelledby="semantic-merge-title">
-      <header className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-3">
-        <div className="flex items-start gap-3"><span className="mt-0.5 rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-2 text-cyan-200"><ArrowRightLeft size={18}/></span><div><h2 id="semantic-merge-title" className="font-semibold text-white">Merge semântico</h2><p className="mt-1 text-xs text-zinc-400">Selecione quantas propriedades quiser. A janela de prévia isola o valor selecionado.</p></div></div>
-        <button type="button" onClick={close} aria-label="Fechar Merge" className="rounded-lg p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white"><X size={18}/></button>
-      </header>
-      <div className="grid grid-cols-2 gap-2 border-b border-white/10 px-4 py-3"><div className="rounded-xl border border-cyan-300/15 bg-cyan-300/[0.04] p-2"><div className="text-[10px] uppercase tracking-wider text-cyan-300">Origem</div><div className="truncate text-sm font-medium text-white">{source?.name ?? 'Componente ausente'}</div></div><div className="rounded-xl border border-violet-300/15 bg-violet-300/[0.04] p-2"><div className="text-[10px] uppercase tracking-wider text-violet-300">Destino</div><div className="truncate text-sm font-medium text-white">{target?.name ?? 'Componente ausente'}</div></div></div>
-      {(!source || !target || !sourceMeta || !targetMeta) ? <div className="p-4 text-sm text-amber-200"><AlertCircle size={16} className="mr-2 inline"/>Não foi possível carregar as propriedades dos componentes.</div> : <div className="min-h-0 space-y-3 overflow-y-auto p-3">
-        {mappings.map((mapping, index) => {
-          const sourceField = sourceFields.find(field => field.key === mapping.sourceKey);
-          const sourceValue = mapping.sourceKey ? source.props[mapping.sourceKey] : undefined;
-          return <section key={mapping.id} className={`rounded-xl border p-3 ${mapping.enabled ? 'border-white/10 bg-white/[0.025]' : 'border-white/5 bg-black/10 opacity-60'}`}>
-            <div className="mb-2 flex items-center justify-between"><span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Transferência {index + 1}</span><div className="flex items-center gap-2"><label className="flex items-center gap-1 text-[10px] text-zinc-400"><input type="checkbox" checked={mapping.enabled} onChange={e => updateMapping(mapping.id, { enabled: e.target.checked })}/> Aplicar</label><button type="button" onClick={() => setMappings(items => items.filter(item => item.id !== mapping.id))} aria-label="Remover transferência" className="rounded p-1 text-zinc-500 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 size={13}/></button></div></div>
-            <div className="grid gap-2 md:grid-cols-[1fr_auto_1fr] md:items-start">
-              <label className="block text-xs text-zinc-300">Propriedade de origem<select value={mapping.sourceKey} onChange={e => updateMapping(mapping.id, { sourceKey: e.target.value })} className="mt-1.5 w-full rounded-lg border border-white/10 bg-zinc-900 p-2 text-xs text-white"><option value="">Escolher propriedade…</option>{sourceFields.map(field => <option key={field.key} value={field.key}>{field.label} · {field.key}</option>)}</select><div className="mt-2 rounded-lg border border-cyan-300/15 bg-black/25 p-2"><div className="mb-1 flex items-center gap-1 text-[9px] uppercase text-cyan-200"><Eye size={11}/> Prévia isolada · {sourceField?.label ?? 'selecione uma prop'}</div>{mapping.sourceKey ? isolatedPreview(sourceValue, sourceField?.label ?? '') : <span className="text-[10px] text-zinc-600">Apenas esta propriedade aparecerá aqui.</span>}</div></label>
-              <div className="flex justify-center pt-8 text-cyan-300"><Grip size={17}/></div>
-              <label className="block text-xs text-zinc-300">Propriedade de destino<select value={mapping.targetKey} onChange={e => updateMapping(mapping.id, { targetKey: e.target.value })} className="mt-1.5 w-full rounded-lg border border-white/10 bg-zinc-900 p-2 text-xs text-white"><option value="">Escolher propriedade…</option>{targetFields.map(field => <option key={field.key} value={field.key}>{field.label} · {field.key}</option>)}</select><div className="mt-2 rounded-lg border border-violet-300/15 bg-black/25 p-2"><div className="mb-1 text-[9px] uppercase text-violet-200">Resultado no alvo</div>{mapping.targetKey ? isolatedPreview(mapping.sourceKey ? sourceValue : target.props[mapping.targetKey], mapping.targetKey) : <span className="text-[10px] text-zinc-600">Selecione a propriedade que receberá o valor.</span>}</div></label>
-            </div>
-          </section>;
+  return <aside className="fixed bottom-3 right-3 z-[100] flex max-h-[88dvh] w-[min(760px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-cyan-300/25 bg-zinc-950/95 shadow-2xl shadow-black/50 backdrop-blur-xl" role="region" aria-labelledby="semantic-merge-title">
+    <header className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-3">
+      <div className="flex items-start gap-3"><span className="mt-0.5 rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-2 text-cyan-200"><ArrowRightLeft size={18}/></span><div><h2 id="semantic-merge-title" className="font-semibold text-white">Merge semântico</h2><p className="mt-1 text-xs text-zinc-400">Escolha uma camada real e veja todos os destinos compatíveis, inclusive propriedades ainda não aplicadas.</p></div></div>
+      <div className="flex gap-1"><button type="button" onClick={refreshLayers} title="Atualizar camadas" className="rounded-lg p-1.5 text-zinc-400 hover:bg-white/10"><RefreshCw size={16}/></button><button type="button" onClick={close} aria-label="Fechar Merge" className="rounded-lg p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white"><X size={18}/></button></div>
+    </header>
+    <div className="grid grid-cols-2 gap-2 border-b border-white/10 px-4 py-3"><div className="rounded-xl border border-cyan-300/15 bg-cyan-300/[0.04] p-2"><div className="text-[10px] uppercase tracking-wider text-cyan-300">Origem</div><div className="truncate text-sm font-medium text-white">{source?.name ?? 'Componente ausente'}</div><div className="mt-1 text-[10px] text-zinc-500">{sourceLayers.length} camadas detectadas</div></div><div className="rounded-xl border border-violet-300/15 bg-violet-300/[0.04] p-2"><div className="text-[10px] uppercase tracking-wider text-violet-300">Destino</div><div className="truncate text-sm font-medium text-white">{target?.name ?? 'Componente ausente'}</div><div className="mt-1 text-[10px] text-zinc-500">{targetLayers.length} camadas detectadas</div></div></div>
+    {(!source || !target || !sourceMeta || !targetMeta) ? <div className="p-4 text-sm text-amber-200"><AlertCircle size={16} className="mr-2 inline"/>Não foi possível carregar os componentes.</div> : <div className="min-h-0 space-y-3 overflow-y-auto p-3">
+      <section className="space-y-2"><div className="flex items-center gap-2 text-xs font-semibold text-cyan-200"><Layers size={14}/> Camadas reais da origem</div><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {sourceLayers.map(layer => {
+          const el = sourceRoot ? atPath(sourceRoot, layer.path) : null;
+          const properties = el ? readSemanticTargets(el) : [];
+          return <button type="button" key={layer.path || 'root'} onClick={() => { setSourcePath(layer.path); setSourceProperty(''); setTargetPath(''); setTargetProperty(''); }} className={`rounded-xl border p-3 text-left ${sourcePath === layer.path ? 'border-cyan-300/50 bg-cyan-300/10' : 'border-white/10 bg-white/[0.02]'}`}>
+            <div className="flex items-center gap-2 text-xs font-semibold text-white">{layer.kind === 'texto' ? <Type size={13}/> : <Box size={13}/>}<span className="truncate">{layer.label}</span></div>
+            <div className="mt-1 text-[9px] text-zinc-500">{layer.tag} · {properties.length} propriedades aplicáveis</div>
+            {layer.text && <div className="mt-2 truncate text-[10px] text-zinc-400">{layer.text}</div>}
+          </button>;
         })}
-        <button type="button" onClick={addMapping} className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-cyan-300/25 py-2.5 text-xs font-medium text-cyan-200 hover:bg-cyan-300/5"><Plus size={14}/>Adicionar outra propriedade</button>
-        {error && <p role="alert" className="text-xs text-rose-300">{error}</p>}
-      </div>}
-      <footer className="flex items-center justify-between gap-2 border-t border-white/10 px-4 py-3"><span className="text-[10px] text-zinc-500">{mappings.filter(m => m.enabled && m.sourceKey && m.targetKey).length} propriedade(s) selecionada(s)</span><div className="flex gap-2"><button type="button" onClick={close} className="rounded-xl px-3 py-2 text-xs text-zinc-300 hover:bg-white/5">Cancelar</button><button type="button" disabled={!source || !target} onClick={apply} className="flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2 text-xs font-semibold text-zinc-950 disabled:opacity-40"><Check size={15}/>Aplicar Merge</button></div></footer>
-    </aside>
-  );
+      </div>{!sourceLayers.length && <p className="rounded-lg border border-amber-300/20 p-3 text-xs text-amber-200">Não foi possível encontrar a árvore DOM renderizada da origem. Mantenha os dois componentes visíveis no Canvas e atualize as camadas.</p>}</section>
+
+      {sourcePath !== '' || sourceLayers.some(l => l.path === '') ? <section className="space-y-2 rounded-xl border border-white/10 p-3"><div className="text-xs font-semibold text-white">Propriedades da camada selecionada</div><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{sourceChoices.filter(c => c.layerPath === sourcePath).map(choice => <button type="button" key={choice.propertyKey} onClick={() => { setSourceProperty(choice.propertyKey); setMergeCategory(choice.kind); setTargetPath(''); setTargetProperty(''); }} className={`rounded-lg border p-2 text-left ${sourceProperty === choice.propertyKey ? 'border-cyan-300/50 bg-cyan-300/10' : 'border-white/10 bg-black/20'}`}><div className="text-xs font-medium text-white">{choice.label}</div><div className="mt-1">{preview(choice.value, choice.label)}</div><div className="mt-1 text-[9px] text-zinc-500">{choice.kind}</div></button>)}</div></section> : null}
+
+      {chosenSource && <section className="space-y-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.03] p-3"><div className="text-xs font-semibold text-violet-200">Destinos compatíveis · {chosenSource.label}</div><p className="text-[10px] text-zinc-400">Cada card é uma camada real do destino. A lista inclui propriedades CSS válidas mesmo quando ainda não existem estilos aplicados.</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{targetLayers.map(layer => {
+        const options = compatibleDestinations.filter(c => c.layerPath === layer.path);
+        const el = targetRoot ? atPath(targetRoot, layer.path) : null;
+        const canCreate = chosenSource.kind === 'border' || chosenSource.kind === 'stroke' || chosenSource.kind === 'animation' || chosenSource.kind === 'background' || chosenSource.kind === 'color' || chosenSource.kind === 'shadow';
+        const createKey = chosenSource.kind === 'border' ? 'borderColor' : chosenSource.kind === 'stroke' ? 'stroke' : chosenSource.kind === 'background' ? 'backgroundColor' : chosenSource.kind === 'color' ? 'color' : chosenSource.kind === 'shadow' ? 'boxShadow' : chosenSource.kind === 'animation' ? 'animation' : '';
+        const createLabel = chosenSource.kind === 'border' ? 'Borda do elemento (criar)' : chosenSource.kind === 'stroke' ? 'Contorno do texto (criar)' : chosenSource.kind === 'background' ? 'Fundo do elemento (criar)' : chosenSource.kind === 'color' ? 'Cor do elemento (criar)' : chosenSource.kind === 'shadow' ? 'Sombra / brilho (criar)' : 'Animação (criar)';
+        return <div key={layer.path || 'root'} className="rounded-xl border border-white/10 bg-black/20 p-3"><button type="button" onClick={() => setTargetPath(layer.path)} className="flex w-full items-center gap-2 text-left text-xs font-semibold text-white"><Box size={13}/><span className="truncate">{layer.label}</span><span className="ml-auto text-[9px] text-zinc-500">{layer.tag}</span></button><div className="mt-2 flex flex-wrap gap-1.5">{options.map(option => <button type="button" key={option.propertyKey} onClick={() => {setTargetPath(layer.path);setTargetProperty(option.propertyKey);}} className={`rounded-md border px-2 py-1 text-[10px] ${targetPath === layer.path && targetProperty === option.propertyKey ? 'border-violet-300/60 bg-violet-300/15 text-violet-100' : 'border-white/10 text-zinc-300'}`}>{option.label}{option.value ? ' · existente' : ' · criar'}</button>)}{canCreate && createKey && !options.some(o => o.propertyKey === createKey) && <button type="button" onClick={() => {setTargetPath(layer.path);setTargetProperty(createKey);}} className={`rounded-md border border-dashed px-2 py-1 text-[10px] ${targetPath === layer.path && targetProperty === createKey ? 'border-violet-300/60 text-violet-100' : 'border-violet-300/25 text-violet-200'}`}>{createLabel}</button>}{!options.length && !canCreate && <span className="text-[10px] text-zinc-600">Nenhuma propriedade compatível</span>}</div></div>;
+      })}</div></section>}
+      {error && <p role="alert" className="text-xs text-rose-300">{error}</p>}
+    </div>}
+    <footer className="flex items-center justify-between gap-2 border-t border-white/10 px-4 py-3"><span className="text-[10px] text-zinc-500">{chosenSource && targetProperty ? '1 destino selecionado' : 'Selecione uma propriedade e destino'}</span><div className="flex gap-2"><button type="button" onClick={close} className="rounded-xl px-3 py-2 text-xs text-zinc-300 hover:bg-white/5">Cancelar</button><button type="button" disabled={!chosenSource || !targetPath || !targetProperty} onClick={applyLayerMerge} className="flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2 text-xs font-semibold text-zinc-950 disabled:opacity-40"><Check size={15}/>Aplicar Merge</button></div></footer>
+  </aside>;
 };
