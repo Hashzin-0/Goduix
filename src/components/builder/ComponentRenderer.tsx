@@ -96,7 +96,11 @@ function applyComponentLayerOverrides(componentId: string, props: Record<string,
         else node.style.removeProperty(cssKey);
       }
     }
-    if (node instanceof SVGElement) applyIconDefinition(node, typeof layerIcons[path] === 'string' ? layerIcons[path] : undefined);
+    if (node instanceof SVGElement) {
+      const customIcon = typeof layerIcons[path] === 'string' ? layerIcons[path] : undefined;
+      if (customIcon) applyIconDefinition(node, customIcon);
+      else if (node.hasAttribute('data-goduix-custom-icon')) applyIconDefinition(node, undefined);
+    }
     if (Object.prototype.hasOwnProperty.call(texts, path) && !node.children.length) {
       if (!node.hasAttribute('data-goduix-original-text')) node.setAttribute('data-goduix-original-text', node.textContent ?? '');
       node.textContent = String(texts[path]);
