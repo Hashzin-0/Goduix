@@ -2,12 +2,19 @@ import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { COMPONENT_REGISTRY } from '../../data/componentRegistry';
+import { GODUI_CATALOG } from '../../data/goduiCatalog';
+import { THEMES } from '../../data/themes';
 import { mergeEngine } from '../../engine/mergeEngine';
-import { cn } from '../../lib/utils';
 import { EffectConfigurator } from './EffectConfigurator';
+import { SpotlightCard } from '../godui/SpotlightCard';
+import { Tilt3DCard } from '../godui/Tilt3DCard';
+import { HolographicCard } from '../godui/HolographicCard';
+import { LiquidGlassCard } from '../godui/LiquidGlassCard';
+import { InsetGlassCard } from '../godui/InsetGlassCard';
 
 export function ComposeCanvas() {
-  const { currentComposition, composerConfiguringEffect } = useBuilderStore();
+  const store = useBuilderStore();
+  const { currentComposition, composerConfiguringEffect } = store;
 
   const component = currentComposition
     ? COMPONENT_REGISTRY[currentComposition.baseComponent]
@@ -33,16 +40,32 @@ export function ComposeCanvas() {
     );
   }
 
-  const effectLayers = resolvedLayers.filter((l) => l.effects.length > 0);
+  const theme = THEMES[store.theme] || THEMES['godly-cyan'];
+  const props = { ...GODUI_CATALOG[currentComposition.baseComponent]?.defaultProps };
+  const renderBaseComponent = (): React.ReactNode => {
+    switch (currentComposition.baseComponent) {
+      case 'spotlight-card':
+        return <SpotlightCard title={props.title} description={props.description} enableBorderBeam={props.enableBorderBeam ?? true} spotlightColor={props.spotlightColor} tagText={props.tagText} theme={theme} />;
+      case 'tilt-3d-card':
+        return <Tilt3DCard title={props.title || 'Spatial Gyro Substrate'} category={props.badge || 'Z-Space 3D'} theme={theme} maxTilt={props.maxTilt || 18} glareOpacity={props.glareOpacity || 0.35} />;
+      case 'holographic-card':
+        return <HolographicCard />;
+      case 'liquid-glass-card':
+        return <LiquidGlassCard />;
+      case 'inset-glass-card':
+        return <InsetGlassCard title={props.title || 'Inset Glass Surface'} description={props.description || 'Superfície de vidro com profundidade e reflexos.'} badge={props.badge || 'GodUI'} insetDepth={props.insetDepth || 'ultra'} theme={theme} />;
+      default:
+        return (
+          <div className="rounded-2xl border border-dashed border-white/15 bg-zinc-900/70 p-6 text-center">
+            <p className="text-sm font-semibold text-white">{component.namePt || component.name}</p>
+            <p className="mt-1 text-xs text-zinc-400">A visualização deste componente ainda não está conectada ao Composer.</p>
+          </div>
+        );
+    }
+  };
 
-  let content: React.ReactNode = (
-    <div className="p-8 text-center">
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800/50 border border-white/5">
-        <div className="w-2 h-2 rounded-full bg-zinc-500" />
-        <span className="text-sm text-zinc-400">{component.namePt || component.name}</span>
-      </div>
-    </div>
-  );
+  const effectLayers = resolvedLayers.filter((layer) => layer.effects.length > 0);
+  let content: React.ReactNode = renderBaseComponent();
 
   for (let i = effectLayers.length - 1; i >= 0; i--) {
     const layer = effectLayers[i];
@@ -72,7 +95,6 @@ export function ComposeCanvas() {
             backgroundSize: '24px 24px',
           }}
         />
-
         <div className="relative flex items-center justify-center min-h-full p-8">
           <motion.div
             key={currentComposition.id}
@@ -85,7 +107,6 @@ export function ComposeCanvas() {
           </motion.div>
         </div>
       </div>
-
       {composerConfiguringEffect && (
         <EffectConfigurator
           layerId={composerConfiguringEffect.layerId}
