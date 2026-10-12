@@ -24,9 +24,53 @@ function isolatedPreview(value: unknown, label: string) {
 export const SemanticMergeIsland: React.FC = () => {
   const store = useBuilderStore();
   const [open, setOpen] = useState(false);
-  const [sourceId, setSourceId] = useState
-…[3084 chars truncated — re-run with head/grep/tail for full output]…
-   if (duplicateTargets.length) { setError(`Cada propriedade de destino pode aparecer uma vez: ${[...new Set(duplicateTargets)].join(', ')}.`); return; }
+  const [sourceId, setSourceId] = useState('');
+  const [targetId, setTargetId] = useState('');
+  const [mappings, setMappings] = useState<Mapping[]>([]);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const handleDrop = (event: Event) => {
+      const detail = (event as CustomEvent<DropDetail>).detail;
+      if (!detail?.sourceId || !detail?.targetId || detail.sourceId === detail.targetId) return;
+      const state = useBuilderStore.getState();
+      if (!state.components.some(c => c.id === detail.sourceId) || !state.components.some(c => c.id === detail.targetId)) return;
+      setSourceId(detail.sourceId);
+      setTargetId(detail.targetId);
+      setMappings([{ id: `${Date.now()}-0`, sourceKey: '', targetKey: '', enabled: true }]);
+      setError('');
+      setOpen(true);
+    };
+    window.addEventListener('goduix:semantic-merge-drop', handleDrop);
+    return () => window.removeEventListener('goduix:semantic-merge-drop', handleDrop);
+  }, []);
+
+  const source = store.components.find(c => c.id === sourceId);
+  const target = store.components.find(c => c.id === targetId);
+  const sourceMeta = source ? GODUI_CATALOG[source.type] : undefined;
+  const targetMeta = target ? GODUI_CATALOG[target.type] : undefined;
+  const sourceFields = useMemo(() => {
+    if (!source || !sourceMeta) return [];
+    const catalogued = sourceMeta.propFields.filter(field => Object.prototype.hasOwnProperty.call(source.props ?? {}, field.key) && source.props[field.key] !== undefined && typeof source.props[field.key] !== 'function');
+    const extras = Object.keys(source.props ?? {}).filter(key => !key.startsWith('__') && !catalogued.some(field => field.key === key) && typeof source.props[key] !== 'function').map(key => ({ key, label: key, type: 'text' as const, defaultValue: source.props[key] }));
+    return [...catalogued, ...extras];
+  }, [source, sourceMeta]);
+  const targetFields = useMemo(() => {
+    if (!target || !targetMeta) return [];
+    const catalogued = targetMeta.propFields.filter(field => field.key in (target.props ?? {}));
+    const extras = Object.keys(target.props ?? {}).filter(key => !key.startsWith('__') && !catalogued.some(field => field.key === key) && typeof target.props[key] !== 'function').map(key => ({ key, label: key, type: 'text' as const, defaultValue: target.props[key] }));
+    return [...catalogued, ...extras];
+  }, [target, targetMeta]);
+
+  const updateMapping = (id: string, patch: Partial<Mapping>) => setMappings(items => items.map(item => item.id === id ? { ...item, ...patch } : item));
+  const addMapping = () => setMappings(items => [...items, { id: `${Date.now()}-${items.length}`, sourceKey: '', targetKey: '', enabled: true }]);
+  const close = () => { setOpen(false); setError(''); };
+  const apply = () => {
+    if (!source || !target) return;
+    const active = mappings.filter(m => m.enabled && m.sourceKey && m.targetKey);
+    if (!active.length) { setError('Selecione pelo menos uma transferência de propriedade.'); return; }
+    const duplicateTargets = active.map(m => m.targetKey).filter((key, index, all) => all.indexOf(key) !== index);
+    if (duplicateTargets.length) { setError(`Cada propriedade de destino pode aparecer uma vez: ${[...new Set(duplicateTargets)].join(', ')}.`); return; }
     const next: Record<string, unknown> = { ...target.props };
     for (const mapping of active) {
       const value = source.props[mapping.sourceKey];
