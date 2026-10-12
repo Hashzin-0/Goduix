@@ -216,6 +216,7 @@ export type GodUIComponentType =
   | 'creative-image-texture-lab'
   | 'creative-kinetic-typography'
   | 'creative-isometric-tilemap'
+  | 'creative-spritesheet-animation-studio'
   | 'vgpu-black-hole';
 
 export type ComponentCategory =
