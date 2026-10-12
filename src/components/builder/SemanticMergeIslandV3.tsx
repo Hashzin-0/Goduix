@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowRightLeft, Check, X, AlertCircle, RefreshCw, Layers, Type, Box } from 'lucide-react';
+import { ArrowRightLeft, Check, X, AlertCircle, RefreshCw, Layers, Type, Box, ChevronDown } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
 import { classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorValue, readSemanticTargets, SemanticPropertyKind } from './semanticLayerAdapter';
@@ -7,7 +7,7 @@ import { classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorVa
 type DropDetail = { sourceId: string; targetId: string };
 type Layer = { path: string; tag: string; label: string; text: string; depth: number; kind: string; leaf: boolean };
 type LayerChoice = { layerPath: string; propertyKey: string; label: string; kind: SemanticPropertyKind; value: string; cssProperty: string };
-type StyleOverrides = Record<string, Record<string, string | undefined>>;
+type StyleOverrides = Record<string, Record<string, string | undefined>>;\ntype PropertyGroup = { key: string; label: string; kinds: SemanticPropertyKind[] };\nconst PROPERTY_GROUPS: PropertyGroup[] = [\n  { key: 'border', label: 'Borda e contorno', kinds: ['border','outline','stroke'] },\n  { key: 'animation', label: 'Animação e movimento', kinds: ['animation','transform'] },\n  { key: 'color', label: 'Cores e preenchimento', kinds: ['color','background','fill'] },\n  { key: 'shadow', label: 'Sombra e brilho', kinds: ['shadow'] },\n  { key: 'typography', label: 'Texto e tipografia', kinds: ['text','typography'] },\n  { key: 'layout', label: 'Dimensões e espaçamento', kinds: ['spacing','size','opacity'] },\n  { key: 'other', label: 'Outras propriedades', kinds: ['media','other'] },\n];\nfunction hasAuthoredValue(choice: LayerChoice): boolean {\n  const v = choice.value.trim().toLowerCase();\n  if (!v || v === 'none' || v === 'normal' || v === 'auto' || v === 'initial' || v === 'unset' || v === 'inherit') return false;\n  if (choice.kind === 'animation' && (v === 'none' || v.startsWith('none '))) return false;\n  if (['border','outline'].includes(choice.kind) && (/^(0(px|rem|em)?)$/.test(v) || v === 'none' || v === '0px none rgb(0, 0, 0)')) return false;\n  if (choice.kind === 'shadow' && v === 'rgba(0, 0, 0, 0)') return false;\n  return true;\n}
 
 function formatValue(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -87,7 +87,7 @@ export const SemanticMergeIsland: React.FC = () => {
   const [targetPath, setTargetPath] = useState('');
   const [sourceProperty, setSourceProperty] = useState('');
   const [targetProperty, setTargetProperty] = useState('');
-  const [mergeCategory, setMergeCategory] = useState<SemanticPropertyKind>('border');
+  const [mergeCategory, setMergeCategory] = useState<SemanticPropertyKind>('border');\n  const [selectedSourceProperties, setSelectedSourceProperties] = useState<string[]>([]);\n  const [expandedGroups, setExpandedGroups] = useState<string[]>(['border','animation','color']);
   const [scanVersion, setScanVersion] = useState(0);
 
   const refreshLayers = useCallback(() => {
@@ -105,7 +105,7 @@ export const SemanticMergeIsland: React.FC = () => {
       const state = useBuilderStore.getState();
       if (!state.components.some(c => c.id === detail.sourceId) || !state.components.some(c => c.id === detail.targetId)) return;
       setSourceId(detail.sourceId); setTargetId(detail.targetId);
-      setSourcePath(''); setTargetPath(''); setSourceProperty(''); setTargetProperty('');
+      setSourcePath(''); setTargetPath(''); setSourceProperty(''); setTargetProperty(''); setSelectedSourceProperties([]);
       setError(''); setOpen(true);
     };
     window.addEventListener('goduix:semantic-merge-drop', handleDrop);
@@ -128,7 +128,7 @@ export const SemanticMergeIsland: React.FC = () => {
   const targetRoot = target ? findRoot(target.id) : null;
   const sourceChoices = useMemo(() => choicesFor(sourceRoot, sourceLayers), [sourceRoot, sourceLayers, scanVersion]);
   const targetChoices = useMemo(() => choicesFor(targetRoot, targetLayers), [targetRoot, targetLayers, scanVersion]);
-  const chosenSource = sourceChoices.find(c => c.layerPath === sourcePath && c.propertyKey === sourceProperty);
+  const chosenSource = sourceChoices.find(c => c.layerPath === sourcePath && c.propertyKey === sourceProperty);\n  const availableSourceChoices = sourceChoices.filter(c => c.layerPath === sourcePath && hasAuthoredValue(c));\n  const selectedChoices = availableSourceChoices.filter(c => selectedSourceProperties.includes(c.propertyKey));
   const sourceKind = chosenSource?.kind ?? mergeCategory;
   const compatibleDestinations = targetChoices.filter(choice => isSemanticallyCompatible(sourceKind, choice.kind));
   const selectedSourceLayer = sourceLayers.find(l => l.path === sourcePath);
@@ -202,7 +202,7 @@ export const SemanticMergeIsland: React.FC = () => {
         })}
       </div>{!sourceLayers.length && <p className="rounded-lg border border-amber-300/20 p-3 text-xs text-amber-200">Não foi possível encontrar a árvore DOM renderizada da origem. Mantenha os dois componentes visíveis no Canvas e atualize as camadas.</p>}</section>
 
-      {sourcePath !== '' || sourceLayers.some(l => l.path === '') ? <section className="space-y-2 rounded-xl border border-white/10 p-3"><div className="text-xs font-semibold text-white">Propriedades da camada selecionada</div><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{sourceChoices.filter(c => c.layerPath === sourcePath).map(choice => <button type="button" key={choice.propertyKey} onClick={() => { setSourceProperty(choice.propertyKey); setMergeCategory(choice.kind); setTargetPath(''); setTargetProperty(''); }} className={`rounded-lg border p-2 text-left ${sourceProperty === choice.propertyKey ? 'border-cyan-300/50 bg-cyan-300/10' : 'border-white/10 bg-black/20'}`}><div className="text-xs font-medium text-white">{choice.label}</div><div className="mt-1">{preview(choice.value, choice.label)}</div><div className="mt-1 text-[9px] text-zinc-500">{choice.kind}</div></button>)}</div></section> : null}
+      {sourcePath !== '' || sourceLayers.some(l => l.path === '') ? <section className="space-y-2 rounded-xl border border-white/10 p-3"><div className="flex items-center justify-between"><div className="text-xs font-semibold text-white">Propriedades existentes na origem</div><span className="text-[10px] text-zinc-500">{selectedSourceProperties.length} selecionadas</span></div><p className="text-[10px] text-zinc-400">Só aparecem valores realmente presentes nesta camada. Expanda uma categoria para selecionar propriedades individuais ou marque a categoria inteira.</p>{PROPERTY_GROUPS.map(group => { const choices = availableSourceChoices.filter(choice => group.kinds.includes(choice.kind)); if (!choices.length) return null; const expanded = expandedGroups.includes(group.key); const allSelected = choices.every(choice => selectedSourceProperties.includes(choice.propertyKey)); return <div key={group.key} className="overflow-hidden rounded-lg border border-white/10"><div className="flex items-center gap-2 bg-white/[0.03] p-2"><button type="button" aria-expanded={expanded} onClick={() => setExpandedGroups(groups => expanded ? groups.filter(k => k !== group.key) : [...groups, group.key])} className="flex min-w-0 flex-1 items-center gap-2 text-left text-xs font-semibold text-white"><ChevronDown size={14} className={expanded ? '' : '-rotate-90'}/><span>{group.label}</span><span className="text-[10px] font-normal text-zinc-500">{choices.length}</span></button><button type="button" onClick={() => { const keys = choices.map(choice => choice.propertyKey); setSelectedSourceProperties(current => allSelected ? current.filter(key => !keys.includes(key)) : [...new Set([...current, ...keys])]); const first = allSelected ? undefined : choices[0]; if (first) { setSourceProperty(first.propertyKey); setMergeCategory(first.kind); } }} className="rounded-md border border-cyan-300/20 px-2 py-1 text-[10px] text-cyan-200">{allSelected ? 'Desmarcar' : 'Selecionar tudo'}</button></div>{expanded && <div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2">{choices.map(choice => <button type="button" key={choice.propertyKey} aria-pressed={selectedSourceProperties.includes(choice.propertyKey)} onClick={() => { setSelectedSourceProperties(current => current.includes(choice.propertyKey) ? current.filter(key => key !== choice.propertyKey) : [...current, choice.propertyKey]); setSourceProperty(choice.propertyKey); setMergeCategory(choice.kind); setTargetPath(''); setTargetProperty(''); }} className={`rounded-lg border p-2 text-left ${selectedSourceProperties.includes(choice.propertyKey) ? 'border-cyan-300/50 bg-cyan-300/10' : 'border-white/10 bg-black/20'}`}><div className="flex items-center justify-between gap-2"><div className="text-xs font-medium text-white">{choice.label}</div><span className={`h-4 w-4 rounded border ${selectedSourceProperties.includes(choice.propertyKey) ? 'border-cyan-300 bg-cyan-300 text-zinc-950' : 'border-zinc-600'}`}>{selectedSourceProperties.includes(choice.propertyKey) ? '✓' : ''}</span></div><div className="mt-1">{preview(choice.value, choice.label)}</div></button>)}</div>}</div>;})}</section> : null}
 
       {chosenSource && <section className="space-y-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.03] p-3"><div className="text-xs font-semibold text-violet-200">Destinos compatíveis · {chosenSource.label}</div><p className="text-[10px] text-zinc-400">Cada card é uma camada real do destino. A lista inclui propriedades CSS válidas mesmo quando ainda não existem estilos aplicados.</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{targetLayers.map(layer => {
         const options = compatibleDestinations.filter(c => c.layerPath === layer.path);
