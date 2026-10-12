@@ -44,9 +44,9 @@ function applyIconDefinition(svg: SVGElement, iconName: string | undefined) {
   svg.setAttribute('data-goduix-custom-icon', iconName);
 }
 
-const LAYER_STYLE_KEYS = ['backgroundColor', 'color', 'borderColor', 'borderWidth', 'borderRadius', 'borderStyle', 'padding', 'fontSize', 'fontWeight', 'letterSpacing', 'opacity', 'transform', 'boxShadow', 'textShadow', 'outline', 'stroke', 'strokeWidth', 'animation'] as const;
+const LAYER_STYLE_KEYS = ['backgroundColor', 'color', 'borderColor', 'borderWidth', 'borderRadius', 'borderStyle', 'padding', 'fontSize', 'fontWeight', 'letterSpacing', 'opacity', 'transform', 'boxShadow', 'textShadow', 'outline', 'stroke', 'strokeWidth', 'animation', 'width', 'height', 'objectFit', 'objectPosition', 'filter', 'fill', 'cursor'] as const;
 const LAYER_STYLE_CSS: Record<(typeof LAYER_STYLE_KEYS)[number], string> = {
-  backgroundColor: 'background-color', color: 'color', borderColor: 'border-color', borderWidth: 'border-width', borderRadius: 'border-radius', borderStyle: 'border-style', padding: 'padding', fontSize: 'font-size', fontWeight: 'font-weight', letterSpacing: 'letter-spacing', opacity: 'opacity', transform: 'transform', boxShadow: 'box-shadow', textShadow: 'text-shadow', outline: 'outline', stroke: 'stroke', strokeWidth: 'stroke-width', animation: 'animation',
+  backgroundColor: 'background-color', color: 'color', borderColor: 'border-color', borderWidth: 'border-width', borderRadius: 'border-radius', borderStyle: 'border-style', padding: 'padding', fontSize: 'font-size', fontWeight: 'font-weight', letterSpacing: 'letter-spacing', opacity: 'opacity', transform: 'transform', boxShadow: 'box-shadow', textShadow: 'text-shadow', outline: 'outline', stroke: 'stroke', strokeWidth: 'stroke-width', animation: 'animation', width: 'width', height: 'height', objectFit: 'object-fit', objectPosition: 'object-position', filter: 'filter', fill: 'fill', cursor: 'cursor',
 };
 function applyComponentLayerOverrides(componentId: string, props: Record<string, any>) {
   if (!document.getElementById('goduix-layer-animation-keyframes')) {
@@ -61,6 +61,8 @@ function applyComponentLayerOverrides(componentId: string, props: Record<string,
   const styles = props.__layerStyles ?? {};
   const texts = props.__layerTexts ?? {};
   const layerIcons = props.__layerIcons ?? {};
+  const layerMedia = props.__layerMedia ?? {};
+  const ORIGINAL_LAYER_MEDIA = (applyComponentLayerOverrides as any).__originalMedia ?? ((applyComponentLayerOverrides as any).__originalMedia = new WeakMap<HTMLElement, Map<string, string | null>>());
   const nodes: HTMLElement[] = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
   const pathFor = (node: HTMLElement) => {
     const indices: number[] = [];
@@ -100,6 +102,27 @@ function applyComponentLayerOverrides(componentId: string, props: Record<string,
       const customIcon = typeof layerIcons[path] === 'string' ? layerIcons[path] : undefined;
       if (customIcon) applyIconDefinition(node, customIcon);
       else if (node.hasAttribute('data-goduix-custom-icon')) applyIconDefinition(node, undefined);
+    }
+    const mediaOverride = layerMedia[path] as { src?: string; alt?: string; controls?: boolean; muted?: boolean; loop?: boolean } | undefined;
+    if (node instanceof HTMLImageElement || node instanceof HTMLVideoElement) {
+      let originalMedia = ORIGINAL_LAYER_MEDIA.get(node);
+      if (!originalMedia) { originalMedia = new Map<string, string | null>(); ['src', 'alt', 'poster'].forEach(attr => originalMedia!.set(attr, node.getAttribute(attr))); ORIGINAL_LAYER_MEDIA.set(node, originalMedia); }
+      for (const attr of ['src', 'alt'] as const) {
+        const override = mediaOverride?.[attr];
+        const original = originalMedia.get(attr) ?? null;
+        if (typeof override === 'string' && override.trim()) node.setAttribute(attr, override);
+        else if (original === null) node.removeAttribute(attr);
+        else node.setAttribute(attr, original);
+      }
+      if (node instanceof HTMLVideoElement) {
+        const video = node as HTMLVideoElement;
+        const originalPoster = originalMedia.get('poster');
+        if (typeof mediaOverride?.src === 'string' && mediaOverride.src.trim()) video.setAttribute('poster', mediaOverride.src);
+        else if (originalPoster === null) video.removeAttribute('poster'); else video.setAttribute('poster', originalPoster);
+        if (typeof mediaOverride?.controls === 'boolean') video.controls = mediaOverride.controls;
+        if (typeof mediaOverride?.muted === 'boolean') video.muted = mediaOverride.muted;
+        if (typeof mediaOverride?.loop === 'boolean') video.loop = mediaOverride.loop;
+      }
     }
     if (Object.prototype.hasOwnProperty.call(texts, path) && !node.children.length) {
       if (!node.hasAttribute('data-goduix-original-text')) node.setAttribute('data-goduix-original-text', node.textContent ?? '');
