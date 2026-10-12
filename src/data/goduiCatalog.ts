@@ -831,20 +831,7 @@ export const GODUI_CATALOG: Record<GodUIComponentType, GodUIMeta> = {
       showNavLinks: true,
       ctaText: 'Deploy Project',
       blurStrength: 16,
-      isSticky: true,,
-      "geometryScale": 1,
-      "rotationSpeed": 0.0025,
-      "cameraDistance": 7.6,
-      "cameraFov": 35,
-      "ambientIntensity": 2.2,
-      "keyLightIntensity": 3.2,
-      "metalness": 0.3,
-      "roughness": 0.25,
-      "wireframe": false,
-      "exposure": 1.1,
-      "pixelRatio": 1.5,
-      "fluidAmplitude": 0.16,
-      "fluidSpeed": 1
+      isSticky: true,
     },
     sampleCode: `import { motion } from "motion/react";
 import { useState } from "react";
