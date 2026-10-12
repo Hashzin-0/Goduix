@@ -88,7 +88,7 @@ export function Holographic3D(props: BaseProps) { return <ThreeScene kind="holog
 export function FluidSurface3D(props: BaseProps) { return <ThreeScene kind="fluid" accent={props.accent ?? '#67e8f9'} label={props.label ?? 'Superfície fluida 3D'} {...props}/>; }
 
 
-export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizador de modelo 3D' }: BaseProps) {
+export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizador de modelo 3D', modelScale = 1, rotationSpeed = 0.0015, cameraDistance = 4.5, cameraFov = 40, ambientIntensity = 2.2, keyLightIntensity = 3, exposure = 1.1, pixelRatio = 1.5, wireframe = false }: BaseProps) {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
@@ -101,16 +101,17 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
     let renderer: THREE.WebGLRenderer;
     try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' }); }
     catch { setError('Este navegador não disponibilizou WebGL.'); return; }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, Math.max(0.75, Math.min(2, pixelRatio))));
     renderer.setSize(host.clientWidth, host.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = exposure;
     host.replaceChildren(renderer.domElement);
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), .01, 1000);
-    camera.position.set(0, 1.3, 4.5);
-    scene.add(new THREE.HemisphereLight(0xe2efff, 0x20243a, 2.2));
-    const key = new THREE.DirectionalLight(0xffffff, 3); key.position.set(4, 7, 5); scene.add(key);
+    const camera = new THREE.PerspectiveCamera(cameraFov, host.clientWidth / Math.max(1, host.clientHeight), .01, 1000);
+    camera.position.set(0, 1.3, cameraDistance);
+    scene.add(new THREE.HemisphereLight(0xe2efff, 0x20243a, ambientIntensity));
+    const key = new THREE.DirectionalLight(0xffffff, keyLightIntensity); key.position.set(4, 7, 5); scene.add(key);
     const rim = new THREE.PointLight(new THREE.Color(accent), 14, 18); rim.position.set(-3, 2, -2); scene.add(rim);
     const root = new THREE.Group(); scene.add(root);
     let model: THREE.Object3D | null = null, raf = 0, dragging = false, lastX = 0, lastY = 0, rotX = 0, rotY = 0;
@@ -126,7 +127,7 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
         const maxAxis = Math.max(size.x,size.y,size.z) || 1;
-        model.scale.setScalar(2.2/maxAxis);
+        model.scale.setScalar((2.2/maxAxis) * Math.max(0.1, Math.min(4, modelScale)));
         model.position.sub(center.multiplyScalar(2.2/maxAxis));
         root.add(model);
         setLoaded(true);
@@ -135,7 +136,7 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
     }).catch(() => setError('Não foi possível iniciar o carregador GLB.'));
     const floor = new THREE.GridHelper(4, 20, new THREE.Color(accent), new THREE.Color('#334155')); floor.position.y = -1.15; scene.add(floor);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const draw = () => { if (!dragging && !reduce && model) rotY += .0015; root.rotation.set(rotX,rotY,0); renderer.render(scene,camera); if (!reduce) raf=requestAnimationFrame(draw); };
+    const draw = () => { if (!dragging && !reduce && model) rotY += rotationSpeed; root.rotation.set(rotX,rotY,0); if (wireframe && model) model.traverse(object => { if (object instanceof THREE.Mesh) { const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(material => { if ('wireframe' in material) (material as THREE.MeshStandardMaterial).wireframe = true; }); } }); renderer.render(scene,camera); if (!reduce) raf=requestAnimationFrame(draw); };
     draw();
     const resize=()=>{camera.aspect=host.clientWidth/Math.max(1,host.clientHeight);camera.updateProjectionMatrix();renderer.setSize(host.clientWidth,host.clientHeight);if(reduce)renderer.render(scene,camera);};
     const observer=new ResizeObserver(resize);observer.observe(host);
@@ -145,7 +146,7 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
     const wheel=(e:WheelEvent)=>{camera.position.z=Math.max(1.8,Math.min(10,camera.position.z+e.deltaY*.004));camera.updateProjectionMatrix();if(reduce)renderer.render(scene,camera);};
     renderer.domElement.addEventListener('pointerdown',down);renderer.domElement.addEventListener('pointermove',move);window.addEventListener('pointerup',up);renderer.domElement.addEventListener('wheel',wheel,{passive:true});
     return()=>{cancelled=true;cancelAnimationFrame(raf);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',down);renderer.domElement.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);renderer.domElement.removeEventListener('wheel',wheel);scene.traverse(object=>{if(object instanceof THREE.Mesh||object instanceof THREE.Points){object.geometry.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];mats.forEach(m=>m.dispose());}});renderer.dispose();renderer.domElement.remove();URL.revokeObjectURL(modelUrl);};
-  },[modelUrl,accent]);
+  },[modelUrl,accent,modelScale,rotationSpeed,cameraDistance,cameraFov,ambientIntensity,keyLightIntensity,exposure,pixelRatio,wireframe]);
   const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; if (!file) return;
     if (!file.name.toLowerCase().endsWith('.glb')) { setError('Selecione um arquivo .glb autocontido.'); event.target.value=''; return; }
