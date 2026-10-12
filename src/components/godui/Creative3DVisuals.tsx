@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import * as THREE from 'three';
 
-type BaseProps = { accent?: string; label?: string };
+type ThreeRenderSettings = { geometryScale?: number; modelScale?: number; rotationSpeed?: number; cameraDistance?: number; cameraFov?: number; ambientIntensity?: number; keyLightIntensity?: number; metalness?: number; roughness?: number; wireframe?: boolean; exposure?: number; fluidAmplitude?: number; fluidSpeed?: number; pixelRatio?: number };
+type BaseProps = { accent?: string; label?: string } & ThreeRenderSettings;
 const frame = 'relative isolate w-full overflow-hidden rounded-2xl border border-white/10 bg-[#080b13] text-white shadow-xl';
 const fieldLabel = 'text-[11px] uppercase tracking-[.16em] text-white/50';
 function VisualHeader({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) {
@@ -10,29 +11,29 @@ function VisualHeader({ eyebrow, title, description }: { eyebrow: string; title:
 }
 
 type SceneKind = 'product' | 'diorama' | 'hologram' | 'fluid';
-function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; accent?: string; label: string }) {
+function ThreeScene({ kind, accent = '#67e8f9', label, geometryScale = 1, rotationSpeed = 0.0025, cameraDistance = 7.6, cameraFov = 35, ambientIntensity = 2.2, keyLightIntensity = 3.2, metalness = 0.3, roughness = 0.25, wireframe = false, exposure = 1.1, fluidAmplitude = 0.16, fluidSpeed = 1, pixelRatio = 1.5 }: { kind: SceneKind; accent?: string; label: string } & ThreeRenderSettings) {
   const hostRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   useEffect(() => {
     const host = hostRef.current; if (!host) return;
     let renderer: THREE.WebGLRenderer;
     try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' }); } catch { return; }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, Math.max(0.75, Math.min(2, pixelRatio))));
     renderer.setSize(host.clientWidth, host.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = exposure;
     host.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, host.clientWidth / Math.max(1, host.clientHeight), .1, 100);
-    camera.position.set(0, 2.6, 7.6);
+    const camera = new THREE.PerspectiveCamera(cameraFov, host.clientWidth / Math.max(1, host.clientHeight), .1, 100);
+    camera.position.set(0, 2.6, cameraDistance);
     const root = new THREE.Group(); scene.add(root);
     let fluidGeometry: THREE.PlaneGeometry | null = null;
     let fluidBase: Float32Array | null = null;
-    scene.add(new THREE.HemisphereLight(0xdceeff, 0x15192e, 2.2));
-    const key = new THREE.DirectionalLight(0xffffff, 3.2); key.position.set(4, 7, 5); scene.add(key);
+    scene.add(new THREE.HemisphereLight(0xdceeff, 0x15192e, ambientIntensity));
+    const key = new THREE.DirectionalLight(0xffffff, keyLightIntensity); key.position.set(4, 7, 5); scene.add(key);
     const rim = new THREE.PointLight(new THREE.Color(accent), 20, 14); rim.position.set(-3, 2, -2); scene.add(rim);
-    const mat = (color: string, metalness = .3, roughness = .25) => new THREE.MeshStandardMaterial({ color, metalness, roughness });
+    const mat = (color: string, materialMetalness = metalness, materialRoughness = roughness) => new THREE.MeshStandardMaterial({ color, metalness: materialMetalness, roughness: materialRoughness, wireframe });
     const add = (geometry: THREE.BufferGeometry, material: THREE.Material, position: [number, number, number], scale?: [number, number, number]) => { const mesh = new THREE.Mesh(geometry, material); mesh.position.set(...position); if (scale) mesh.scale.set(...scale); mesh.castShadow = true; mesh.receiveShadow = true; root.add(mesh); return mesh; };
     if (kind === 'product') {
       add(new THREE.CylinderGeometry(.76, .83, 1.75, 64, 1, false), mat('#dbeafe', .72, .18), [0, .05, 0]);
@@ -55,8 +56,8 @@ function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; acce
       fluidBase = (fluidGeometry.attributes.position.array as Float32Array).slice();
       const surface = add(fluidGeometry, new THREE.MeshStandardMaterial({ color: accent, metalness: .48, roughness: .2, side: THREE.DoubleSide }), [0, -.2, 0]);
       surface.receiveShadow = true;
-      add(new THREE.TorusGeometry(1.45, .018, 8, 96), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .55 }), [0, -.12, 0]).rotation.x = Math.PI / 2;
-      add(new THREE.TorusGeometry(1.9, .012, 8, 96), new THREE.MeshBasicMaterial({ color: '#a5f3fc', transparent: true, opacity: .28 }), [0, -.14, 0]).rotation.x = Math.PI / 2;
+      add(new THREE.TorusGeometry(1.45, .018, 8, 96), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .55, wireframe }), [0, -.12, 0]).rotation.x = Math.PI / 2;
+      add(new THREE.TorusGeometry(1.9, .012, 8, 96), new THREE.MeshBasicMaterial({ color: '#a5f3fc', transparent: true, opacity: .28, wireframe }), [0, -.14, 0]).rotation.x = Math.PI / 2;
     } else {
       const geometry = new THREE.IcosahedronGeometry(1.35, 3);
       const wire = new THREE.MeshBasicMaterial({ color: accent, wireframe: true, transparent: true, opacity: .8 });
@@ -66,8 +67,21 @@ function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; acce
     }
     const floor = new THREE.Mesh(new THREE.CircleGeometry(2.7, 64), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .07 })); floor.rotation.x = -Math.PI / 2; floor.position.y = -1.03; scene.add(floor);
     let frameId = 0, dragging = false, lastX = 0, lastY = 0, rotateX = -.08, rotateY = .18;
+    root.scale.setScalar(Math.max(0.25, Math.min(3, geometryScale)));
+    root.traverse(object => {
+      if (!(object instanceof THREE.Mesh) && !(object instanceof THREE.Points)) return;
+      const materials = Array.isArray(object.material) ? object.material : [object.material];
+      materials.forEach(material => {
+        if (material instanceof THREE.MeshStandardMaterial) { material.metalness = metalness; material.roughness = roughness; }
+        if ('wireframe' in material) {
+          const isHologramCore = kind === 'hologram' && object instanceof THREE.Mesh && object.geometry instanceof THREE.IcosahedronGeometry;
+          (material as THREE.MeshStandardMaterial).wireframe = wireframe || isHologramCore;
+        }
+        material.needsUpdate = true;
+      });
+    });
     const startedAt = performance.now();
-    const render = () => { if (kind === 'fluid' && fluidGeometry && fluidBase && !reducedMotion) { const position = fluidGeometry.attributes.position as THREE.BufferAttribute; const t = (performance.now() - startedAt) * .001; for (let i = 0; i < position.count; i++) position.setY(i, Math.sin(fluidBase[i * 3] * 1.8 + t) * Math.cos(fluidBase[i * 3 + 2] * 1.5 - t * .7) * .16); position.needsUpdate = true; fluidGeometry.computeVertexNormals(); } if (!dragging && !reducedMotion) rotateY += .0025; root.rotation.y = rotateY; root.rotation.x = rotateX; renderer.render(scene, camera); if (!reducedMotion) frameId = requestAnimationFrame(render); };
+    const render = () => { if (kind === 'fluid' && fluidGeometry && fluidBase && !reducedMotion) { const position = fluidGeometry.attributes.position as THREE.BufferAttribute; const t = (performance.now() - startedAt) * .001; for (let i = 0; i < position.count; i++) position.setY(i, Math.sin(fluidBase[i * 3] * 1.8 + t * fluidSpeed) * Math.cos(fluidBase[i * 3 + 2] * 1.5 - t * .7 * fluidSpeed) * fluidAmplitude); position.needsUpdate = true; fluidGeometry.computeVertexNormals(); } if (!dragging && !reducedMotion) rotateY += rotationSpeed; root.rotation.y = rotateY; root.rotation.x = rotateX; renderer.render(scene, camera); if (!reducedMotion) frameId = requestAnimationFrame(render); };
     render();
     const resize = () => { if (!host) return; camera.aspect = host.clientWidth / Math.max(1, host.clientHeight); camera.updateProjectionMatrix(); renderer.setSize(host.clientWidth, host.clientHeight); if (reducedMotion) renderer.render(scene, camera); };
     const observer = new ResizeObserver(resize); observer.observe(host);
@@ -77,16 +91,16 @@ function ThreeScene({ kind, accent = '#67e8f9', label }: { kind: SceneKind; acce
     const wheel = (e: WheelEvent) => { camera.position.z = Math.max(4.5, Math.min(10, camera.position.z + e.deltaY * .005)); camera.updateProjectionMatrix(); if (reducedMotion) renderer.render(scene, camera); };
     renderer.domElement.addEventListener('pointerdown', down); renderer.domElement.addEventListener('pointermove', move); window.addEventListener('pointerup', up); renderer.domElement.addEventListener('wheel', wheel, { passive: true });
     return () => { cancelAnimationFrame(frameId); observer.disconnect(); renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); renderer.domElement.removeEventListener('wheel', wheel); scene.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Points) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(material => material.dispose()); } }); renderer.dispose(); renderer.domElement.remove(); };
-  }, [kind, accent, reducedMotion]);
+  }, [kind, accent, reducedMotion, geometryScale, rotationSpeed, cameraDistance, cameraFov, ambientIntensity, keyLightIntensity, metalness, roughness, wireframe, exposure, fluidAmplitude, fluidSpeed, pixelRatio]);
   return <section className={frame}><VisualHeader eyebrow="3D / WEBGL SCENE" title={label} description="Cena Three.js real, com geometria, materiais, iluminação, rotação por arraste e zoom pela roda ou gesto equivalente."/><div ref={hostRef} className="h-72 w-full cursor-grab touch-pan-y active:cursor-grabbing" role="img" aria-label={label}/><p className="px-4 pb-3 text-[10px] text-white/40">Arraste para orbitar · role para aproximar</p></section>;
 }
-export function ProductObject3D({ accent = '#67e8f9', label = 'Vitrine de objeto 3D' }: BaseProps) { return <ThreeScene kind="product" accent={accent} label={label}/>; }
-export function Diorama3D({ accent = '#4ade80', label = 'Diorama 3D' }: BaseProps) { return <ThreeScene kind="diorama" accent={accent} label={label}/>; }
-export function Holographic3D({ accent = '#a78bfa', label = 'Holograma geométrico 3D' }: BaseProps) { return <ThreeScene kind="hologram" accent={accent} label={label}/>; }
-export function FluidSurface3D({ accent = '#67e8f9', label = 'Superfície fluida 3D' }: BaseProps) { return <ThreeScene kind="fluid" accent={accent} label={label}/>; }
+export function ProductObject3D(props: BaseProps) { return <ThreeScene kind="product" accent={props.accent ?? '#67e8f9'} label={props.label ?? 'Vitrine de objeto 3D'} {...props}/>; }
+export function Diorama3D(props: BaseProps) { return <ThreeScene kind="diorama" accent={props.accent ?? '#4ade80'} label={props.label ?? 'Diorama 3D'} {...props}/>; }
+export function Holographic3D(props: BaseProps) { return <ThreeScene kind="hologram" accent={props.accent ?? '#a78bfa'} label={props.label ?? 'Holograma geométrico 3D'} {...props}/>; }
+export function FluidSurface3D(props: BaseProps) { return <ThreeScene kind="fluid" accent={props.accent ?? '#67e8f9'} label={props.label ?? 'Superfície fluida 3D'} {...props}/>; }
 
 
-export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizador de modelo 3D' }: BaseProps) {
+export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizador de modelo 3D', modelScale = 1, rotationSpeed = 0.0015, cameraDistance = 4.5, cameraFov = 40, ambientIntensity = 2.2, keyLightIntensity = 3, exposure = 1.1, pixelRatio = 1.5, wireframe = false }: BaseProps) {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
@@ -99,16 +113,17 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
     let renderer: THREE.WebGLRenderer;
     try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' }); }
     catch { setError('Este navegador não disponibilizou WebGL.'); return; }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, Math.max(0.75, Math.min(2, pixelRatio))));
     renderer.setSize(host.clientWidth, host.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = exposure;
     host.replaceChildren(renderer.domElement);
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), .01, 1000);
-    camera.position.set(0, 1.3, 4.5);
-    scene.add(new THREE.HemisphereLight(0xe2efff, 0x20243a, 2.2));
-    const key = new THREE.DirectionalLight(0xffffff, 3); key.position.set(4, 7, 5); scene.add(key);
+    const camera = new THREE.PerspectiveCamera(cameraFov, host.clientWidth / Math.max(1, host.clientHeight), .01, 1000);
+    camera.position.set(0, 1.3, cameraDistance);
+    scene.add(new THREE.HemisphereLight(0xe2efff, 0x20243a, ambientIntensity));
+    const key = new THREE.DirectionalLight(0xffffff, keyLightIntensity); key.position.set(4, 7, 5); scene.add(key);
     const rim = new THREE.PointLight(new THREE.Color(accent), 14, 18); rim.position.set(-3, 2, -2); scene.add(rim);
     const root = new THREE.Group(); scene.add(root);
     let model: THREE.Object3D | null = null, raf = 0, dragging = false, lastX = 0, lastY = 0, rotX = 0, rotY = 0;
@@ -124,16 +139,22 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
         const maxAxis = Math.max(size.x,size.y,size.z) || 1;
-        model.scale.setScalar(2.2/maxAxis);
-        model.position.sub(center.multiplyScalar(2.2/maxAxis));
+        const normalizedScale = (2.2/maxAxis) * Math.max(0.1, Math.min(4, modelScale));
+        model.scale.setScalar(normalizedScale);
+        model.position.sub(center.multiplyScalar(normalizedScale));
         root.add(model);
+        model.traverse(object => {
+          if (!(object instanceof THREE.Mesh)) return;
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          materials.forEach(material => { if ('wireframe' in material) { (material as THREE.MeshStandardMaterial).wireframe = wireframe; material.needsUpdate = true; } });
+        });
         setLoaded(true);
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) renderer.render(scene,camera);
       }, undefined, () => setError('Não foi possível abrir este GLB. Verifique se o arquivo é válido e tente novamente.'));
     }).catch(() => setError('Não foi possível iniciar o carregador GLB.'));
     const floor = new THREE.GridHelper(4, 20, new THREE.Color(accent), new THREE.Color('#334155')); floor.position.y = -1.15; scene.add(floor);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const draw = () => { if (!dragging && !reduce && model) rotY += .0015; root.rotation.set(rotX,rotY,0); renderer.render(scene,camera); if (!reduce) raf=requestAnimationFrame(draw); };
+    const draw = () => { if (!dragging && !reduce && model) rotY += rotationSpeed; root.rotation.set(rotX,rotY,0); renderer.render(scene,camera); if (!reduce) raf=requestAnimationFrame(draw); };
     draw();
     const resize=()=>{camera.aspect=host.clientWidth/Math.max(1,host.clientHeight);camera.updateProjectionMatrix();renderer.setSize(host.clientWidth,host.clientHeight);if(reduce)renderer.render(scene,camera);};
     const observer=new ResizeObserver(resize);observer.observe(host);
@@ -142,8 +163,9 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
     const up=()=>{dragging=false;};
     const wheel=(e:WheelEvent)=>{camera.position.z=Math.max(1.8,Math.min(10,camera.position.z+e.deltaY*.004));camera.updateProjectionMatrix();if(reduce)renderer.render(scene,camera);};
     renderer.domElement.addEventListener('pointerdown',down);renderer.domElement.addEventListener('pointermove',move);window.addEventListener('pointerup',up);renderer.domElement.addEventListener('wheel',wheel,{passive:true});
-    return()=>{cancelled=true;cancelAnimationFrame(raf);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',down);renderer.domElement.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);renderer.domElement.removeEventListener('wheel',wheel);scene.traverse(object=>{if(object instanceof THREE.Mesh||object instanceof THREE.Points){object.geometry.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];mats.forEach(m=>m.dispose());}});renderer.dispose();renderer.domElement.remove();URL.revokeObjectURL(modelUrl);};
-  },[modelUrl,accent]);
+    return()=>{cancelled=true;cancelAnimationFrame(raf);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',down);renderer.domElement.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);renderer.domElement.removeEventListener('wheel',wheel);scene.traverse(object=>{if(object instanceof THREE.Mesh||object instanceof THREE.Points){object.geometry.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];mats.forEach(m=>m.dispose());}});renderer.dispose();renderer.domElement.remove();};
+  },[modelUrl,accent,modelScale,rotationSpeed,cameraDistance,cameraFov,ambientIntensity,keyLightIntensity,exposure,pixelRatio,wireframe]);
+  useEffect(() => () => { if (modelUrl) URL.revokeObjectURL(modelUrl); }, [modelUrl]);
   const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; if (!file) return;
     if (!file.name.toLowerCase().endsWith('.glb')) { setError('Selecione um arquivo .glb autocontido.'); event.target.value=''; return; }

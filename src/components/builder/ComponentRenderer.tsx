@@ -2143,7 +2143,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         return <Mascot2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Mascote vetorial interativo')}     />;
 
       case 'creative-2d-particles':
-        return <ParticleField2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Campo de partículas')} count={Number(props.count ?? 56)} speed={Number(props.speed ?? 1)}   />;
+        return <ParticleField2D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Campo de partículas')} count={Number(props.count ?? 56)} speed={Number(props.speed ?? 1)} connectionDistance={Number(props.connectionDistance ?? 86)} repulsionRadius={Number(props.repulsionRadius ?? 90)} particleSize={Number(props.particleSize ?? 1.8)} pixelRatio={Number(props.pixelRatio ?? 1.5)} />;
 
       case 'creative-2d-liquid':
         return <LiquidBlob2D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Formas líquidas orgânicas')}   intensity={Number(props.intensity ?? 0.8)}  />;
@@ -2155,19 +2155,19 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         return <IsometricSceneComposer accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Compositor isométrico')} />;
 
       case 'creative-3d-model-viewer':
-        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando visualizador 3D" />}><LazyUploadedModelViewer3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Visualizador de modelo 3D')} /></React.Suspense>;
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando visualizador 3D" />}><LazyUploadedModelViewer3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Visualizador de modelo 3D')}  geometryScale={Number(props.geometryScale ?? 1)} modelScale={Number(props.modelScale ?? 1)} rotationSpeed={Number(props.rotationSpeed ?? 0.0025)} cameraDistance={Number(props.cameraDistance ?? 7.6)} cameraFov={Number(props.cameraFov ?? 35)} ambientIntensity={Number(props.ambientIntensity ?? 2.2)} keyLightIntensity={Number(props.keyLightIntensity ?? 3.2)} metalness={Number(props.metalness ?? 0.3)} roughness={Number(props.roughness ?? 0.25)} wireframe={Boolean(props.wireframe ?? false)} exposure={Number(props.exposure ?? 1.1)} fluidAmplitude={Number(props.fluidAmplitude ?? 0.16)} fluidSpeed={Number(props.fluidSpeed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)}/></React.Suspense>;
 
       case 'creative-3d-fluid':
-        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando superfície 3D" />}><LazyFluidSurface3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Superfície fluida 3D')} /></React.Suspense>;
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando superfície 3D" />}><LazyFluidSurface3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Superfície fluida 3D')}  geometryScale={Number(props.geometryScale ?? 1)} modelScale={Number(props.modelScale ?? 1)} rotationSpeed={Number(props.rotationSpeed ?? 0.0025)} cameraDistance={Number(props.cameraDistance ?? 7.6)} cameraFov={Number(props.cameraFov ?? 35)} ambientIntensity={Number(props.ambientIntensity ?? 2.2)} keyLightIntensity={Number(props.keyLightIntensity ?? 3.2)} metalness={Number(props.metalness ?? 0.3)} roughness={Number(props.roughness ?? 0.25)} wireframe={Boolean(props.wireframe ?? false)} exposure={Number(props.exposure ?? 1.1)} fluidAmplitude={Number(props.fluidAmplitude ?? 0.16)} fluidSpeed={Number(props.fluidSpeed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)}/></React.Suspense>;
 
       case 'creative-3d-product':
-        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyProductObject3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Vitrine de objeto 3D')} /></React.Suspense>;
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyProductObject3D accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Vitrine de objeto 3D')}  geometryScale={Number(props.geometryScale ?? 1)} modelScale={Number(props.modelScale ?? 1)} rotationSpeed={Number(props.rotationSpeed ?? 0.0025)} cameraDistance={Number(props.cameraDistance ?? 7.6)} cameraFov={Number(props.cameraFov ?? 35)} ambientIntensity={Number(props.ambientIntensity ?? 2.2)} keyLightIntensity={Number(props.keyLightIntensity ?? 3.2)} metalness={Number(props.metalness ?? 0.3)} roughness={Number(props.roughness ?? 0.25)} wireframe={Boolean(props.wireframe ?? false)} exposure={Number(props.exposure ?? 1.1)} fluidAmplitude={Number(props.fluidAmplitude ?? 0.16)} fluidSpeed={Number(props.fluidSpeed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)}/></React.Suspense>;
 
       case 'creative-3d-diorama':
-        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyDiorama3D accent={String(props.accent || '#4ade80')} label={String(props.label || 'Diorama 3D')} /></React.Suspense>;
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyDiorama3D accent={String(props.accent || '#4ade80')} label={String(props.label || 'Diorama 3D')}  geometryScale={Number(props.geometryScale ?? 1)} modelScale={Number(props.modelScale ?? 1)} rotationSpeed={Number(props.rotationSpeed ?? 0.0025)} cameraDistance={Number(props.cameraDistance ?? 7.6)} cameraFov={Number(props.cameraFov ?? 35)} ambientIntensity={Number(props.ambientIntensity ?? 2.2)} keyLightIntensity={Number(props.keyLightIntensity ?? 3.2)} metalness={Number(props.metalness ?? 0.3)} roughness={Number(props.roughness ?? 0.25)} wireframe={Boolean(props.wireframe ?? false)} exposure={Number(props.exposure ?? 1.1)} fluidAmplitude={Number(props.fluidAmplitude ?? 0.16)} fluidSpeed={Number(props.fluidSpeed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)}/></React.Suspense>;
 
       case 'creative-3d-hologram':
-        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyHolographic3D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Holograma geométrico 3D')} /></React.Suspense>;
+        return <React.Suspense fallback={<div className="my-4 h-72 animate-pulse rounded-2xl border border-white/10 bg-white/5" aria-label="Carregando cena 3D" />}><LazyHolographic3D accent={String(props.accent || '#a78bfa')} label={String(props.label || 'Holograma geométrico 3D')}  geometryScale={Number(props.geometryScale ?? 1)} modelScale={Number(props.modelScale ?? 1)} rotationSpeed={Number(props.rotationSpeed ?? 0.0025)} cameraDistance={Number(props.cameraDistance ?? 7.6)} cameraFov={Number(props.cameraFov ?? 35)} ambientIntensity={Number(props.ambientIntensity ?? 2.2)} keyLightIntensity={Number(props.keyLightIntensity ?? 3.2)} metalness={Number(props.metalness ?? 0.3)} roughness={Number(props.roughness ?? 0.25)} wireframe={Boolean(props.wireframe ?? false)} exposure={Number(props.exposure ?? 1.1)} fluidAmplitude={Number(props.fluidAmplitude ?? 0.16)} fluidSpeed={Number(props.fluidSpeed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)}/></React.Suspense>;
 
       case 'creative-isometric-city':
         return <IsometricCity accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Cidade isométrica')}     />;
@@ -2182,16 +2182,16 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         return <IsometricFactory accent={String(props.accent || '#fbbf24')} label={String(props.label || 'Fábrica isométrica')}     />;
 
       case 'creative-shader-liquid-glass':
-        return <LiquidGlassShader accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Superfície líquida WebGL')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+        return <LiquidGlassShader accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Superfície líquida WebGL')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)} />;
 
       case 'creative-shader-glitch':
-        return <GlitchShader accent={String(props.accent || '#f472b6')} label={String(props.label || 'Distorção digital glitch')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+        return <GlitchShader accent={String(props.accent || '#f472b6')} label={String(props.label || 'Distorção digital glitch')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)} />;
 
       case 'creative-shader-aurora':
-        return <AuroraShader accent={String(props.accent || '#34d399')} label={String(props.label || 'Aurora procedural')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} />;
+        return <AuroraShader accent={String(props.accent || '#34d399')} label={String(props.label || 'Aurora procedural')}   intensity={Number(props.intensity ?? 0.8)} speed={Number(props.speed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)} />;
 
       case 'creative-data-network':
-        return <NetworkVisualization accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Rede interativa de nós')} count={Number(props.count ?? 42)}    />;
+        return <NetworkVisualization accent={String(props.accent || '#67e8f9')} label={String(props.label || 'Rede interativa de nós')} count={Number(props.count ?? 42)} connectionDistance={Number(props.connectionDistance ?? 105)} pointSize={Number(props.pointSize ?? 2.3)} speed={Number(props.speed ?? 1)} pixelRatio={Number(props.pixelRatio ?? 1.5)} />;
 
       case 'vgpu-black-hole':
         return (
