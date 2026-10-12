@@ -25,6 +25,7 @@ import { FUSION_DONORS } from '../../data/fusionCatalog';
 import { ThemePalette } from '../../types';
 import { EntranceAnimationType, ExitAnimationType, LoopingAnimationType } from '../../types/builder';
 import { cn } from '../../lib/utils';
+import { ComponentLayerEditor } from './ComponentLayerEditor';
 
 export const ComponentInspectorPanel: React.FC = () => {
   const store = useBuilderStore();
@@ -246,6 +247,8 @@ export const ComponentInspectorPanel: React.FC = () => {
             </div>
           );
         })}
+
+        <ComponentLayerEditor component={selectedComponent} />
 
         {/* ANIMATIONS SECTION */}
         <div className="pt-4 border-t border-white/10 space-y-3">

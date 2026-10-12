@@ -1,4 +1,5 @@
 import React from 'react';
+import { Trash2 as Trash2Def, Search as SearchDef, Settings as SettingsDef, Plus as PlusDef, Heart as HeartDef, Star as StarDef, Menu as MenuDef, Check as CheckDef, X as XDef, ArrowRight as ArrowRightDef, Home as HomeDef, User as UserDef, Bell as BellDef, Calendar as CalendarDef, Mail as MailDef, Download as DownloadDef, Upload as UploadDef, Pencil as PencilDef, Copy as CopyDef, Info as InfoDef, AlertCircle as AlertCircleDef, Sparkles as SparklesDef } from 'lucide';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ChevronUp, 
@@ -24,6 +25,113 @@ import { HairlineFigure } from '../godui/HairlineFigure';
 import { FeraUIExperiment } from '../godui/FeraUIExperiment';
 
 // Animation Variants
+const EDITABLE_ICON_DEFINITIONS: Record<string, ReadonlyArray<readonly [string, Record<string, string | number>]>> = {
+  Trash2: Trash2Def, Search: SearchDef, Settings: SettingsDef, Plus: PlusDef, Heart: HeartDef, Star: StarDef, Menu: MenuDef, Check: CheckDef, X: XDef, ArrowRight: ArrowRightDef, Home: HomeDef, User: UserDef, Bell: BellDef, Calendar: CalendarDef, Mail: MailDef, Download: DownloadDef, Upload: UploadDef, Pencil: PencilDef, Copy: CopyDef, Info: InfoDef, AlertCircle: AlertCircleDef, Sparkles: SparklesDef,
+};
+const ORIGINAL_ICON_MARKUP = new WeakMap<SVGElement, string>();
+const ORIGINAL_LAYER_STYLES = new WeakMap<HTMLElement, Map<string, string>>();
+function applyIconDefinition(svg: SVGElement, iconName: string | undefined) {
+  if (!ORIGINAL_ICON_MARKUP.has(svg)) ORIGINAL_ICON_MARKUP.set(svg, svg.innerHTML);
+  if (!iconName) { svg.innerHTML = ORIGINAL_ICON_MARKUP.get(svg) ?? ''; svg.removeAttribute('data-goduix-custom-icon'); return; }
+  const definition = EDITABLE_ICON_DEFINITIONS[iconName];
+  if (!definition) return;
+  svg.replaceChildren();
+  for (const [tag, attrs] of definition) {
+    const child = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const [key, value] of Object.entries(attrs)) child.setAttribute(key, String(value));
+    svg.appendChild(child);
+  }
+  svg.setAttribute('data-goduix-custom-icon', iconName);
+}
+
+const LAYER_STYLE_KEYS = ['backgroundColor', 'color', 'borderColor', 'borderWidth', 'borderRadius', 'borderStyle', 'padding', 'fontSize', 'fontWeight', 'letterSpacing', 'opacity', 'transform', 'boxShadow', 'textShadow', 'outline', 'stroke', 'strokeWidth', 'animation', 'width', 'height', 'objectFit', 'objectPosition', 'filter', 'fill', 'cursor'] as const;
+const LAYER_STYLE_CSS: Record<(typeof LAYER_STYLE_KEYS)[number], string> = {
+  backgroundColor: 'background-color', color: 'color', borderColor: 'border-color', borderWidth: 'border-width', borderRadius: 'border-radius', borderStyle: 'border-style', padding: 'padding', fontSize: 'font-size', fontWeight: 'font-weight', letterSpacing: 'letter-spacing', opacity: 'opacity', transform: 'transform', boxShadow: 'box-shadow', textShadow: 'text-shadow', outline: 'outline', stroke: 'stroke', strokeWidth: 'stroke-width', animation: 'animation', width: 'width', height: 'height', objectFit: 'object-fit', objectPosition: 'object-position', filter: 'filter', fill: 'fill', cursor: 'cursor',
+};
+function applyComponentLayerOverrides(componentId: string, props: Record<string, any>) {
+  if (!document.getElementById('goduix-layer-animation-keyframes')) {
+    const style = document.createElement('style');
+    style.id = 'goduix-layer-animation-keyframes';
+    style.textContent = '@keyframes goduix-layer-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.65;transform:scale(1.025)}}@keyframes goduix-layer-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes goduix-layer-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}';
+    document.head.appendChild(style);
+  }
+  const card = document.querySelector<HTMLElement>(`[data-goduix-component-card][data-component-id="${CSS.escape(componentId)}"]`);
+  const root = card?.querySelector<HTMLElement>('[data-goduix-layer-root]');
+  if (!root) return;
+  const styles = props.__layerStyles ?? {};
+  const texts = props.__layerTexts ?? {};
+  const layerIcons = props.__layerIcons ?? {};
+  const layerMedia = props.__layerMedia ?? {};
+  const ORIGINAL_LAYER_MEDIA = (applyComponentLayerOverrides as any).__originalMedia ?? ((applyComponentLayerOverrides as any).__originalMedia = new WeakMap<HTMLElement, Map<string, string | null>>());
+  const nodes: HTMLElement[] = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
+  const pathFor = (node: HTMLElement) => {
+    const indices: number[] = [];
+    let current: HTMLElement | null = node;
+    while (current && current !== root) {
+      const parent: HTMLElement | null = current.parentElement;
+      if (!parent) return '';
+      indices.unshift(Array.from(parent.children).indexOf(current));
+      current = parent;
+    }
+    return current === root ? indices.join('.') : '';
+  };
+  for (const node of nodes) {
+    if (node.closest('[data-goduix-editor-chrome]')) continue;
+    const path = pathFor(node);
+    const layerStyle = styles[path] ?? {};
+    let originalStyles = ORIGINAL_LAYER_STYLES.get(node);
+    if (!originalStyles) {
+      originalStyles = new Map<string, string>();
+      for (const key of LAYER_STYLE_KEYS) {
+        const cssKey = LAYER_STYLE_CSS[key];
+        originalStyles.set(cssKey, node.style.getPropertyValue(cssKey));
+      }
+      ORIGINAL_LAYER_STYLES.set(node, originalStyles);
+    }
+    for (const key of LAYER_STYLE_KEYS) {
+      const cssKey = LAYER_STYLE_CSS[key];
+      const value = layerStyle[key];
+      if (typeof value === 'string' && value.trim()) node.style.setProperty(cssKey, value);
+      else {
+        const originalValue = originalStyles.get(cssKey) ?? '';
+        if (originalValue) node.style.setProperty(cssKey, originalValue);
+        else node.style.removeProperty(cssKey);
+      }
+    }
+    if (node instanceof SVGElement) {
+      const customIcon = typeof layerIcons[path] === 'string' ? layerIcons[path] : undefined;
+      if (customIcon) applyIconDefinition(node, customIcon);
+      else if (node.hasAttribute('data-goduix-custom-icon')) applyIconDefinition(node, undefined);
+    }
+    const mediaOverride = layerMedia[path] as { src?: string; alt?: string; poster?: string; controls?: boolean; muted?: boolean; loop?: boolean } | undefined;
+    if (node instanceof HTMLImageElement || node instanceof HTMLVideoElement) {
+      let originalMedia = ORIGINAL_LAYER_MEDIA.get(node);
+      if (!originalMedia) { originalMedia = new Map<string, string | null>(); ['src', 'alt', 'poster', 'controls', 'muted', 'loop'].forEach(attr => originalMedia!.set(attr, attr === 'controls' || attr === 'muted' || attr === 'loop' ? String(Boolean((node as any)[attr])) : node.getAttribute(attr))); ORIGINAL_LAYER_MEDIA.set(node, originalMedia); }
+      for (const attr of ['src', 'alt', ...(node instanceof HTMLVideoElement ? ['poster'] : [])] as Array<'src' | 'alt' | 'poster'>) {
+        const override = mediaOverride?.[attr];
+        const original = originalMedia.get(attr) ?? null;
+        if (typeof override === 'string' && override.trim()) node.setAttribute(attr, override);
+        else if (original === null) node.removeAttribute(attr);
+        else node.setAttribute(attr, original);
+      }
+      if (node instanceof HTMLVideoElement) {
+        const video = node as HTMLVideoElement;
+        for (const key of ['controls', 'muted', 'loop'] as const) {
+          const value = mediaOverride?.[key];
+          (video as any)[key] = typeof value === 'boolean' ? value : originalMedia.get(key) === 'true';
+        }
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(texts, path) && !node.children.length) {
+      if (!node.hasAttribute('data-goduix-original-text')) node.setAttribute('data-goduix-original-text', node.textContent ?? '');
+      node.textContent = String(texts[path]);
+    } else if (node.hasAttribute('data-goduix-original-text') && !Object.prototype.hasOwnProperty.call(texts, path) && !node.children.length) {
+      node.textContent = node.getAttribute('data-goduix-original-text') ?? '';
+      node.removeAttribute('data-goduix-original-text');
+    }
+  }
+}
+
 const HAIRLINE_FIGURE_BY_COMPONENT: Record<string, string> = {
   'hairline-riffle': 'riffle',
   'hairline-terrain': 'terrain',
@@ -316,6 +424,12 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     } catch { /* Pointer capture may already be released by the browser. */ }
     canvasPointerDragRef.current = null;
   };
+
+  React.useEffect(() => {
+    if (!isBuilderMode) return;
+    const frame = window.requestAnimationFrame(() => applyComponentLayerOverrides(instance.id, instance.props));
+    return () => window.cancelAnimationFrame(frame);
+  }, [instance.id, instance.props, isBuilderMode]);
 
   if (!instance.isVisible) {
     if (!isBuilderMode) return null;
@@ -2210,6 +2324,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     >
       {/* Floating quick action toolbar on top right */}
       <div
+        data-goduix-editor-chrome
         className={cn(
           "absolute -top-3.5 right-4 z-40 flex items-center gap-1 px-2 py-1 rounded-full",
           "bg-zinc-900 border border-white/20 text-zinc-300 text-xs shadow-2xl backdrop-blur-md",
@@ -2298,6 +2413,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
       {/* Render component */}
       <div className="relative">
+        <div data-goduix-layer-root>
         {hasAnimations ? (
           <AnimatePresence mode="wait">
             <motion.div
@@ -2316,10 +2432,12 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         ) : (
           renderGodUIElement()
         )}
+        </div>
 
         {/* DRAG-AND-DROP FUSION OVERLAY: Active when user drags an effect */}
         {store.draggingItem && (
-          <div 
+          <div
+            data-goduix-editor-chrome
             className="absolute inset-0 z-50 rounded-2xl overflow-hidden bg-black/40 backdrop-blur-[2px] p-2 flex flex-col justify-between pointer-events-auto border-2 border-dashed border-cyan-400/80 animate-pulse"
             data-component-id={instance.id}
             onDragOver={(e) => {
