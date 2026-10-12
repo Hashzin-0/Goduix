@@ -136,8 +136,9 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
         const maxAxis = Math.max(size.x,size.y,size.z) || 1;
-        model.scale.setScalar((2.2/maxAxis) * Math.max(0.1, Math.min(4, modelScale)));
-        model.position.sub(center.multiplyScalar(2.2/maxAxis));
+        const normalizedScale = (2.2/maxAxis) * Math.max(0.1, Math.min(4, modelScale));
+        model.scale.setScalar(normalizedScale);
+        model.position.sub(center.multiplyScalar(normalizedScale));
         root.add(model);
         model.traverse(object => {
           if (!(object instanceof THREE.Mesh)) return;
