@@ -20,7 +20,7 @@ const labels: Record<string, string> = {
 };
 
 export function humanizeLayer(tag: string, text: string, depth: number, parentTag?: string): string {
-  const clean = text.trim().replace(/\\s+/g, ' ').slice(0, 34);
+  const clean = text.trim().replace(/\s+/g, ' ').slice(0, 34);
   if (tag === 'div' && depth === 0) return 'Contêiner principal';
   if (tag === 'div' && parentTag === 'button') return 'Estrutura do botão';
   if ((tag === 'span' || tag === 'p') && parentTag === 'button') return 'Texto do botão';
@@ -113,8 +113,8 @@ export function isSemanticallyCompatible(source: SemanticPropertyKind, target: S
 export function parseColorValue(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const v = value.trim();
-  if (/^#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})$/i.test(v)) return v;
-  const rgb = v.match(/^rgba?\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)/i);
+  if (/^#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})$/i.test(v)) return v;
+  const rgb = v.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
   if (rgb) return '#' + rgb.slice(1,4).map(n => Number(n).toString(16).padStart(2,'0')).join('');
   return null;
 }
