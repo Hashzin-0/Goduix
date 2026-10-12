@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Layers, Type, Box, RotateCcw, RefreshCw, ArrowRightLeft } from 'lucide-react';
 import { BuilderComponentInstance } from '../../types/builder';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { cn } from '../../lib/utils';
-import { classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorValue, readSemanticTargets } from './semanticLayerAdapter';
+import { classifyLayerElement, classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorValue, readSemanticTargets } from './semanticLayerAdapter';
 
-type LayerNode = { path: string; tag: string; label: string; kind: 'text' | 'icon' | 'image' | 'container' | 'control'; depth: number; text: string; leaf: boolean; parentTag?: string };
+type LayerNode = { path: string; tag: string; label: string; kind: 'text' | 'icon' | 'image' | 'container' | 'control'; depth: number; text: string; leaf: boolean; parentTag?: string; archetype?: string; effectLayer?: boolean; effectName?: string };
 type LayerStyle = Record<string, string | undefined>;
 const styleFields = [
   { key: 'backgroundColor', label: 'Fundo', type: 'color' }, { key: 'color', label: 'Cor do texto', type: 'color' },
@@ -36,7 +36,7 @@ function scanLayers(root: HTMLElement): LayerNode[] {
     const isControl = ['button','input','textarea','select','a'].includes(tag);
     const kind: LayerNode['kind'] = isIcon ? 'icon' : isImage ? 'image' : isControl ? 'control' : text && leaf ? 'text' : 'container';
     const hint = text || node.getAttribute('aria-label') || node.getAttribute('title') || node.getAttribute('alt') || node.getAttribute('placeholder') || '';
-    output.push({ path, tag, label: humanizeLayer(tag, hint, depth, parentTag), kind, depth, text, leaf, parentTag });
+    const semantic = classifyLayerElement(node, tag, hint, depth, parentTag);\n    output.push({ path, tag, label: semantic.label || humanizeLayer(tag, hint, depth, parentTag), kind, depth, text, leaf, parentTag, archetype: semantic.archetype, effectLayer: semantic.effectLayer, effectName: semantic.effectName });
     children.forEach((child,index) => walk(child as HTMLElement, path ? `${path}.${index}` : String(index), depth+1, tag));
   };
   walk(root, '', 0);
@@ -57,7 +57,7 @@ const kindIcon = (kind: LayerNode['kind']) => kind === 'text' ? <Type size={13}/
 
 export const ComponentLayerEditor: React.FC<{ component: BuilderComponentInstance }> = ({ component }) => {
   const store = useBuilderStore();
-  const [layers, setLayers] = useState<LayerNode[]>([]);
+  const [layers, setLayers] = useState<LayerNode[]>([]);\n  const previewHostRef = useRef<HTMLDivElement>(null);
   const [selectedPath, setSelectedPath] = useState('');
   const [textValue, setTextValue] = useState('');
   const [scanVersion, setScanVersion] = useState(0);
@@ -85,6 +85,33 @@ export const ComponentLayerEditor: React.FC<{ component: BuilderComponentInstanc
     return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
   },[component.id,scan]);
   useEffect(() => { if (selected) setTextValue(texts[selected.path] ?? selected.text); },[selectedPath,scanVersion,component.id]);
+  useEffect(() => {
+    const host = previewHostRef.current;
+    const root = getLayerRoot(component.id);
+    const source = root && selected ? elementAtPath(root, selected.path) : null;
+    if (!host) return;
+    host.replaceChildren();
+    if (!source) return;
+    const clone = source.cloneNode(true) as HTMLElement;
+    const originals = [source, ...Array.from(source.querySelectorAll<HTMLElement>('*'))];
+    const copies = [clone, ...Array.from(clone.querySelectorAll<HTMLElement>('*'))];
+    copies.forEach((copy, index) => {
+      const original = originals[index];
+      if (!original) return;
+      const computed = getComputedStyle(original);
+      for (let i = 0; i < computed.length; i++) {
+        const property = computed.item(i);
+        if (property && !property.startsWith('--')) copy.style.setProperty(property, computed.getPropertyValue(property));
+      }
+      copy.removeAttribute('id');
+      copy.style.animationPlayState = 'paused';
+      copy.style.maxWidth = '100%';
+      copy.style.boxSizing = 'border-box';
+    });
+    clone.style.pointerEvents = 'none';
+    host.appendChild(clone);
+    return () => { host.replaceChildren(); };
+  }, [component.id, selectedPath, scanVersion]);
   const updateStyle = (key: string,value: string) => {
     if (!selected) return;
     store.updateComponentProps(component.id,{__layerStyles:{...styles,[selected.path]:{...(styles[selected.path] ?? {}),[key]:value || undefined}}});
@@ -153,6 +180,7 @@ export const ComponentLayerEditor: React.FC<{ component: BuilderComponentInstanc
     </div>
     {selected && <div className="space-y-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
       <div className="flex items-center justify-between"><div className="min-w-0"><div className="text-xs font-semibold text-white">{selected.label}</div><div className="mt-0.5 text-[9px] uppercase tracking-wider text-zinc-500">{selected.kind} · camada isolada</div></div><button type="button" onClick={resetLayer} className="flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[10px] text-zinc-400 hover:bg-white/10 hover:text-white"><RotateCcw size={11}/> Resetar</button></div>
+      <div className="rounded-lg border border-white/10 bg-black/30 p-2"><div className="mb-2 flex items-center justify-between text-[10px] text-zinc-300"><span>Prévia da camada selecionada</span>{selected.effectLayer && <span className="text-fuchsia-200">{selected.effectName}</span>}</div><div className="flex min-h-16 items-center justify-center overflow-hidden rounded bg-zinc-950 p-3"><div ref={previewHostRef} className="max-w-full overflow-hidden" /></div><div className="mt-1 text-[9px] text-zinc-500">{selected.effectLayer ? 'Efeito visual independente' : 'Elemento real isolado'} · {selected.archetype || selected.tag}</div></div>
       {selected.kind === 'text' && selected.leaf && <label className="block text-[10px] text-zinc-400">Texto<div className="mt-1 flex gap-1"><input value={textValue} onChange={e=>setTextValue(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-white/10 bg-zinc-900 px-2 py-1.5 text-xs text-white"/><button type="button" onClick={()=>store.updateComponentProps(component.id,{__layerTexts:{...texts,[selected.path]:textValue}})} className="rounded-lg bg-cyan-300 px-2 text-[10px] font-semibold text-zinc-950">Aplicar</button></div></label>}
       <div className="grid grid-cols-2 gap-2">{styleFields.map(field => {
         const root = getLayerRoot(component.id); const el = root && elementAtPath(root,selected.path);
