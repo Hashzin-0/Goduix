@@ -26,6 +26,111 @@ export const RealtimeCanvas: React.FC = () => {
 
   const selectedComponent = store.components.find(c => c.id === store.selectedId);
 
+  type QuickLibraryDrag = {
+    pointerId: number;
+    type: keyof typeof GODUI_CATALOG;
+    name: string;
+    startX: number;
+    startY: number;
+    active: boolean;
+    cancelled: boolean;
+  };
+
+  const quickDragRef = React.useRef<QuickLibraryDrag | null>(null);
+  const suppressQuickClickUntilRef = React.useRef(0);
+  const [quickDrag, setQuickDrag] = React.useState<{
+    x: number;
+    y: number;
+    name: string;
+    overCanvas: boolean;
+  } | null>(null);
+
+  const handleQuickDragStart = (
+    event: React.PointerEvent<HTMLButtonElement>,
+    item: (typeof GODUI_CATALOG)[keyof typeof GODUI_CATALOG],
+  ) => {
+    if (event.pointerType === 'mouse' || event.button !== 0) return;
+
+    quickDragRef.current = {
+      pointerId: event.pointerId,
+      type: item.type,
+      name: item.name,
+      startX: event.clientX,
+      startY: event.clientY,
+      active: false,
+      cancelled: false,
+    };
+
+    // Keep receiving pointer events after the finger leaves the card. The
+    // carousel's touch-pan-x still allows horizontal swiping.
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Some browsers may revoke capture during native scrolling.
+    }
+  };
+
+  const handleQuickDragMove = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const drag = quickDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId || drag.cancelled) return;
+
+    const deltaX = event.clientX - drag.startX;
+    const deltaY = event.clientY - drag.startY;
+
+    if (!drag.active) {
+      if (Math.hypot(deltaX, deltaY) < 10) return;
+
+      // Horizontal movement belongs to the quick-library carousel, not DnD.
+      if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+        drag.cancelled = true;
+        return;
+      }
+
+      drag.active = true;
+    }
+
+    event.preventDefault();
+    const dropTarget = document
+      .elementFromPoint(event.clientX, event.clientY)
+      ?.closest('[data-goduix-new-component-drop-target]');
+
+    setQuickDrag({
+      x: event.clientX,
+      y: event.clientY,
+      name: drag.name,
+      overCanvas: Boolean(dropTarget),
+    });
+  };
+
+  const finishQuickDrag = (
+    event: React.PointerEvent<HTMLButtonElement>,
+    cancelled = false,
+  ) => {
+    const drag = quickDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    if (drag.active && !cancelled) {
+      event.preventDefault();
+      const dropTarget = document
+        .elementFromPoint(event.clientX, event.clientY)
+        ?.closest('[data-goduix-new-component-drop-target]');
+
+      if (dropTarget) {
+        store.addComponent(drag.type);
+      }
+      suppressQuickClickUntilRef.current = Date.now() + 700;
+    } else if (drag.cancelled || cancelled) {
+      // A carousel swipe must not fall through to the card's add-on-click.
+      suppressQuickClickUntilRef.current = Date.now() + 500;
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    quickDragRef.current = null;
+    setQuickDrag(null);
+  };
+
   const viewportWidths = {
     desktop: 'w-full max-w-6xl',
     tablet: 'w-[768px] max-w-full',
@@ -60,7 +165,7 @@ export const RealtimeCanvas: React.FC = () => {
           </div>
           <span className="shrink-0 rounded-full border border-white/10 px-2.5 py-1 text-[10px] text-zinc-400">{Object.keys(GODUI_CATALOG).length} componentes</span>
         </div>
-        <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-2 [scrollbar-width:thin]">
+        <div data-goduix-quick-library className="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-2 touch-pan-x select-none [scrollbar-width:thin]">
           {Object.values(GODUI_CATALOG).map((item) => (
             <button
               key={item.type}
@@ -70,9 +175,21 @@ export const RealtimeCanvas: React.FC = () => {
                 e.dataTransfer.setData('application/x-goduix-new-component-type', item.type);
                 e.dataTransfer.effectAllowed = 'copy';
               }}
-              onClick={() => store.addComponent(item.type)}
+              onPointerDown={(e) => handleQuickDragStart(e, item)}
+              onPointerMove={handleQuickDragMove}
+              onPointerUp={(e) => finishQuickDrag(e)}
+              onPointerCancel={(e) => finishQuickDrag(e, true)}
+              onClick={(e) => {
+                if (Date.now() < suppressQuickClickUntilRef.current) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  suppressQuickClickUntilRef.current = 0;
+                  return;
+                }
+                store.addComponent(item.type);
+              }}
               title={`Adicionar ${item.name} ao Canvas`}
-              className="group flex w-40 shrink-0 snap-start flex-col items-start rounded-xl border border-white/10 bg-black/20 p-3 text-left transition hover:border-cyan-300/40 hover:bg-cyan-300/[0.06] active:scale-[0.98] cursor-grab"
+              className="group flex w-40 shrink-0 snap-start flex-col items-start rounded-xl border border-white/10 bg-black/20 p-3 text-left transition hover:border-cyan-300/40 hover:bg-cyan-300/[0.06] active:scale-[0.98] cursor-grab touch-pan-x"
             >
               <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-300/20 bg-cyan-300/10 text-sm font-semibold text-cyan-200 transition group-hover:bg-cyan-300/20">+</span>
               <span className="line-clamp-1 text-xs font-semibold text-white">{item.name}</span>
@@ -82,6 +199,21 @@ export const RealtimeCanvas: React.FC = () => {
           ))}
         </div>
       </section>
+
+      {quickDrag && (
+        <div
+          aria-live="polite"
+          className={cn(
+            "pointer-events-none fixed z-[100] max-w-[min(75vw,18rem)] -translate-y-1/2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-2xl backdrop-blur-md",
+            quickDrag.overCanvas
+              ? "border-cyan-300 bg-cyan-400/20 text-cyan-100"
+              : "border-white/20 bg-zinc-900/95 text-white"
+          )}
+          style={{ left: Math.min(quickDrag.x + 14, window.innerWidth - 220), top: quickDrag.y }}
+        >
+          {quickDrag.overCanvas ? "Solte para adicionar" : "Arraste para o Canvas"} · {quickDrag.name}
+        </div>
+      )}
 
       {/* Toast Notification for real-time interactions */}
       <AnimatePresence>
@@ -176,8 +308,10 @@ export const RealtimeCanvas: React.FC = () => {
 
       {/* Frame wrapper based on viewport */}
       <div
+        data-goduix-new-component-drop-target
         className={cn(
           "transition-all duration-300 relative",
+          quickDrag?.overCanvas && "ring-2 ring-cyan-400/70 ring-offset-2 ring-offset-zinc-950",
           viewportWidths[store.viewport],
           store.viewport === 'mobile' && "rounded-[48px] border-[10px] border-zinc-900 shadow-2xl overflow-hidden min-h-[820px] bg-zinc-950 px-2 py-4 mt-4 mb-24",
           store.viewport === 'tablet' && "rounded-[32px] border-[8px] border-zinc-900 shadow-2xl overflow-hidden min-h-[900px] bg-zinc-950 px-4 py-6 mt-4 mb-24",
