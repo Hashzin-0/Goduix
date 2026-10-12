@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import type { MergeComponentMetadata } from '@/types/goduiMergeAdapter';
+import type { MergeComponentMetadata } from '@/src/types/goduiMergeAdapter';
 
 export interface MergeComponentBoundaryProps
   extends HTMLAttributes<HTMLDivElement>, MergeComponentMetadata {
