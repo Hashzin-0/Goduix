@@ -76,13 +76,21 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "min": 0.1,
         "max": 2,
         "step": 0.1
-      }
+      },
+      { "key": "connectionDistance", "label": "Distância de conexão", "type": "number", "defaultValue": 86, "min": 20, "max": 180, "step": 2 },
+      { "key": "repulsionRadius", "label": "Raio de repulsão do ponteiro", "type": "number", "defaultValue": 90, "min": 0, "max": 220, "step": 5 },
+      { "key": "particleSize", "label": "Escala das partículas", "type": "number", "defaultValue": 1.8, "min": 0.25, "max": 4, "step": 0.1 },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#67e8f9",
       "label": "Campo de partículas",
       "count": 56,
-      "speed": 1
+      "speed": 1,
+      "connectionDistance": 86,
+      "repulsionRadius": 90,
+      "particleSize": 1.8,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { ParticleField2D } from \"@/components/godui/CreativeVisuals\";\n\nexport function ParticleField2DExample() {\n  return <ParticleField2D accent={\"#67e8f9\"} label={\"Campo de partículas\"} count={56} speed={1} />;\n}"
   },
@@ -495,13 +503,15 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "min": 0.1,
         "max": 2,
         "step": 0.1
-      }
+      },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#67e8f9",
       "label": "Refração líquida WebGL",
       "intensity": 0.8,
-      "speed": 1
+      "speed": 1,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { LiquidGlassShader } from \"@/components/godui/CreativeVisuals\";\n\nexport function LiquidGlassShaderExample() {\n  return <LiquidGlassShader accent={\"#67e8f9\"} label={\"Refração líquida WebGL\"} intensity={0.8} speed={1} />;\n}"
   },
@@ -547,13 +557,15 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "min": 0.1,
         "max": 2,
         "step": 0.1
-      }
+      },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#f472b6",
       "label": "Distorção digital glitch",
       "intensity": 0.8,
-      "speed": 1
+      "speed": 1,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { GlitchShader } from \"@/components/godui/CreativeVisuals\";\n\nexport function GlitchShaderExample() {\n  return <GlitchShader accent={\"#f472b6\"} label={\"Distorção digital glitch\"} intensity={0.8} speed={1} />;\n}"
   },
@@ -599,13 +611,15 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "min": 0.1,
         "max": 2,
         "step": 0.1
-      }
+      },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#34d399",
       "label": "Aurora procedural",
       "intensity": 0.8,
-      "speed": 1
+      "speed": 1,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { AuroraShader } from \"@/components/godui/CreativeVisuals\";\n\nexport function AuroraShaderExample() {\n  return <AuroraShader accent={\"#34d399\"} label={\"Aurora procedural\"} intensity={0.8} speed={1} />;\n}"
   },
@@ -642,12 +656,20 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "min": 10,
         "max": 120,
         "step": 1
-      }
+      },
+      { "key": "connectionDistance", "label": "Distância de conexão", "type": "number", "defaultValue": 105, "min": 20, "max": 220, "step": 5 },
+      { "key": "pointSize", "label": "Tamanho dos nós", "type": "number", "defaultValue": 2.3, "min": 0.5, "max": 8, "step": 0.1 },
+      { "key": "speed", "label": "Velocidade dos nós", "type": "number", "defaultValue": 1, "min": 0, "max": 3, "step": 0.1 },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#67e8f9",
       "label": "Rede interativa de nós",
-      "count": 42
+      "count": 42,
+      "connectionDistance": 105,
+      "pointSize": 2.3,
+      "speed": 1,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { NetworkVisualization } from \"@/components/godui/CreativeVisuals\";\n\nexport function NetworkVisualizationExample() {\n  return <NetworkVisualization accent={\"#67e8f9\"} label={\"Rede interativa de nós\"} count={42} />;\n}"
   },
