@@ -780,7 +780,7 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
       { "key": "fluidAmplitude", "label": "Amplitude da superfície", "type": "number", "defaultValue": 0.16, "min": 0, "max": 0.5, "step": 0.01 },
       { "key": "fluidSpeed", "label": "Velocidade da onda", "type": "number", "defaultValue": 1, "min": 0, "max": 3, "step": 0.1 }
     ],
-    "defaultProps": { "accent": "#67e8f9", "label": "Superfície fluida 3D" },
+    "defaultProps": { "accent": "#67e8f9", "label": "Superfície fluida 3D", "geometryScale": 1, "rotationSpeed": 0.0025, "cameraDistance": 7.6, "cameraFov": 35, "ambientIntensity": 2.2, "keyLightIntensity": 3.2, "metalness": 0.3, "roughness": 0.25, "wireframe": false, "exposure": 1.1, "pixelRatio": 1.5, "fluidAmplitude": 0.16, "fluidSpeed": 1 },
     "sampleCode": "import { FluidSurface3D } from '@/components/godui/Creative3DVisuals';\n\nexport function FluidSurface3DExample() {\n  return <FluidSurface3D accent='#67e8f9' label='Superfície fluida 3D' />;\n}"
   }
 ];
