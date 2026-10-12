@@ -29,6 +29,7 @@ const EDITABLE_ICON_DEFINITIONS: Record<string, ReadonlyArray<readonly [string, 
   Trash2: Trash2Def, Search: SearchDef, Settings: SettingsDef, Plus: PlusDef, Heart: HeartDef, Star: StarDef, Menu: MenuDef, Check: CheckDef, X: XDef, ArrowRight: ArrowRightDef, Home: HomeDef, User: UserDef, Bell: BellDef, Calendar: CalendarDef, Mail: MailDef, Download: DownloadDef, Upload: UploadDef, Pencil: PencilDef, Copy: CopyDef, Info: InfoDef, AlertCircle: AlertCircleDef, Sparkles: SparklesDef,
 };
 const ORIGINAL_ICON_MARKUP = new WeakMap<SVGElement, string>();
+const ORIGINAL_LAYER_STYLES = new WeakMap<HTMLElement, Map<string, string>>();
 function applyIconDefinition(svg: SVGElement, iconName: string | undefined) {
   if (!ORIGINAL_ICON_MARKUP.has(svg)) ORIGINAL_ICON_MARKUP.set(svg, svg.innerHTML);
   if (!iconName) { svg.innerHTML = ORIGINAL_ICON_MARKUP.get(svg) ?? ''; svg.removeAttribute('data-goduix-custom-icon'); return; }
@@ -76,11 +77,24 @@ function applyComponentLayerOverrides(componentId: string, props: Record<string,
     if (node.closest('[data-goduix-editor-chrome]')) continue;
     const path = pathFor(node);
     const layerStyle = styles[path] ?? {};
+    let originalStyles = ORIGINAL_LAYER_STYLES.get(node);
+    if (!originalStyles) {
+      originalStyles = new Map<string, string>();
+      for (const key of LAYER_STYLE_KEYS) {
+        const cssKey = LAYER_STYLE_CSS[key];
+        originalStyles.set(cssKey, node.style.getPropertyValue(cssKey));
+      }
+      ORIGINAL_LAYER_STYLES.set(node, originalStyles);
+    }
     for (const key of LAYER_STYLE_KEYS) {
       const cssKey = LAYER_STYLE_CSS[key];
       const value = layerStyle[key];
       if (typeof value === 'string' && value.trim()) node.style.setProperty(cssKey, value);
-      else node.style.removeProperty(cssKey);
+      else {
+        const originalValue = originalStyles.get(cssKey) ?? '';
+        if (originalValue) node.style.setProperty(cssKey, originalValue);
+        else node.style.removeProperty(cssKey);
+      }
     }
     if (node instanceof SVGElement) applyIconDefinition(node, typeof layerIcons[path] === 'string' ? layerIcons[path] : undefined);
     if (Object.prototype.hasOwnProperty.call(texts, path) && !node.children.length) {
