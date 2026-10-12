@@ -3,7 +3,7 @@ import { Layers, Type, Box, RotateCcw, RefreshCw, ArrowRightLeft } from 'lucide-
 import { BuilderComponentInstance } from '../../types/builder';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { cn } from '../../lib/utils';
-import { classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorValue, readSemanticTargets, SemanticPropertyKind } from './semanticLayerAdapter';
+import { classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorValue, readSemanticTargets } from './semanticLayerAdapter';
 
 type LayerNode = { path: string; tag: string; label: string; kind: 'text' | 'icon' | 'image' | 'container' | 'control'; depth: number; text: string; leaf: boolean; parentTag?: string };
 type LayerStyle = Record<string, string | undefined>;
@@ -101,7 +101,6 @@ export const ComponentLayerEditor: React.FC<{ component: BuilderComponentInstanc
   const targetRoot = mergeTarget ? getLayerRoot(mergeTarget.id) : null;
   const targetLayers = useMemo(() => targetRoot ? scanLayers(targetRoot) : [],[targetRoot,mergeTargetId,scanVersion]);
   const sourceElement = selected ? getLayerRoot(component.id) && elementAtPath(getLayerRoot(component.id)!,selected.path) : null;
-  const sourceTargets = sourceElement ? readSemanticTargets(sourceElement) : [];
   const selectedSourceKind = classifyProperty(mergeKind);
   const compatibleTargets = targetLayers.filter(layer => {
     const root = targetRoot;
@@ -117,7 +116,6 @@ export const ComponentLayerEditor: React.FC<{ component: BuilderComponentInstanc
     const current = (mergeTarget.props.__layerStyles ?? {}) as Record<string,LayerStyle>;
     const next = {...current};
     const destStyle = {...(current[mergeTargetPath] ?? {})};
-    const candidates: Record<string,string> = {};
     if (computed) {
       if (mergeKind === 'border') {
         const color = computed.borderTopColor || '#00d4ff';
@@ -142,7 +140,6 @@ export const ComponentLayerEditor: React.FC<{ component: BuilderComponentInstanc
         destStyle.animation = selectedStyle.animation || computed.animation;
       }
     }
-    Object.assign(destStyle,candidates);
     next[mergeTargetPath] = destStyle;
     store.updateComponentProps(mergeTarget.id,{__layerStyles:next});
   };
