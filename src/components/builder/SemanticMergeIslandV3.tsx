@@ -7,7 +7,25 @@ import { classifyProperty, humanizeLayer, isSemanticallyCompatible, parseColorVa
 type DropDetail = { sourceId: string; targetId: string };
 type Layer = { path: string; tag: string; label: string; text: string; depth: number; kind: string; leaf: boolean };
 type LayerChoice = { layerPath: string; propertyKey: string; label: string; kind: SemanticPropertyKind; value: string; cssProperty: string };
-type StyleOverrides = Record<string, Record<string, string | undefined>>;\ntype PropertyGroup = { key: string; label: string; kinds: SemanticPropertyKind[] };\nconst PROPERTY_GROUPS: PropertyGroup[] = [\n  { key: 'border', label: 'Borda e contorno', kinds: ['border','outline','stroke'] },\n  { key: 'animation', label: 'Animação e movimento', kinds: ['animation','transform'] },\n  { key: 'color', label: 'Cores e preenchimento', kinds: ['color','background','fill'] },\n  { key: 'shadow', label: 'Sombra e brilho', kinds: ['shadow'] },\n  { key: 'typography', label: 'Texto e tipografia', kinds: ['text','typography'] },\n  { key: 'layout', label: 'Dimensões e espaçamento', kinds: ['spacing','size','opacity'] },\n  { key: 'other', label: 'Outras propriedades', kinds: ['media','other'] },\n];\nfunction hasAuthoredValue(choice: LayerChoice): boolean {\n  const v = choice.value.trim().toLowerCase();\n  if (!v || v === 'none' || v === 'normal' || v === 'auto' || v === 'initial' || v === 'unset' || v === 'inherit') return false;\n  if (choice.kind === 'animation' && (v === 'none' || v.startsWith('none '))) return false;\n  if (['border','outline'].includes(choice.kind) && (/^(0(px|rem|em)?)$/.test(v) || v === 'none' || v === '0px none rgb(0, 0, 0)')) return false;\n  if (choice.kind === 'shadow' && v === 'rgba(0, 0, 0, 0)') return false;\n  return true;\n}
+type StyleOverrides = Record<string, Record<string, string | undefined>>;
+type PropertyGroup = { key: string; label: string; kinds: SemanticPropertyKind[] };
+const PROPERTY_GROUPS: PropertyGroup[] = [
+  { key: 'border', label: 'Borda e contorno', kinds: ['border','outline','stroke'] },
+  { key: 'animation', label: 'Animação e movimento', kinds: ['animation','transform'] },
+  { key: 'color', label: 'Cores e preenchimento', kinds: ['color','background','fill'] },
+  { key: 'shadow', label: 'Sombra e brilho', kinds: ['shadow'] },
+  { key: 'typography', label: 'Texto e tipografia', kinds: ['text','typography'] },
+  { key: 'layout', label: 'Dimensões e espaçamento', kinds: ['spacing','size','opacity'] },
+  { key: 'other', label: 'Outras propriedades', kinds: ['media','other'] },
+];
+function hasAuthoredValue(choice: LayerChoice): boolean {
+  const v = choice.value.trim().toLowerCase();
+  if (!v || v === 'none' || v === 'normal' || v === 'auto' || v === 'initial' || v === 'unset' || v === 'inherit') return false;
+  if (choice.kind === 'animation' && (v === 'none' || v.startsWith('none '))) return false;
+  if (['border','outline'].includes(choice.kind) && (/^(0(px|rem|em)?)$/.test(v) || v === 'none' || v === '0px none rgb(0, 0, 0)')) return false;
+  if (choice.kind === 'shadow' && v === 'rgba(0, 0, 0, 0)') return false;
+  return true;
+}
 
 function formatValue(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -87,7 +105,9 @@ export const SemanticMergeIsland: React.FC = () => {
   const [targetPath, setTargetPath] = useState('');
   const [sourceProperty, setSourceProperty] = useState('');
   const [targetProperty, setTargetProperty] = useState('');
-  const [mergeCategory, setMergeCategory] = useState<SemanticPropertyKind>('border');\n  const [selectedSourceProperties, setSelectedSourceProperties] = useState<string[]>([]);\n  const [expandedGroups, setExpandedGroups] = useState<string[]>(['border','animation','color']);
+  const [mergeCategory, setMergeCategory] = useState<SemanticPropertyKind>('border');
+  const [selectedSourceProperties, setSelectedSourceProperties] = useState<string[]>([]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(['border','animation','color']);
   const [scanVersion, setScanVersion] = useState(0);
 
   const refreshLayers = useCallback(() => {
@@ -128,7 +148,9 @@ export const SemanticMergeIsland: React.FC = () => {
   const targetRoot = target ? findRoot(target.id) : null;
   const sourceChoices = useMemo(() => choicesFor(sourceRoot, sourceLayers), [sourceRoot, sourceLayers, scanVersion]);
   const targetChoices = useMemo(() => choicesFor(targetRoot, targetLayers), [targetRoot, targetLayers, scanVersion]);
-  const chosenSource = sourceChoices.find(c => c.layerPath === sourcePath && c.propertyKey === sourceProperty);\n  const availableSourceChoices = sourceChoices.filter(c => c.layerPath === sourcePath && hasAuthoredValue(c));\n  const selectedChoices = availableSourceChoices.filter(c => selectedSourceProperties.includes(c.propertyKey));
+  const chosenSource = sourceChoices.find(c => c.layerPath === sourcePath && c.propertyKey === sourceProperty);
+  const availableSourceChoices = sourceChoices.filter(c => c.layerPath === sourcePath && hasAuthoredValue(c));
+  const selectedChoices = availableSourceChoices.filter(c => selectedSourceProperties.includes(c.propertyKey));
   const sourceKind = chosenSource?.kind ?? mergeCategory;
   const compatibleDestinations = targetChoices.filter(choice => isSemanticallyCompatible(sourceKind, choice.kind));
   const selectedSourceLayer = sourceLayers.find(l => l.path === sourcePath);
