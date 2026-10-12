@@ -23,7 +23,7 @@ export type LayerArchetype = 'border-animation' | 'beam-animation' | 'bevel-anim
 export type LayerSemanticInfo = { label: string; archetype: LayerArchetype; effectLayer: boolean; effectName?: string };
 
 export function classifyLayerElement(element: HTMLElement, tag: string, text: string, depth: number, parentTag?: string): LayerSemanticInfo {
-  const clean = text.trim().replace(/\\s+/g, ' ').slice(0, 34);
+  const clean = text.trim().replace(/\s+/g, ' ').slice(0, 34);
   const tokens = [element.className, element.id, element.getAttribute('data-testid'), element.getAttribute('aria-label'), element.getAttribute('title')].filter(v => typeof v === 'string').join(' ').toLowerCase();
   const animationTokens = tokens + ' ' + Array.from(element.attributes).filter(a => a.name.startsWith('data-')).map(a => a.value).join(' ').toLowerCase();
   const hasAnimation = /animate|animation|motion|keyframe|shimmer|beam|neon|glow|shine|sweep|bevel|mirror|hologram|pulse|ripple|border-flow|borderbeam|border-beam|spotlight/.test(animationTokens);
@@ -56,7 +56,7 @@ export function classifyLayerElement(element: HTMLElement, tag: string, text: st
 }
 
 export function humanizeLayer(tag: string, text: string, depth: number, parentTag?: string): string {
-  const clean = text.trim().replace(/\\s+/g, ' ').slice(0, 34);
+  const clean = text.trim().replace(/\s+/g, ' ').slice(0, 34);
   if (tag === 'div' && depth === 0) return 'Contêiner principal';
   if (tag === 'div' && parentTag === 'button') return 'Estrutura do botão';
   if ((tag === 'span' || tag === 'p') && parentTag === 'button') return 'Texto do botão';
