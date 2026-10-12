@@ -999,6 +999,7 @@ export function getComponentSignatureEffect(type: GodUIComponentType): FusionEff
     'creative-image-texture-lab': 'pixel-reveal',
     'creative-kinetic-typography': 'shimmer-beam',
     'creative-isometric-tilemap': 'blueprint-laser',
+    'creative-spritesheet-animation-studio': 'pixel-reveal',
     'vgpu-black-hole': 'glass-refraction',
   };
 
