@@ -329,3 +329,117 @@ export function SpriteStage2D({ accent = '#67e8f9', label = 'Compositor de sprit
     </div>
   </section>;
 }
+
+
+type VectorShape = { id:number; kind:'rect'|'circle'|'triangle'|'line'; x:number; y:number; w:number; h:number; fill:string; stroke:string; strokeWidth:number };
+export function SVGVectorStudio({ accent = '#67e8f9', label = 'Estúdio vetorial SVG' }: BaseProps) {
+  const [shapes,setShapes] = useState<VectorShape[]>([]);
+  const [selected,setSelected] = useState<number|null>(null);
+  const [kind,setKind] = useState<VectorShape['kind']>('rect');
+  const [fill,setFill] = useState(accent);
+  const [stroke,setStroke] = useState('#e2e8f0');
+  const [nextId,setNextId] = useState(1);
+  const drag = useRef<{id:number; x:number; y:number}|null>(null);
+  const addShape = () => { const item:VectorShape={id:nextId,kind,x:320,y:180,w:kind==='line'?100:kind==='circle'?90:110,h:kind==='line'?0:kind==='circle'?90:kind==='triangle'?100:76,fill,stroke,strokeWidth:2};setShapes(items=>[...items,item]);setSelected(nextId);setNextId(v=>v+1); };
+  const update = (patch:Partial<VectorShape>) => setShapes(items=>items.map(item=>item.id===selected?{...item,...patch}:item));
+  const exportSvg = () => { const svg=document.getElementById('goduix-vector-artboard');if(!svg)return;const source=new XMLSerializer().serializeToString(svg);const url=URL.createObjectURL(new Blob([source],{type:'image/svg+xml;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='goduix-vector-art.svg';a.click();URL.revokeObjectURL(url); };
+  const down = (event:React.PointerEvent<SVGGElement>, item:VectorShape) => {const svg=event.currentTarget.ownerSVGElement;if(!svg)return;const rect=svg.getBoundingClientRect();drag.current={id:item.id,x:(event.clientX-rect.left)/rect.width*640-item.x,y:(event.clientY-rect.top)/rect.height*360-item.y};setSelected(item.id);svg.setPointerCapture(event.pointerId);};
+  const move = (event:React.PointerEvent<SVGSVGElement>) => {if(!drag.current)return;const rect=event.currentTarget.getBoundingClientRect();const x=(event.clientX-rect.left)/rect.width*640-drag.current.x;const y=(event.clientY-rect.top)/rect.height*360-drag.current.y;setShapes(items=>items.map(item=>item.id===drag.current?.id?{...item,x:Math.max(0,Math.min(640,x)),y:Math.max(0,Math.min(360,y))}:item));};
+  const current=shapes.find(item=>item.id===selected);
+  return <section className={frame}><VisualHeader eyebrow="SVG / VECTOR EDITOR" title={label} description="Crie formas vetoriais, mova objetos, edite cores e exporte SVG. A prancheta começa vazia."/>
+    <div className="mx-3 mb-3 mt-3 overflow-hidden rounded-xl border border-white/10">
+      <svg id="goduix-vector-artboard" viewBox="0 0 640 360" role="img" aria-label={label} className="block aspect-video w-full touch-none bg-[#0b1220]" onPointerMove={move} onPointerUp={()=>{drag.current=null;}} onPointerCancel={()=>{drag.current=null;}}>
+        <defs><pattern id="goduix-vector-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(148,163,184,.12)" strokeWidth=".7"/></pattern></defs>
+        <rect width="640" height="360" fill="url(#goduix-vector-grid)" />
+        {shapes.map(item=><g key={item.id} onPointerDown={event=>down(event,item)} className="cursor-move">
+          {item.kind==='rect'&&<rect x={item.x-item.w/2} y={item.y-item.h/2} width={item.w} height={item.h} rx="8" fill={item.fill} stroke={item.stroke} strokeWidth={item.strokeWidth}/>}
+          {item.kind==='circle'&&<circle cx={item.x} cy={item.y} r={item.w/2} fill={item.fill} stroke={item.stroke} strokeWidth={item.strokeWidth}/>}
+          {item.kind==='triangle'&&<polygon points={(item.x)+','+(item.y-item.h/2)+' '+(item.x+item.w/2)+','+(item.y+item.h/2)+' '+(item.x-item.w/2)+','+(item.y+item.h/2)} fill={item.fill} stroke={item.stroke} strokeWidth={item.strokeWidth}/>}
+          {item.kind==='line'&&<line x1={item.x-item.w/2} y1={item.y} x2={item.x+item.w/2} y2={item.y} stroke={item.stroke||item.fill} strokeWidth={item.strokeWidth} strokeLinecap="round"/>}
+          {selected===item.id&&<rect x={item.x-item.w/2-7} y={item.y-item.h/2-7} width={item.w+14} height={Math.max(item.h,2)+14} fill="none" stroke={accent} strokeDasharray="5 4" pointerEvents="none"/>}
+        </g>)}
+        {shapes.length===0&&<text x="320" y="180" textAnchor="middle" fill="#94a3b8" fontSize="13">Adicione uma forma para começar</text>}
+      </svg>
+      <div className="flex flex-wrap items-center gap-2 border-t border-white/10 bg-black/20 p-3">
+        <select className={control} value={kind} onChange={e=>setKind(e.target.value as VectorShape['kind'])} aria-label="Tipo de forma"><option value="rect">Retângulo</option><option value="circle">Círculo</option><option value="triangle">Triângulo</option><option value="line">Linha</option></select>
+        <button className={control} onClick={addShape} type="button">Adicionar forma</button>
+        <button className={control} onClick={()=>{setShapes(items=>items.filter(item=>item.id!==selected));setSelected(null);}} disabled={selected===null} type="button">Remover</button>
+        <button className={control} onClick={exportSvg} disabled={shapes.length===0} type="button">Exportar SVG</button>
+        <span className="ml-auto text-[10px] text-white/45">{shapes.length} forma(s)</span>
+      </div>
+      {current&&<div className="grid grid-cols-2 gap-3 border-t border-white/10 p-3 sm:grid-cols-4">
+        <label className={fieldLabel}>Preenchimento<input className="mt-2 block h-8 w-full" type="color" value={current.fill} onChange={e=>update({fill:e.target.value})}/></label>
+        <label className={fieldLabel}>Contorno<input className="mt-2 block h-8 w-full" type="color" value={current.stroke} onChange={e=>update({stroke:e.target.value})}/></label>
+        <label className={fieldLabel}>Largura <span className="text-white">{current.w}</span><input className="mt-2 block w-full" type="range" min="12" max="220" value={current.w} onChange={e=>update({w:Number(e.target.value)})}/></label>
+        <label className={fieldLabel}>Altura <span className="text-white">{current.h}</span><input className="mt-2 block w-full" type="range" min="0" max="220" value={current.h} onChange={e=>update({h:Number(e.target.value)})}/></label>
+      </div>}
+    </div>
+  </section>;
+}
+
+type ImageFilter = 'none'|'grayscale'|'sepia'|'contrast'|'saturate'|'hue'|'blur';
+export function ImageTextureLab({ accent = '#67e8f9', label = 'Laboratório de texturas' }: BaseProps) {
+  const canvasRef=useRef<HTMLCanvasElement>(null);const inputRef=useRef<HTMLInputElement>(null);const imageRef=useRef<HTMLImageElement|null>(null);const urlRef=useRef<string|null>(null);
+  const [filter,setFilter]=useState<ImageFilter>('none');const [strength,setStrength]=useState(1);const [fileName,setFileName]=useState('');const [message,setMessage]=useState('');
+  useEffect(()=>{const canvas=canvasRef.current,ctx=canvas?.getContext('2d');const img=imageRef.current;if(!canvas||!ctx||!img)return;const scale=Math.min(1,1200/img.naturalWidth,900/img.naturalHeight);canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));ctx.clearRect(0,0,canvas.width,canvas.height);let filterValue='none';if(filter==='grayscale')filterValue='grayscale('+strength+')';if(filter==='sepia')filterValue='sepia('+strength+')';if(filter==='contrast')filterValue='contrast('+(1+strength*.8)+')';if(filter==='saturate')filterValue='saturate('+(1+strength*1.5)+')';if(filter==='hue')filterValue='hue-rotate('+Math.round(strength*360)+'deg)';if(filter==='blur')filterValue='blur('+(strength*4)+'px)';ctx.filter=filterValue;ctx.drawImage(img,0,0,canvas.width,canvas.height);ctx.filter='none';},[filter,strength,fileName]);
+  useEffect(()=>()=>{if(urlRef.current)URL.revokeObjectURL(urlRef.current);},[]);
+  const upload=(event:React.ChangeEvent<HTMLInputElement>)=>{const file=event.currentTarget.files?.[0];if(!file)return;if(!file.type.startsWith('image/')){setMessage('O arquivo selecionado não é uma imagem compatível.');return;}if(urlRef.current)URL.revokeObjectURL(urlRef.current);const url=URL.createObjectURL(file);urlRef.current=url;const img=new Image();img.onload=()=>{imageRef.current=img;setFileName(file.name);setMessage('');setFilter('none');};img.onerror=()=>setMessage('Não foi possível decodificar esta imagem.');img.src=url;event.currentTarget.value='';};
+  const exportPng=()=>{const canvas=canvasRef.current;if(!canvas||!imageRef.current)return;canvas.toBlob(blob=>{if(!blob){setMessage('Falha ao exportar PNG.');return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='goduix-texture.png';a.click();URL.revokeObjectURL(url);},'image/png');};
+  return <section className={frame}><VisualHeader eyebrow="IMAGE / TEXTURE LAB" title={label} description="Aplique filtros à imagem escolhida e exporte o resultado. Nenhuma imagem de demonstração é carregada."/>
+    <div className="mx-3 mb-3 mt-3 overflow-hidden rounded-xl border border-white/10">
+      <div className="relative flex min-h-64 items-center justify-center bg-[#0b1220] p-3">
+        <canvas ref={canvasRef} aria-label="Prévia da imagem filtrada" className="max-h-[420px] max-w-full object-contain" />
+        {!fileName&&<div className="pointer-events-none absolute text-center text-xs text-white/45">Importe uma imagem para visualizar os filtros</div>}
+      </div>
+      <div className="flex flex-wrap items-center gap-2 border-t border-white/10 p-3">
+        <input ref={inputRef} type="file" accept="image/*" className="sr-only" onChange={upload} aria-label="Importar imagem"/>
+        <button type="button" className={control} onClick={()=>inputRef.current?.click()}>Importar imagem</button>
+        <select className={control} value={filter} onChange={e=>setFilter(e.target.value as ImageFilter)} aria-label="Filtro de imagem"><option value="none">Original</option><option value="grayscale">Preto e branco</option><option value="sepia">Sépia</option><option value="contrast">Alto contraste</option><option value="saturate">Saturação</option><option value="hue">Matiz</option><option value="blur">Desfoque</option></select>
+        <button type="button" className={control} onClick={exportPng} disabled={!fileName}>Exportar PNG</button>
+      </div>
+      {filter!=='none'&&<label className="block px-3 pb-3 text-xs text-white/60">Intensidade <span className="text-white">{strength.toFixed(2)}</span><input className="mt-2 block w-full accent-cyan-300" type="range" min="0" max="1" step=".05" value={strength} onChange={e=>setStrength(Number(e.target.value))}/></label>}
+      {fileName&&<p className="px-3 pb-3 text-[10px] text-white/45">{fileName}</p>}
+      {message&&<p role="status" className="px-3 pb-3 text-xs text-amber-200">{message}</p>}
+    </div>
+  </section>;
+}
+
+export function KineticTypographyLab({ accent = '#67e8f9', label = 'Laboratório tipográfico cinético' }: BaseProps) {
+  const [textValue,setTextValue]=useState('');const [effect,setEffect]=useState<'gradient'|'depth'|'outline'|'glow'>('gradient');const [size,setSize]=useState(38);const [speed,setSpeed]=useState(1);const reducedMotion=useReducedMotion();
+  return <section className={frame}><VisualHeader eyebrow="KINETIC TYPE / MOTION" title={label} description="Experimente tratamentos tipográficos em texto editável, com controles de tamanho e velocidade e respeito a movimento reduzido."/>
+    <div className="mx-3 mb-3 mt-3 rounded-xl border border-white/10 bg-[#0b1220] p-4">
+      <textarea value={textValue} onChange={e=>setTextValue(e.target.value)} rows={2} maxLength={120} aria-label="Texto tipográfico" placeholder="Digite o texto que deseja animar" className="w-full resize-y rounded-lg border border-white/10 bg-black/20 p-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"/>
+      <div className="flex min-h-44 items-center justify-center overflow-hidden px-3 py-6 text-center">
+        <motion.div animate={reducedMotion?{opacity:1}:{opacity:[.78,1,.88]}} transition={{duration:Math.max(.5,2/speed),repeat:reducedMotion?0:Infinity,ease:'easeInOut'}} style={{fontSize:size,lineHeight:1.1,fontWeight:850,overflowWrap:'anywhere',color:effect==='outline'?'transparent':accent,background:effect==='gradient'?'linear-gradient(100deg,'+accent+',#fff,#a78bfa,'+accent+')':undefined,backgroundSize:effect==='gradient'?'220% 100%':undefined,WebkitBackgroundClip:effect==='gradient'?'text':undefined,WebkitTextStroke:effect==='outline'?'1.5px '+accent:undefined,textShadow:effect==='glow'?'0 0 12px '+accent+', 0 0 38px '+accent+'70':undefined,filter:effect==='depth'?'drop-shadow(0 8px 0 rgba(103,232,249,.16))':undefined}}>{textValue||'Prévia do texto'}</motion.div>
+      </div>
+      <div className="grid grid-cols-1 gap-3 border-t border-white/10 pt-3 sm:grid-cols-3">
+        <label className={fieldLabel}>Efeito<select className={control+' mt-2 block w-full'} value={effect} onChange={e=>setEffect(e.target.value as typeof effect)}><option value="gradient">Gradiente</option><option value="depth">Profundidade</option><option value="outline">Contorno</option><option value="glow">Brilho</option></select></label>
+        <label className={fieldLabel}>Tamanho <span className="text-white">{size}px</span><input className="mt-3 block w-full" type="range" min="16" max="72" value={size} onChange={e=>setSize(Number(e.target.value))}/></label>
+        <label className={fieldLabel}>Velocidade <span className="text-white">{speed.toFixed(1)}×</span><input className="mt-3 block w-full" type="range" min=".3" max="2" step=".1" value={speed} onChange={e=>setSpeed(Number(e.target.value))}/></label>
+      </div>
+    </div>
+  </section>;
+}
+
+type IsoTile={col:number;row:number;kind:'grass'|'water'|'stone'|'sand';color:string};
+export function IsometricTilemapStudio({ accent = '#67e8f9', label = 'Estúdio de mapas isométricos' }: BaseProps) {
+  const [tiles,setTiles]=useState<IsoTile[]>([]);const [kind,setKind]=useState<IsoTile['kind']>('grass');const [selected,setSelected]=useState<string|null>(null);
+  const [colors,setColors]=useState<Record<IsoTile['kind'],string>>({grass:'#4ade80',water:'#38bdf8',stone:'#94a3b8',sand:'#fbbf24'});
+  const addTile=(col:number,row:number)=>{const key=col+':'+row;setTiles(current=>current.some(t=>t.col===col&&t.row===row)?current.map(t=>t.col===col&&t.row===row?{...t,kind,color:colors[kind]}:t):[...current,{col,row,kind,color:colors[kind]}]);setSelected(key);};
+  const exportSvg=()=>{const svg=document.getElementById('goduix-isometric-tilemap');if(!svg)return;const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='goduix-isometric-map.svg';a.click();URL.revokeObjectURL(url);};
+  return <section className={frame}><VisualHeader eyebrow="ISOMETRIC / TILEMAP EDITOR" title={label} description="Construa um mapa tile a tile, escolhendo terreno e cor. A grade começa vazia e pode ser exportada como SVG."/>
+    <div className="mx-3 mb-3 mt-3 overflow-hidden rounded-xl border border-white/10">
+      <svg id="goduix-isometric-tilemap" viewBox="0 0 640 360" role="img" aria-label={label} className="block aspect-video w-full bg-[#0b1220]">
+        {Array.from({length:11},(_,row)=>Array.from({length:17},(_,col)=>{const x=320+(col-row)*18,y=35+(col+row)*9;const key=col+':'+row;const tile=tiles.find(t=>t.col===col&&t.row===row);return <g key={key} onClick={()=>addTile(col,row)} className="cursor-pointer"><polygon points={x+','+y+' '+(x+18)+','+(y+9)+' '+x+','+(y+18)+' '+(x-18)+','+(y+9)} fill={tile?.color||'rgba(148,163,184,.035)'} stroke={selected===key?accent:'rgba(148,163,184,.2)'} strokeWidth={selected===key?2:1}/>{tile?.kind==='water'&&<path d={'M '+(x-10)+' '+(y+9)+' q 5 -3 10 0 t 10 0'} fill="none" stroke="#e0f2fe" strokeWidth="1.5" pointerEvents="none"/>}{tile?.kind==='grass'&&<path d={'M '+x+' '+(y+7)+' l -3 -4 m 3 4 l 4 -5'} fill="none" stroke="#dcfce7" strokeWidth="1.2" pointerEvents="none"/>}</g>;}))}
+      </svg>
+      <div className="flex flex-wrap items-center gap-2 border-t border-white/10 p-3">
+        <select className={control} value={kind} onChange={e=>setKind(e.target.value as IsoTile['kind'])} aria-label="Tipo de terreno"><option value="grass">Vegetação</option><option value="water">Água</option><option value="stone">Pedra</option><option value="sand">Areia</option></select>
+        <button className={control} type="button" onClick={()=>{if(selected){const parts=selected.split(':').map(Number);setTiles(current=>current.filter(t=>t.col!==parts[0]||t.row!==parts[1]));setSelected(null);}}} disabled={!selected}>Apagar tile</button>
+        <button className={control} type="button" onClick={exportSvg} disabled={tiles.length===0}>Exportar SVG</button>
+        <button className={control} type="button" onClick={()=>{setTiles([]);setSelected(null);}}>Limpar mapa</button>
+        <span className="ml-auto text-[10px] text-white/45">{tiles.length} tile(s)</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 border-t border-white/10 p-3 sm:grid-cols-4">{(['grass','water','stone','sand'] as const).map(type=><label key={type} className={fieldLabel}>{type==='grass'?'Vegetação':type==='water'?'Água':type==='stone'?'Pedra':'Areia'}<input className="mt-2 block h-8 w-full" type="color" value={colors[type]} onChange={e=>setColors(c=>({...c,[type]:e.target.value}))}/></label>)}</div>
+    </div>
+  </section>;
+}
