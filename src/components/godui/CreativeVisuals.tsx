@@ -36,7 +36,7 @@ export function Mascot2D({ accent = '#67e8f9', label = 'Mascote vetorial interat
 }
 
 type Particle = { x: number; y: number; vx: number; vy: number; radius: number };
-export function ParticleField2D({ accent = '#67e8f9', label = 'Campo de partículas', count = 56, speed = 1 }: BaseProps & { count?: number; speed?: number }) {
+export function ParticleField2D({ accent = '#67e8f9', label = 'Campo de partículas', count = 56, speed = 1, connectionDistance = 86, repulsionRadius = 90, particleSize = 1.8, pixelRatio = 1.5 }: BaseProps & { count?: number; speed?: number; connectionDistance?: number; repulsionRadius?: number; particleSize?: number; pixelRatio?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointer = useRef({ x: -1000, y: -1000 });
   useEffect(() => {
@@ -47,7 +47,7 @@ export function ParticleField2D({ accent = '#67e8f9', label = 'Campo de partícu
     const particles: Particle[] = [];
     const resize = () => {
       const rect = canvas.getBoundingClientRect(); width = Math.max(1, rect.width); height = Math.max(1, rect.height);
-      const ratio = Math.min(window.devicePixelRatio || 1, 2); canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio); context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const ratio = Math.min(window.devicePixelRatio || 1, Math.max(0.75, Math.min(2, pixelRatio))); canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio); context.setTransform(ratio, 0, 0, ratio, 0, 0);
       const target = Math.max(12, Math.min(120, Math.round(count)));
       while (particles.length < target) particles.push({ x: Math.random() * width, y: Math.random() * height, vx: (Math.random() - .5) * .6, vy: (Math.random() - .5) * .6, radius: 1 + Math.random() * 1.8 });
       particles.length = target;
@@ -57,13 +57,13 @@ export function ParticleField2D({ accent = '#67e8f9', label = 'Campo de partícu
       context.clearRect(0, 0, width, height);
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]; const dx = p.x - pointer.current.x, dy = p.y - pointer.current.y, distance = Math.hypot(dx, dy);
-        if (distance < 90 && distance > 0) { p.vx += dx / distance * .025; p.vy += dy / distance * .025; }
+        if (distance < repulsionRadius && distance > 0) { p.vx += dx / distance * .025; p.vy += dy / distance * .025; }
         p.vx += (Math.random() - .5) * .004; p.vy += (Math.random() - .5) * .004;
         const velocity = Math.max(.15, Math.min(1.5, speed)); p.x += p.vx * velocity; p.y += p.vy * velocity;
         p.vx *= .995; p.vy *= .995;
         if (p.x < -5) p.x = width + 5; if (p.x > width + 5) p.x = -5; if (p.y < -5) p.y = height + 5; if (p.y > height + 5) p.y = -5;
-        context.beginPath(); context.arc(p.x, p.y, p.radius, 0, Math.PI * 2); context.fillStyle = accent; context.globalAlpha = .55 + .35 * Math.sin(p.x * .025 + p.y * .02); context.fill();
-        for (let j = i + 1; j < particles.length; j++) { const q = particles[j]; const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < 86) { context.beginPath(); context.moveTo(p.x, p.y); context.lineTo(q.x, q.y); context.strokeStyle = accent; context.globalAlpha = (1 - d / 86) * .22; context.lineWidth = .7; context.stroke(); } }
+        context.beginPath(); context.arc(p.x, p.y, p.radius * Math.max(0.25, Math.min(4, particleSize)), 0, Math.PI * 2); context.fillStyle = accent; context.globalAlpha = .55 + .35 * Math.sin(p.x * .025 + p.y * .02); context.fill();
+        for (let j = i + 1; j < particles.length; j++) { const q = particles[j]; const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < connectionDistance) { context.beginPath(); context.moveTo(p.x, p.y); context.lineTo(q.x, q.y); context.strokeStyle = accent; context.globalAlpha = (1 - d / connectionDistance) * .22; context.lineWidth = .7; context.stroke(); } }
       }
       context.globalAlpha = 1;
       if (!reduce) raf = requestAnimationFrame(draw);
@@ -73,7 +73,7 @@ export function ParticleField2D({ accent = '#67e8f9', label = 'Campo de partícu
     const leave = () => { pointer.current = { x: -1000, y: -1000 }; };
     canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerleave', leave);
     return () => { cancelAnimationFrame(raf); observer.disconnect(); canvas.removeEventListener('pointermove', move); canvas.removeEventListener('pointerleave', leave); };
-  }, [accent, count, speed]);
+  }, [accent, count, speed, connectionDistance, repulsionRadius, particleSize, pixelRatio]);
   return <section className={frame}><VisualHeader eyebrow="2D / CANVAS FIELD" title={label} description="Campo de partículas renderizado em canvas, com conexões espaciais e repulsão pelo ponteiro."/><canvas ref={canvasRef} className="mt-3 block h-64 w-full touch-pan-y" aria-label={label}/></section>;
 }
 
@@ -140,7 +140,7 @@ export function IsometricInterior({ accent = '#c084fc', label = 'Interior isomé
 export function IsometricFactory({ accent = '#fbbf24', label = 'Fábrica isométrica' }: BaseProps) { return <IsometricScene kind="factory" accent={accent} label={label}/>; }
 
 type ShaderKind = 'liquid' | 'glitch' | 'aurora';
-function ShaderCanvas({ kind, accent = '#67e8f9', label, speed = 1, intensity = .8 }: { kind: ShaderKind; accent?: string; label: string; speed?: number; intensity?: number }) {
+function ShaderCanvas({ kind, accent = '#67e8f9', label, speed = 1, intensity = .8, pixelRatio = 1.5 }: { kind: ShaderKind; accent?: string; label: string; speed?: number; intensity?: number; pixelRatio?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current; const gl = canvas?.getContext('webgl', { alpha: true, antialias: false, powerPreference: 'low-power' });
@@ -161,7 +161,7 @@ function ShaderCanvas({ kind, accent = '#67e8f9', label, speed = 1, intensity = 
     const timeLoc = gl.getUniformLocation(program, 'u_time'), resolutionLoc = gl.getUniformLocation(program, 'u_resolution'), intensityLoc = gl.getUniformLocation(program, 'u_intensity'), accentLoc = gl.getUniformLocation(program, 'u_accent'), kindLoc = gl.getUniformLocation(program, 'u_kind');
     const raw = accent.replace('#', ''); const expanded = raw.length === 3 ? raw.split('').map((part) => part + part).join('') : raw; const parsed = Number.parseInt(expanded, 16); const safe = Number.isFinite(parsed) ? parsed : 0x67e8f9; gl.uniform3f(accentLoc, ((safe >> 16) & 255) / 255, ((safe >> 8) & 255) / 255, (safe & 255) / 255); gl.uniform1i(kindLoc, kind === 'liquid' ? 0 : kind === 'glitch' ? 1 : 2); gl.uniform1f(intensityLoc, Math.max(.1, Math.min(1.5, intensity)));
     let raf = 0, start = performance.now();
-    const resize = () => { const rect = canvas.getBoundingClientRect(), ratio = Math.min(window.devicePixelRatio || 1, 1.5); canvas.width = Math.max(1, Math.round(rect.width * ratio)); canvas.height = Math.max(1, Math.round(rect.height * ratio)); gl.viewport(0,0,canvas.width,canvas.height); gl.uniform2f(resolutionLoc,canvas.width,canvas.height); };
+    const resize = () => { const rect = canvas.getBoundingClientRect(), ratio = Math.min(window.devicePixelRatio || 1, Math.max(0.75, Math.min(2, pixelRatio))); canvas.width = Math.max(1, Math.round(rect.width * ratio)); canvas.height = Math.max(1, Math.round(rect.height * ratio)); gl.viewport(0,0,canvas.width,canvas.height); gl.uniform2f(resolutionLoc,canvas.width,canvas.height); };
     const observer = new ResizeObserver(resize); observer.observe(canvas); resize();
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const draw = (now: number) => { gl.uniform1f(timeLoc, reduced ? 0 : (now-start)/1000*speed); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); if (!reduced) raf=requestAnimationFrame(draw); };
@@ -170,20 +170,20 @@ function ShaderCanvas({ kind, accent = '#67e8f9', label, speed = 1, intensity = 
   }, [kind, accent, speed, intensity]);
   return <section className={frame}><VisualHeader eyebrow="REALTIME / WEBGL SHADER" title={label} description="Fragment shader executado em WebGL com controles de intensidade e movimento; não é uma imagem pré-renderizada."/><canvas ref={canvasRef} className="mt-3 block h-64 w-full" role="img" aria-label={label}/></section>;
 }
-export function LiquidGlassShader({ accent = '#67e8f9', label = 'Refração líquida WebGL', intensity = .8, speed = 1 }: BaseProps & { intensity?: number; speed?: number }) { return <ShaderCanvas kind="liquid" accent={accent} label={label} intensity={intensity} speed={speed}/>; }
-export function GlitchShader({ accent = '#f472b6', label = 'Distorção digital glitch', intensity = .8, speed = 1 }: BaseProps & { intensity?: number; speed?: number }) { return <ShaderCanvas kind="glitch" accent={accent} label={label} intensity={intensity} speed={speed}/>; }
-export function AuroraShader({ accent = '#34d399', label = 'Aurora procedural', intensity = .8, speed = 1 }: BaseProps & { intensity?: number; speed?: number }) { return <ShaderCanvas kind="aurora" accent={accent} label={label} intensity={intensity} speed={speed}/>; }
+export function LiquidGlassShader({ accent = '#67e8f9', label = 'Refração líquida WebGL', intensity = .8, speed = 1, pixelRatio = 1.5 }: BaseProps & { intensity?: number; speed?: number; pixelRatio?: number }) { return <ShaderCanvas kind="liquid" accent={accent} label={label} intensity={intensity} speed={speed} pixelRatio={pixelRatio}/>; }
+export function GlitchShader({ accent = '#f472b6', label = 'Distorção digital glitch', intensity = .8, speed = 1, pixelRatio = 1.5 }: BaseProps & { intensity?: number; speed?: number; pixelRatio?: number }) { return <ShaderCanvas kind="glitch" accent={accent} label={label} intensity={intensity} speed={speed} pixelRatio={pixelRatio}/>; }
+export function AuroraShader({ accent = '#34d399', label = 'Aurora procedural', intensity = .8, speed = 1, pixelRatio = 1.5 }: BaseProps & { intensity?: number; speed?: number; pixelRatio?: number }) { return <ShaderCanvas kind="aurora" accent={accent} label={label} intensity={intensity} speed={speed} pixelRatio={pixelRatio}/>; }
 
-export function NetworkVisualization({ accent = '#67e8f9', label = 'Rede interativa de nós', count = 42 }: BaseProps & { count?: number }) {
+export function NetworkVisualization({ accent = '#67e8f9', label = 'Rede interativa de nós', count = 42, connectionDistance = 105, pointSize = 2.3, speed = 1, pixelRatio = 1.5 }: BaseProps & { count?: number; connectionDistance?: number; pointSize?: number; speed?: number; pixelRatio?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current, ctx = canvas?.getContext('2d'); if (!canvas || !ctx) return;
     let width=1,height=1,raf=0; const points: {x:number;y:number;vx:number;vy:number}[]=[];
-    const resize=()=>{const rect=canvas.getBoundingClientRect();width=rect.width;height=rect.height;const ratio=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(width*ratio));canvas.height=Math.max(1,Math.round(height*ratio));ctx.setTransform(ratio,0,0,ratio,0,0);const target=Math.max(10,Math.min(90,Math.round(count)));while(points.length<target)points.push({x:Math.random()*width,y:Math.random()*height,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35});points.length=target;};
+    const resize=()=>{const rect=canvas.getBoundingClientRect();width=rect.width;height=rect.height;const ratio=Math.min(window.devicePixelRatio||1,Math.max(0.75,Math.min(2,pixelRatio)));canvas.width=Math.max(1,Math.round(width*ratio));canvas.height=Math.max(1,Math.round(height*ratio));ctx.setTransform(ratio,0,0,ratio,0,0);const target=Math.max(10,Math.min(90,Math.round(count)));while(points.length<target)points.push({x:Math.random()*width,y:Math.random()*height,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35});points.length=target;};
     const observer=new ResizeObserver(resize);observer.observe(canvas);resize();const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const draw=()=>{ctx.clearRect(0,0,width,height);points.forEach((p,i)=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>width)p.vx*=-1;if(p.y<0||p.y>height)p.vy*=-1;for(let j=i+1;j<points.length;j++){const q=points[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<105){ctx.strokeStyle=accent;ctx.globalAlpha=(1-d/105)*.45;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}}ctx.globalAlpha=1;ctx.fillStyle=accent;ctx.beginPath();ctx.arc(p.x,p.y,2.3,0,Math.PI*2);ctx.fill();});if(!reduced)raf=requestAnimationFrame(draw);};draw();
+    const draw=()=>{ctx.clearRect(0,0,width,height);points.forEach((p,i)=>{p.x+=p.vx*speed;p.y+=p.vy*speed;if(p.x<0||p.x>width)p.vx*=-1;if(p.y<0||p.y>height)p.vy*=-1;for(let j=i+1;j<points.length;j++){const q=points[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<connectionDistance){ctx.strokeStyle=accent;ctx.globalAlpha=(1-d/connectionDistance)*.45;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}}ctx.globalAlpha=1;ctx.fillStyle=accent;ctx.beginPath();ctx.arc(p.x,p.y,pointSize,0,Math.PI*2);ctx.fill();});if(!reduced)raf=requestAnimationFrame(draw);};draw();
     return()=>{cancelAnimationFrame(raf);observer.disconnect();};
-  },[accent,count]);
+  },[accent,count,connectionDistance,pointSize,speed,pixelRatio]);
   return <section className={frame}><VisualHeader eyebrow="NETWORK / CANVAS" title={label} description="Grafo visual procedural com nós e arestas calculados em tempo real; mova o ponteiro sobre a área para explorar a rede."/><canvas ref={canvasRef} className="mt-3 block h-64 w-full" aria-label={label}/></section>;
 }
 
