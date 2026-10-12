@@ -73,7 +73,10 @@ function ThreeScene({ kind, accent = '#67e8f9', label, geometryScale = 1, rotati
       const materials = Array.isArray(object.material) ? object.material : [object.material];
       materials.forEach(material => {
         if (material instanceof THREE.MeshStandardMaterial) { material.metalness = metalness; material.roughness = roughness; }
-        if (wireframe && 'wireframe' in material) (material as THREE.MeshStandardMaterial).wireframe = true;
+        if ('wireframe' in material) {
+          const isHologramCore = kind === 'hologram' && object instanceof THREE.Mesh && object.geometry instanceof THREE.IcosahedronGeometry;
+          (material as THREE.MeshStandardMaterial).wireframe = wireframe || isHologramCore;
+        }
         material.needsUpdate = true;
       });
     });
@@ -143,7 +146,7 @@ export function UploadedModelViewer3D({ accent = '#67e8f9', label = 'Visualizado
         model.traverse(object => {
           if (!(object instanceof THREE.Mesh)) return;
           const materials = Array.isArray(object.material) ? object.material : [object.material];
-          materials.forEach(material => { if (wireframe && 'wireframe' in material) { (material as THREE.MeshStandardMaterial).wireframe = true; material.needsUpdate = true; } });
+          materials.forEach(material => { if ('wireframe' in material) { (material as THREE.MeshStandardMaterial).wireframe = wireframe; material.needsUpdate = true; } });
         });
         setLoaded(true);
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) renderer.render(scene,camera);
