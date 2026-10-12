@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { 
   Plus, 
   Search, 
@@ -19,8 +20,7 @@ import {
   FileCode2,
   Play,
   Move,
-  ArrowLeft,
-  Maximize2
+  ArrowLeft
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
@@ -98,8 +98,10 @@ const ComponentCardPreview: React.FC<{
   );
 
   return (
-    <div
+    <motion.div
       ref={previewRef}
+      layoutId={`component-preview-${item.type}`}
+      transition={{ layout: { type: 'spring', stiffness: 300, damping: 32, mass: 0.8 } }}
       role={fullscreen ? undefined : 'button'}
       tabIndex={fullscreen ? undefined : 0}
       onClick={(event) => {
@@ -115,22 +117,15 @@ const ComponentCardPreview: React.FC<{
         }
       }}
       className={cn(
-        "group/preview relative isolate w-full overflow-auto overscroll-contain border border-white/10 bg-zinc-950/80",
-        fullscreen ? "h-full min-h-0 rounded-2xl" : "h-48 cursor-zoom-in rounded-xl sm:h-56"
+        "group/preview relative isolate w-full min-w-0 overflow-hidden border border-white/10 bg-zinc-950/80",
+        fullscreen ? "h-full min-h-0 rounded-2xl" : "h-64 cursor-zoom-in rounded-xl sm:h-72"
       )}
       aria-label={fullscreen ? `Prévia interativa ampliada de ${item.name}` : `Abrir prévia ampliada de ${item.name}`}
-      title={fullscreen ? undefined : "Clique para ampliar a prévia"}
     >
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.08),transparent_70%)]" />
-      {!fullscreen && (
-        <div className="pointer-events-none absolute right-2 bottom-2 z-10 flex items-center gap-1 rounded-md border border-white/10 bg-black/70 px-1.5 py-1 text-[9px] text-zinc-300">
-          <Maximize2 className="h-3 w-3" />
-          Clique para ampliar
-        </div>
-      )}
       {isVisible ? (
-        <div className={cn("flex w-full min-w-0 items-stretch justify-center", fullscreen ? "min-h-full h-full p-4 sm:p-8" : "min-h-full p-0")}>
-          <div className="flex h-full w-full min-w-0 items-center justify-center">
+        <div className={cn("flex h-full w-full min-h-0 min-w-0 items-center justify-center", fullscreen ? "p-3 sm:p-6 lg:p-10" : "p-2")}>
+          <div className="flex h-full w-full min-h-0 min-w-0 items-center justify-center [&>*]:max-w-full">
             <ComponentRenderer instance={previewInstance} index={0} total={1} isInteractiveOnly />
           </div>
         </div>
@@ -151,10 +146,7 @@ const ComponentCardPreview: React.FC<{
           Replay
         </button>
       )}
-      {fullscreen && (
-        <span className="pointer-events-none absolute bottom-3 right-3 rounded-md border border-white/10 bg-black/60 px-2 py-1 text-[10px] font-mono uppercase tracking-wide text-zinc-300">Prévia interativa</span>
-      )}
-    </div>
+    </motion.div>
   );
 };
 
@@ -631,14 +623,20 @@ export const ComponentLibraryPanel: React.FC = () => {
         </div>
       )}
 
-      {expandedPreviewItem && (
-        <div
-          className="fixed inset-0 z-[100] flex flex-col bg-zinc-950/98 p-3 backdrop-blur-xl sm:p-6"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Prévia ampliada de ${expandedPreviewItem.name}`}
-        >
-          <div className="mb-3 flex shrink-0 items-center justify-between gap-3 border-b border-white/10 pb-3 sm:mb-4 sm:pb-4">
+      <AnimatePresence>
+        {expandedPreviewItem && (
+          <motion.div
+            key={`preview-overlay-${expandedPreviewItem.type}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ opacity: { duration: 0.18 } }}
+            className="fixed inset-0 z-[100] flex min-h-0 flex-col overflow-hidden bg-zinc-950/98 p-3 backdrop-blur-xl sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Prévia ampliada de ${expandedPreviewItem.name}`}
+          >
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2, delay: 0.08 }} className="mb-3 flex shrink-0 items-center justify-between gap-3 border-b border-white/10 pb-3 sm:mb-4 sm:pb-4">
             <button
               type="button"
               onClick={() => setExpandedPreviewItem(null)}
@@ -652,16 +650,17 @@ export const ComponentLibraryPanel: React.FC = () => {
               <div className="truncate text-sm font-semibold text-white">{expandedPreviewItem.name}</div>
               <div className="text-xs text-zinc-500">Prévia em tela cheia</div>
             </div>
-          </div>
-          <div className="min-h-0 flex-1">
+          </motion.div>
+          <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
             <ComponentCardPreview
               item={expandedPreviewItem}
               fullscreen
               onOpen={() => undefined}
             />
           </div>
-        </div>
-      )}
+        </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Pointer Drag Ghost Element */}
       {pointerDrag.active && pointerDrag.item && (
