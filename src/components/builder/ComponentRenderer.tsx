@@ -103,11 +103,11 @@ function applyComponentLayerOverrides(componentId: string, props: Record<string,
       if (customIcon) applyIconDefinition(node, customIcon);
       else if (node.hasAttribute('data-goduix-custom-icon')) applyIconDefinition(node, undefined);
     }
-    const mediaOverride = layerMedia[path] as { src?: string; alt?: string; controls?: boolean; muted?: boolean; loop?: boolean } | undefined;
+    const mediaOverride = layerMedia[path] as { src?: string; alt?: string; poster?: string; controls?: boolean; muted?: boolean; loop?: boolean } | undefined;
     if (node instanceof HTMLImageElement || node instanceof HTMLVideoElement) {
       let originalMedia = ORIGINAL_LAYER_MEDIA.get(node);
-      if (!originalMedia) { originalMedia = new Map<string, string | null>(); ['src', 'alt', 'poster'].forEach(attr => originalMedia!.set(attr, node.getAttribute(attr))); ORIGINAL_LAYER_MEDIA.set(node, originalMedia); }
-      for (const attr of ['src', 'alt'] as const) {
+      if (!originalMedia) { originalMedia = new Map<string, string | null>(); ['src', 'alt', 'poster', 'controls', 'muted', 'loop'].forEach(attr => originalMedia!.set(attr, attr === 'controls' || attr === 'muted' || attr === 'loop' ? String(Boolean((node as any)[attr])) : node.getAttribute(attr))); ORIGINAL_LAYER_MEDIA.set(node, originalMedia); }
+      for (const attr of ['src', 'alt', ...(node instanceof HTMLVideoElement ? ['poster'] : [])] as Array<'src' | 'alt' | 'poster'>) {
         const override = mediaOverride?.[attr];
         const original = originalMedia.get(attr) ?? null;
         if (typeof override === 'string' && override.trim()) node.setAttribute(attr, override);
@@ -116,12 +116,10 @@ function applyComponentLayerOverrides(componentId: string, props: Record<string,
       }
       if (node instanceof HTMLVideoElement) {
         const video = node as HTMLVideoElement;
-        const originalPoster = originalMedia.get('poster');
-        if (typeof mediaOverride?.src === 'string' && mediaOverride.src.trim()) video.setAttribute('poster', mediaOverride.src);
-        else if (originalPoster === null) video.removeAttribute('poster'); else video.setAttribute('poster', originalPoster);
-        if (typeof mediaOverride?.controls === 'boolean') video.controls = mediaOverride.controls;
-        if (typeof mediaOverride?.muted === 'boolean') video.muted = mediaOverride.muted;
-        if (typeof mediaOverride?.loop === 'boolean') video.loop = mediaOverride.loop;
+        for (const key of ['controls', 'muted', 'loop'] as const) {
+          const value = mediaOverride?.[key];
+          (video as any)[key] = typeof value === 'boolean' ? value : originalMedia.get(key) === 'true';
+        }
       }
     }
     if (Object.prototype.hasOwnProperty.call(texts, path) && !node.children.length) {
