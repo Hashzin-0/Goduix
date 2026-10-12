@@ -185,11 +185,33 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "label": "Legenda acessível",
         "type": "text",
         "defaultValue": "Vitrine de objeto 3D"
-      }
+      },
+      { "key": "geometryScale", "label": "Escala da geometria", "type": "number", "defaultValue": 1, "min": 0.25, "max": 3, "step": 0.05 },
+      { "key": "rotationSpeed", "label": "Velocidade de rotação", "type": "number", "defaultValue": 0.0025, "min": 0, "max": 0.02, "step": 0.0005 },
+      { "key": "cameraDistance", "label": "Distância da câmera", "type": "number", "defaultValue": 7.6, "min": 4.5, "max": 12, "step": 0.1 },
+      { "key": "cameraFov", "label": "Campo de visão da câmera", "type": "number", "defaultValue": 35, "min": 25, "max": 70, "step": 1 },
+      { "key": "ambientIntensity", "label": "Intensidade da luz ambiente", "type": "number", "defaultValue": 2.2, "min": 0, "max": 4, "step": 0.1 },
+      { "key": "keyLightIntensity", "label": "Intensidade da luz principal", "type": "number", "defaultValue": 3.2, "min": 0, "max": 5, "step": 0.1 },
+      { "key": "metalness", "label": "Metalness dos materiais", "type": "number", "defaultValue": 0.3, "min": 0, "max": 1, "step": 0.05 },
+      { "key": "roughness", "label": "Rugosidade dos materiais", "type": "number", "defaultValue": 0.25, "min": 0, "max": 1, "step": 0.05 },
+      { "key": "wireframe", "label": "Renderizar em wireframe", "type": "boolean", "defaultValue": false },
+      { "key": "exposure", "label": "Exposição HDR", "type": "number", "defaultValue": 1.1, "min": 0.5, "max": 2, "step": 0.05 },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#67e8f9",
-      "label": "Vitrine de objeto 3D"
+      "label": "Vitrine de objeto 3D",
+      "geometryScale": 1,
+      "rotationSpeed": 0.0025,
+      "cameraDistance": 7.6,
+      "cameraFov": 35,
+      "ambientIntensity": 2.2,
+      "keyLightIntensity": 3.2,
+      "metalness": 0.3,
+      "roughness": 0.25,
+      "wireframe": false,
+      "exposure": 1.1,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { ProductObject3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function ProductObject3DExample() {\n  return <ProductObject3D accent={\"#67e8f9\"} label={\"Vitrine de objeto 3D\"} />;\n}"
   },
@@ -218,11 +240,33 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "label": "Legenda acessível",
         "type": "text",
         "defaultValue": "Diorama 3D"
-      }
+      },
+      { "key": "geometryScale", "label": "Escala da geometria", "type": "number", "defaultValue": 1, "min": 0.25, "max": 3, "step": 0.05 },
+      { "key": "rotationSpeed", "label": "Velocidade de rotação", "type": "number", "defaultValue": 0.0025, "min": 0, "max": 0.02, "step": 0.0005 },
+      { "key": "cameraDistance", "label": "Distância da câmera", "type": "number", "defaultValue": 7.6, "min": 4.5, "max": 12, "step": 0.1 },
+      { "key": "cameraFov", "label": "Campo de visão da câmera", "type": "number", "defaultValue": 35, "min": 25, "max": 70, "step": 1 },
+      { "key": "ambientIntensity", "label": "Intensidade da luz ambiente", "type": "number", "defaultValue": 2.2, "min": 0, "max": 4, "step": 0.1 },
+      { "key": "keyLightIntensity", "label": "Intensidade da luz principal", "type": "number", "defaultValue": 3.2, "min": 0, "max": 5, "step": 0.1 },
+      { "key": "metalness", "label": "Metalness dos materiais", "type": "number", "defaultValue": 0.3, "min": 0, "max": 1, "step": 0.05 },
+      { "key": "roughness", "label": "Rugosidade dos materiais", "type": "number", "defaultValue": 0.25, "min": 0, "max": 1, "step": 0.05 },
+      { "key": "wireframe", "label": "Renderizar em wireframe", "type": "boolean", "defaultValue": false },
+      { "key": "exposure", "label": "Exposição HDR", "type": "number", "defaultValue": 1.1, "min": 0.5, "max": 2, "step": 0.05 },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#4ade80",
-      "label": "Diorama 3D"
+      "label": "Diorama 3D",
+      "geometryScale": 1,
+      "rotationSpeed": 0.0025,
+      "cameraDistance": 7.6,
+      "cameraFov": 35,
+      "ambientIntensity": 2.2,
+      "keyLightIntensity": 3.2,
+      "metalness": 0.3,
+      "roughness": 0.25,
+      "wireframe": false,
+      "exposure": 1.1,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { Diorama3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function Diorama3DExample() {\n  return <Diorama3D accent={\"#4ade80\"} label={\"Diorama 3D\"} />;\n}"
   },
@@ -251,11 +295,33 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "label": "Legenda acessível",
         "type": "text",
         "defaultValue": "Holograma geométrico 3D"
-      }
+      },
+      { "key": "geometryScale", "label": "Escala da geometria", "type": "number", "defaultValue": 1, "min": 0.25, "max": 3, "step": 0.05 },
+      { "key": "rotationSpeed", "label": "Velocidade de rotação", "type": "number", "defaultValue": 0.0025, "min": 0, "max": 0.02, "step": 0.0005 },
+      { "key": "cameraDistance", "label": "Distância da câmera", "type": "number", "defaultValue": 7.6, "min": 4.5, "max": 12, "step": 0.1 },
+      { "key": "cameraFov", "label": "Campo de visão da câmera", "type": "number", "defaultValue": 35, "min": 25, "max": 70, "step": 1 },
+      { "key": "ambientIntensity", "label": "Intensidade da luz ambiente", "type": "number", "defaultValue": 2.2, "min": 0, "max": 4, "step": 0.1 },
+      { "key": "keyLightIntensity", "label": "Intensidade da luz principal", "type": "number", "defaultValue": 3.2, "min": 0, "max": 5, "step": 0.1 },
+      { "key": "metalness", "label": "Metalness dos materiais", "type": "number", "defaultValue": 0.3, "min": 0, "max": 1, "step": 0.05 },
+      { "key": "roughness", "label": "Rugosidade dos materiais", "type": "number", "defaultValue": 0.25, "min": 0, "max": 1, "step": 0.05 },
+      { "key": "wireframe", "label": "Renderizar em wireframe", "type": "boolean", "defaultValue": false },
+      { "key": "exposure", "label": "Exposição HDR", "type": "number", "defaultValue": 1.1, "min": 0.5, "max": 2, "step": 0.05 },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#a78bfa",
-      "label": "Holograma geométrico 3D"
+      "label": "Holograma geométrico 3D",
+      "geometryScale": 1,
+      "rotationSpeed": 0.0025,
+      "cameraDistance": 7.6,
+      "cameraFov": 35,
+      "ambientIntensity": 2.2,
+      "keyLightIntensity": 3.2,
+      "metalness": 0.3,
+      "roughness": 0.25,
+      "wireframe": false,
+      "exposure": 1.1,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { Holographic3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function Holographic3DExample() {\n  return <Holographic3D accent={\"#a78bfa\"} label={\"Holograma geométrico 3D\"} />;\n}"
   },
@@ -643,11 +709,29 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
         "label": "Legenda acessível",
         "type": "text",
         "defaultValue": "Visualizador de modelo 3D"
-      }
+      },
+      { "key": "modelScale", "label": "Escala do modelo GLB", "type": "number", "defaultValue": 1, "min": 0.1, "max": 4, "step": 0.05 },
+      { "key": "rotationSpeed", "label": "Velocidade de rotação", "type": "number", "defaultValue": 0.0015, "min": 0, "max": 0.02, "step": 0.0005 },
+      { "key": "cameraDistance", "label": "Distância da câmera", "type": "number", "defaultValue": 4.5, "min": 1.8, "max": 10, "step": 0.1 },
+      { "key": "cameraFov", "label": "Campo de visão da câmera", "type": "number", "defaultValue": 40, "min": 25, "max": 70, "step": 1 },
+      { "key": "ambientIntensity", "label": "Intensidade da luz ambiente", "type": "number", "defaultValue": 2.2, "min": 0, "max": 4, "step": 0.1 },
+      { "key": "keyLightIntensity", "label": "Intensidade da luz principal", "type": "number", "defaultValue": 3, "min": 0, "max": 5, "step": 0.1 },
+      { "key": "wireframe", "label": "Renderizar em wireframe", "type": "boolean", "defaultValue": false },
+      { "key": "exposure", "label": "Exposição HDR", "type": "number", "defaultValue": 1.1, "min": 0.5, "max": 2, "step": 0.05 },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 }
     ],
     "defaultProps": {
       "accent": "#67e8f9",
-      "label": "Visualizador de modelo 3D"
+      "label": "Visualizador de modelo 3D",
+      "modelScale": 1,
+      "rotationSpeed": 0.0015,
+      "cameraDistance": 4.5,
+      "cameraFov": 40,
+      "ambientIntensity": 2.2,
+      "keyLightIntensity": 3,
+      "wireframe": false,
+      "exposure": 1.1,
+      "pixelRatio": 1.5
     },
     "sampleCode": "import { UploadedModelViewer3D } from \"@/components/godui/Creative3DVisuals\";\n\nexport function UploadedModelViewer3DExample() {\n  return <UploadedModelViewer3D accent={\"#67e8f9\"} label={\"Visualizador de modelo 3D\"} />;\n}"
   }
@@ -681,7 +765,20 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "dependencies": ["react", "three", "motion"],
     "propFields": [
       { "key": "accent", "label": "Cor de destaque", "type": "color", "defaultValue": "#67e8f9" },
-      { "key": "label", "label": "Legenda acessível", "type": "text", "defaultValue": "Superfície fluida 3D" }
+      { "key": "label", "label": "Legenda acessível", "type": "text", "defaultValue": "Superfície fluida 3D" },
+      { "key": "geometryScale", "label": "Escala da geometria", "type": "number", "defaultValue": 1, "min": 0.25, "max": 3, "step": 0.05 },
+      { "key": "rotationSpeed", "label": "Velocidade de rotação", "type": "number", "defaultValue": 0.0025, "min": 0, "max": 0.02, "step": 0.0005 },
+      { "key": "cameraDistance", "label": "Distância da câmera", "type": "number", "defaultValue": 7.6, "min": 4.5, "max": 12, "step": 0.1 },
+      { "key": "cameraFov", "label": "Campo de visão da câmera", "type": "number", "defaultValue": 35, "min": 25, "max": 70, "step": 1 },
+      { "key": "ambientIntensity", "label": "Intensidade da luz ambiente", "type": "number", "defaultValue": 2.2, "min": 0, "max": 4, "step": 0.1 },
+      { "key": "keyLightIntensity", "label": "Intensidade da luz principal", "type": "number", "defaultValue": 3.2, "min": 0, "max": 5, "step": 0.1 },
+      { "key": "metalness", "label": "Metalness dos materiais", "type": "number", "defaultValue": 0.3, "min": 0, "max": 1, "step": 0.05 },
+      { "key": "roughness", "label": "Rugosidade dos materiais", "type": "number", "defaultValue": 0.25, "min": 0, "max": 1, "step": 0.05 },
+      { "key": "wireframe", "label": "Renderizar em wireframe", "type": "boolean", "defaultValue": false },
+      { "key": "exposure", "label": "Exposição HDR", "type": "number", "defaultValue": 1.1, "min": 0.5, "max": 2, "step": 0.05 },
+      { "key": "pixelRatio", "label": "Densidade de renderização", "type": "number", "defaultValue": 1.5, "min": 0.75, "max": 2, "step": 0.25 },
+      { "key": "fluidAmplitude", "label": "Amplitude da superfície", "type": "number", "defaultValue": 0.16, "min": 0, "max": 0.5, "step": 0.01 },
+      { "key": "fluidSpeed", "label": "Velocidade da onda", "type": "number", "defaultValue": 1, "min": 0, "max": 3, "step": 0.1 }
     ],
     "defaultProps": { "accent": "#67e8f9", "label": "Superfície fluida 3D" },
     "sampleCode": "import { FluidSurface3D } from '@/components/godui/Creative3DVisuals';\n\nexport function FluidSurface3DExample() {\n  return <FluidSurface3D accent='#67e8f9' label='Superfície fluida 3D' />;\n}"
@@ -712,7 +809,20 @@ export const GODUI_CATALOG: Record<GodUIComponentType, GodUIMeta> = {
       showNavLinks: true,
       ctaText: 'Deploy Project',
       blurStrength: 16,
-      isSticky: true,
+      isSticky: true,,
+      "geometryScale": 1,
+      "rotationSpeed": 0.0025,
+      "cameraDistance": 7.6,
+      "cameraFov": 35,
+      "ambientIntensity": 2.2,
+      "keyLightIntensity": 3.2,
+      "metalness": 0.3,
+      "roughness": 0.25,
+      "wireframe": false,
+      "exposure": 1.1,
+      "pixelRatio": 1.5,
+      "fluidAmplitude": 0.16,
+      "fluidSpeed": 1
     },
     sampleCode: `import { motion } from "motion/react";
 import { useState } from "react";
