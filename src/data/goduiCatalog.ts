@@ -815,6 +815,37 @@ const CREATIVE_COMPONENTS: GodUIMeta[] = [
     "sampleCode": "import { IsometricTilemapStudio } from \"@/components/godui/CreativeVisuals\";\n\nexport function IsometricTilemapStudioExample() {\n  return <IsometricTilemapStudio accent={\"#67e8f9\"} label={\"Estúdio de mapas isométricos\"} />;\n}"
   }
 
+  {
+    "type": "creative-spritesheet-animation-studio",
+    "name": "Estúdio de Animação por Spritesheet",
+    "category": "Creative & Shaders",
+    "description": "Importe uma spritesheet real, defina linhas e colunas, reproduza a animação com FPS ajustável e exporte quadros PNG.",
+    "iconName": "Film",
+    "badge": "2D / Sprite Animation",
+    "registryName": "godui/SpriteSheetAnimationStudio",
+    "dependencies": [
+      "react"
+    ],
+    "propFields": [
+      {
+        "key": "accent",
+        "label": "Cor de destaque",
+        "type": "color",
+        "defaultValue": "#67e8f9"
+      },
+      {
+        "key": "label",
+        "label": "Legenda acessível",
+        "type": "text",
+        "defaultValue": "Estúdio de animação por spritesheet"
+      }
+    ],
+    "defaultProps": {
+      "accent": "#67e8f9",
+      "label": "Estúdio de animação por spritesheet"
+    },
+    "sampleCode": "import { SpriteSheetAnimationStudio } from \"@/components/godui/SpriteSheetAnimationStudio\";\n\nexport function SpriteSheetAnimationStudioExample() {\n  return <SpriteSheetAnimationStudio accent={\"#67e8f9\"} label={\"Estúdio de animação por spritesheet\"} />;\n}"
+  }
 ];
 
 export const GODUI_CATALOG: Record<GodUIComponentType, GodUIMeta> = {
