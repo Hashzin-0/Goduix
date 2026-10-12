@@ -36,7 +36,8 @@ function scanLayers(root: HTMLElement): LayerNode[] {
     const isControl = ['button','input','textarea','select','a'].includes(tag);
     const kind: LayerNode['kind'] = isIcon ? 'icon' : isImage ? 'image' : isControl ? 'control' : text && leaf ? 'text' : 'container';
     const hint = text || node.getAttribute('aria-label') || node.getAttribute('title') || node.getAttribute('alt') || node.getAttribute('placeholder') || '';
-    const semantic = classifyLayerElement(node, tag, hint, depth, parentTag);\n    output.push({ path, tag, label: semantic.label || humanizeLayer(tag, hint, depth, parentTag), kind, depth, text, leaf, parentTag, archetype: semantic.archetype, effectLayer: semantic.effectLayer, effectName: semantic.effectName });
+    const semantic = classifyLayerElement(node, tag, hint, depth, parentTag);
+    output.push({ path, tag, label: semantic.label || humanizeLayer(tag, hint, depth, parentTag), kind, depth, text, leaf, parentTag, archetype: semantic.archetype, effectLayer: semantic.effectLayer, effectName: semantic.effectName });
     children.forEach((child,index) => walk(child as HTMLElement, path ? `${path}.${index}` : String(index), depth+1, tag));
   };
   walk(root, '', 0);
@@ -57,7 +58,8 @@ const kindIcon = (kind: LayerNode['kind']) => kind === 'text' ? <Type size={13}/
 
 export const ComponentLayerEditor: React.FC<{ component: BuilderComponentInstance }> = ({ component }) => {
   const store = useBuilderStore();
-  const [layers, setLayers] = useState<LayerNode[]>([]);\n  const previewHostRef = useRef<HTMLDivElement>(null);
+  const [layers, setLayers] = useState<LayerNode[]>([]);
+  const previewHostRef = useRef<HTMLDivElement>(null);
   const [selectedPath, setSelectedPath] = useState('');
   const [textValue, setTextValue] = useState('');
   const [scanVersion, setScanVersion] = useState(0);
