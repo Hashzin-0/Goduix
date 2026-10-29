@@ -1,46 +1,21 @@
-# Integração da Canvas UI no Goduix
+# Canvas UI: estado da integração
 
-## Decisão de integração e licença
+## Por que o catálogo de comandos foi removido
 
-A Canvas UI oferece 35 efeitos com variantes React e WebGL/WebGPU, distribuídos pelo registry oficial compatível com shadcn: `npx shadcn@latest add @canvas-ui/<componente>-react`.
+O Goduix não deve apresentar um catálogo de componentes que exige que o usuário copie comandos para outro projeto. Essa interface foi removida.
 
-A licença publicada pelo autor é MIT + Commons Clause. Ela permite utilizar o software como parte de uma aplicação, mas proíbe vender, sublicenciar ou redistribuir os componentes em si, inclusive em pacote ou versão portada. Como o Goduix é um construtor de componentes e pode exportar código para terceiros, copiar esses componentes para o catálogo interno e redistribuí-los seria incompatível com essa restrição.
+O repositório de origem, https://github.com/DavidHDev/canvas-ui, publica seus componentes sob a licença MIT + Commons Clause, disponível em https://github.com/DavidHDev/canvas-ui/blob/main/LICENSE.md. A cláusula proíbe vender, sublicenciar ou redistribuir os próprios componentes, inclusive em um pacote ou versão portada.
 
-Por isso, a integração usa o registry oficial diretamente e **não clona nem incorpora o código-fonte Canvas UI** ao repositório Goduix. Assim, os usuários podem obter os arquivos do próprio autor no projeto React de destino, mantendo a origem e os avisos de licença.
+Como o Goduix é um repositório público e um construtor que pode exportar componentes, copiar o código-fonte original para o repositório e incorporá-lo ao bundle exigiria autorização/licença compatível do titular. Não devemos contornar essa restrição.
 
-## O que foi integrado
+## Caminho para uma integração real
 
-- Nova aba **Canvas UI** na biblioteca do Goduix.
-- Catálogo pesquisável com os 35 slugs oficiais.
-- Comando de instalação por componente, gerado no formato oficial `@canvas-ui/<slug>-react`.
-- Ação para copiar o comando e link para a documentação oficial do efeito.
-- Nenhuma importação de código remoto em tempo de execução e nenhuma dependência nova no bundle do Goduix.
+Para incorporar literalmente o código original ao Goduix, obter autorização escrita ou uma licença alternativa do autor que permita redistribuição e incorporação no construtor/exportador.
 
-## Como usar
+Sem essa autorização, a alternativa é implementar efeitos próprios no Goduix, com código independente, integrados à biblioteca, ao renderer, às propriedades editáveis, à seleção e à exportação. Isso não deve ser apresentado como uma cópia oficial dos componentes Canvas UI.
 
-1. Abra a aba **Canvas UI** na biblioteca.
-2. Pesquise o efeito desejado e abra sua documentação oficial para revisar props, requisitos e suporte do navegador.
-3. Copie o comando de instalação e execute-o no diretório do projeto React que receberá o componente.
-4. Revise o código e os avisos de licença instalados pelo registry oficial antes de publicar ou redistribuir o projeto.
+## Estado atual
 
-Exemplo:
-
-```bash
-npx shadcn@latest add @canvas-ui/liquid-react
-```
-
-As variantes WebGPU, quando publicadas para um efeito, usam o sufixo `-webgpu` conforme a documentação oficial.
-
-## Referências
-
-- Projeto: https://github.com/DavidHDev/canvas-ui
-- Catálogo: https://canvasui.dev/components
-- Documentação: https://canvasui.dev/docs
-- Registry: https://canvasui.dev/r/{name}.json
-- Licença: https://github.com/DavidHDev/canvas-ui/blob/main/LICENSE.md
-
-## Validação pendente
-
-- Executar `bun run lint` e `bun run build` no ambiente do projeto.
-- Validar visualmente a aba em desktop e dispositivos móveis.
-- Testar o comando copiado em um projeto React de destino com a configuração de aliases exigida pelo shadcn.
+- Aba de catálogo e ações de copiar comandos removidas.
+- Nenhum código dos componentes Canvas UI foi copiado.
+- A integração completa do código original permanece bloqueada pela condição de licença acima.
