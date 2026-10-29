@@ -21,7 +21,6 @@ import {
   Play,
   Move,
   ArrowLeft,
-  ExternalLink
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
@@ -31,7 +30,6 @@ import { THEMES } from '../../data/themes';
 import { FUSION_DONORS } from '../../data/fusionCatalog';
 import { ComponentRenderer } from './ComponentRenderer';
 import { cn } from '../../lib/utils';
-import { CANVAS_UI_REGISTRY, getCanvasUIInstallCommand, getCanvasUIDocsUrl } from '../../data/canvasUiRegistry';
 
 // Pointer Drag State for mobile/touch DnD
 interface PointerDragState {
@@ -156,10 +154,7 @@ export const ComponentLibraryPanel: React.FC = () => {
   const store = useBuilderStore();
   const theme = THEMES[store.theme] || THEMES['godly-cyan'];
 
-  const [activeTab, setActiveTab] = useState<'library' | 'canvas-tree' | 'templates' | 'canvas-ui'>('library');
-  const [canvasUISearch, setCanvasUISearch] = useState('');
-  const [copiedCanvasSlug, setCopiedCanvasSlug] = useState<string | null>(null);
-  const filteredCanvasUI = CANVAS_UI_REGISTRY.filter(item => `${item.name} ${item.slug} ${item.description}`.toLowerCase().includes(canvasUISearch.toLowerCase()));
+  const [activeTab, setActiveTab] = useState<'library' | 'canvas-tree' | 'templates'>('library');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ComponentCategory | 'All'>('All');
   const [expandedPreviewItem, setExpandedPreviewItem] = useState<(typeof GODUI_CATALOG)[GodUIComponentType] | null>(null);
@@ -329,19 +324,6 @@ export const ComponentLibraryPanel: React.FC = () => {
           <span>Templates</span>
         </button>
 
-        <button
-          onClick={() => setActiveTab('canvas-ui')}
-          className={cn(
-            "flex-1 min-w-0 py-2 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex items-center justify-center gap-1 cursor-pointer",
-            activeTab === 'canvas-ui'
-              ? "bg-white/10 text-white shadow-sm border border-white/10"
-              : "text-zinc-400 hover:text-white"
-          )}
-          aria-label="Abrir componentes oficiais Canvas UI"
-        >
-          <Sparkles className="w-3.5 h-3.5 shrink-0" />
-          <span>Canvas UI</span>
-        </button>
       </div>
 
       {/* TAB 1: COMPONENT LIBRARY */}
@@ -639,70 +621,6 @@ export const ComponentLibraryPanel: React.FC = () => {
               </button>
             </div>
           ))}
-        </div>
-      )}
-
-      {activeTab === 'canvas-ui' && (
-        <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-3">
-          <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/[0.06] p-3 space-y-1.5">
-            <div className="flex items-center gap-2 text-sm font-semibold text-white">
-              <Sparkles className="h-4 w-4 text-cyan-300" /> Canvas UI oficial
-            </div>
-            <p className="text-[11px] leading-relaxed text-zinc-400">
-              35 efeitos com WebGL/WebGPU. Os comandos abaixo instalam o código diretamente da registry oficial no projeto React de destino; o Goduix não copia nem redistribui os componentes.
-            </p>
-            <a href="https://canvasui.dev/components" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-medium text-cyan-300 hover:text-cyan-200">
-              Ver catálogo oficial <ExternalLink className="h-3 w-3" />
-            </a>
-          </div>
-
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
-            <input
-              value={canvasUISearch}
-              onChange={event => setCanvasUISearch(event.target.value)}
-              placeholder="Buscar efeito Canvas UI..."
-              aria-label="Buscar efeito Canvas UI"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-9 pr-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-cyan-500/50"
-            />
-          </div>
-
-          <div className="space-y-2">
-            {filteredCanvasUI.map(item => {
-              const command = getCanvasUIInstallCommand(item.slug);
-              return (
-                <article key={item.slug} className="rounded-xl border border-white/10 bg-white/[0.025] p-3 space-y-2.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <h3 className="text-xs font-semibold text-white">{item.name}</h3>
-                      <p className="mt-1 text-[11px] leading-relaxed text-zinc-400">{item.description}</p>
-                    </div>
-                    <a href={getCanvasUIDocsUrl(item.slug)} target="_blank" rel="noreferrer" aria-label={`Abrir documentação de ${item.name}`} title="Documentação oficial" className="rounded-lg p-1.5 text-zinc-400 hover:bg-white/10 hover:text-cyan-200">
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  </div>
-                  <code className="block break-all rounded-lg border border-white/5 bg-black/30 px-2 py-2 text-[10px] leading-relaxed text-cyan-100">{command}</code>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(command);
-                        setCopiedCanvasSlug(item.slug);
-                        window.setTimeout(() => setCopiedCanvasSlug(current => current === item.slug ? null : current), 1800);
-                      } catch {
-                        setCopiedCanvasSlug(null);
-                      }
-                    }}
-                    className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.05] px-2 py-2 text-[11px] font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-                  >
-                    <Copy className="h-3 w-3" />
-                    {copiedCanvasSlug === item.slug ? 'Comando copiado' : 'Copiar comando de instalação'}
-                  </button>
-                </article>
-              );
-            })}
-            {filteredCanvasUI.length === 0 && <p className="py-8 text-center text-xs text-zinc-500">Nenhum efeito encontrado.</p>}
-          </div>
         </div>
       )}
 
