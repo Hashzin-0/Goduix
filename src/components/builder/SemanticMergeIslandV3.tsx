@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRightLeft, Check, X, AlertCircle, RefreshCw, Layers, Type, Box, ChevronDown } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
@@ -135,7 +135,11 @@ export const SemanticMergeIsland: React.FC = () => {
   useEffect(() => {
     if (!open) return;
     const frame = window.requestAnimationFrame(refreshLayers);
-    const observer = new MutationObserver(() => refreshLayers());
+    const observer = new MutationObserver((mutations) => {
+      const preview = previewContainerRef.current;
+      if (preview && mutations.every(mutation => preview.contains(mutation.target as Node))) return;
+      refreshLayers();
+    });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
     return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
   }, [open, refreshLayers]);
@@ -188,6 +192,27 @@ export const SemanticMergeIsland: React.FC = () => {
     return css;
   }, [chosenSource]);
   const previewLabel = selectedTargetLayer?.text || selectedTargetLayer?.label || 'Elemento de destino';
+  const previewContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = previewContainerRef.current;
+    if (!container) return;
+    container.replaceChildren();
+    if (!targetRoot || !selectedTargetLayer) return;
+    const clone = targetRoot.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('[data-goduix-editor-chrome]').forEach(node => node.remove());
+    const destinationClone = atPath(clone, selectedTargetLayer.path);
+    if (destinationClone) Object.assign(destinationClone.style, previewStyle);
+    clone.style.maxWidth = '100%';
+    clone.style.maxHeight = '132px';
+    clone.style.boxSizing = 'border-box';
+    clone.querySelectorAll('video').forEach(video => {
+      video.pause();
+      video.removeAttribute('autoplay');
+    });
+    container.appendChild(clone);
+    return () => container.replaceChildren();
+  }, [open, targetRoot, selectedTargetLayer, previewStyle]);
 
   const close = () => { setOpen(false); setError(''); };
   const applyLayerMerge = () => {
@@ -272,7 +297,7 @@ export const SemanticMergeIsland: React.FC = () => {
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
           <div className="min-w-0 rounded-lg border border-white/10 bg-black/20 p-2"><div className="mb-1 text-[9px] uppercase tracking-wide text-cyan-200">Origem · {chosenSource.label}</div><div className="truncate text-[10px] text-zinc-300">{formatValue(chosenSource.value || 'Valor calculado no elemento')}</div></div>
           <ArrowRightLeft size={16} className="text-emerald-300"/>
-          <div className="min-w-0 rounded-lg border border-white/10 bg-black/20 p-2"><div className="mb-1 text-[9px] uppercase tracking-wide text-violet-200">Destino · {selectedTargetLayer.tag}</div><div className="flex min-h-12 items-center justify-center rounded-lg bg-zinc-900/80 p-2 text-center text-xs text-zinc-100 transition-all" style={previewStyle}>{previewLabel}</div><div className="mt-1 truncate text-[9px] text-zinc-500">{selectedTargetLayer.label} · {targetProperty}</div></div>
+          <div className="min-w-0 rounded-lg border border-white/10 bg-black/20 p-2"><div className="mb-1 text-[9px] uppercase tracking-wide text-violet-200">Destino · {selectedTargetLayer.tag}</div><div ref={previewContainerRef} className="flex min-h-24 max-h-36 items-center justify-center overflow-hidden rounded-lg bg-zinc-900/80 p-2 text-center text-xs text-zinc-100 [&>*]:max-w-full">{!targetRoot && previewLabel}</div><div className="mt-1 truncate text-[9px] text-zinc-500">{selectedTargetLayer.label} · {targetProperty}</div></div>
         </div>
       </section>}
       {error && <p role="alert" className="text-xs text-rose-300">{error}</p>}
