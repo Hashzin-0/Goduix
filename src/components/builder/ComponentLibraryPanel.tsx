@@ -21,7 +21,6 @@ import {
   Play,
   Move,
   ArrowLeft,
-  ExternalLink
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
