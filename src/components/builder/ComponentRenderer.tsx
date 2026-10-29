@@ -63,7 +63,7 @@ function applyComponentLayerOverrides(componentId: string, props: Record<string,
   const layerIcons = props.__layerIcons ?? {};
   const layerMedia = props.__layerMedia ?? {};
   const ORIGINAL_LAYER_MEDIA = (applyComponentLayerOverrides as any).__originalMedia ?? ((applyComponentLayerOverrides as any).__originalMedia = new WeakMap<HTMLElement, Map<string, string | null>>());
-  const nodes: HTMLElement[] = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
+  const nodes: HTMLElement[] = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*')).filter(node => !node.matches('svg,path,defs,linearGradient,stop,title,desc,[data-goduix-editor-chrome]'))];
   const pathFor = (node: HTMLElement) => {
     const indices: number[] = [];
     let current: HTMLElement | null = node;
