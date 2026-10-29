@@ -44,9 +44,9 @@ function applyIconDefinition(svg: SVGElement, iconName: string | undefined) {
   svg.setAttribute('data-goduix-custom-icon', iconName);
 }
 
-const LAYER_STYLE_KEYS = ['backgroundColor', 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'position', 'color', 'borderColor', 'borderWidth', 'borderRadius', 'borderStyle', 'padding', 'fontSize', 'fontWeight', 'letterSpacing', 'opacity', 'transform', 'boxShadow', 'textShadow', 'outline', 'stroke', 'strokeWidth', 'animation', 'width', 'height', 'objectFit', 'objectPosition', 'filter', 'fill', 'cursor'] as const;
+const LAYER_STYLE_KEYS = ['backgroundColor', 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'position', 'color', 'border', 'borderColor', 'borderWidth', 'borderRadius', 'borderStyle', 'padding', 'fontSize', 'fontWeight', 'letterSpacing', 'opacity', 'transform', 'boxShadow', 'textShadow', 'outline', 'stroke', 'strokeWidth', 'WebkitTextStroke', 'animation', 'width', 'height', 'objectFit', 'objectPosition', 'filter', 'fill', 'cursor'] as const;
 const LAYER_STYLE_CSS: Record<(typeof LAYER_STYLE_KEYS)[number], string> = {
-  backgroundColor: 'background-color', backgroundImage: 'background-image', backgroundSize: 'background-size', backgroundPosition: 'background-position', position: 'position', color: 'color', borderColor: 'border-color', borderWidth: 'border-width', borderRadius: 'border-radius', borderStyle: 'border-style', padding: 'padding', fontSize: 'font-size', fontWeight: 'font-weight', letterSpacing: 'letter-spacing', opacity: 'opacity', transform: 'transform', boxShadow: 'box-shadow', textShadow: 'text-shadow', outline: 'outline', stroke: 'stroke', strokeWidth: 'stroke-width', animation: 'animation', width: 'width', height: 'height', objectFit: 'object-fit', objectPosition: 'object-position', filter: 'filter', fill: 'fill', cursor: 'cursor',
+  backgroundColor: 'background-color', backgroundImage: 'background-image', backgroundSize: 'background-size', backgroundPosition: 'background-position', position: 'position', color: 'color', border: 'border', borderColor: 'border-color', borderWidth: 'border-width', borderRadius: 'border-radius', borderStyle: 'border-style', padding: 'padding', fontSize: 'font-size', fontWeight: 'font-weight', letterSpacing: 'letter-spacing', opacity: 'opacity', transform: 'transform', boxShadow: 'box-shadow', textShadow: 'text-shadow', outline: 'outline', stroke: 'stroke', strokeWidth: 'stroke-width', WebkitTextStroke: '-webkit-text-stroke', animation: 'animation', width: 'width', height: 'height', objectFit: 'object-fit', objectPosition: 'object-position', filter: 'filter', fill: 'fill', cursor: 'cursor',
 };
 function applyComponentLayerOverrides(componentId: string, props: Record<string, any>) {
   if (!document.getElementById('goduix-layer-animation-keyframes')) {
@@ -70,7 +70,11 @@ function applyComponentLayerOverrides(componentId: string, props: Record<string,
     while (current && current !== root) {
       const parent: HTMLElement | null = current.parentElement;
       if (!parent) return '';
-      indices.unshift(Array.from(parent.children).indexOf(current));
+      // Keep layer paths identical to SemanticMergeIslandV3.scan/atPath.
+      const pathChildren = Array.from(parent.children).filter(child => !child.matches('svg,path,defs,linearGradient,stop,title,desc,[data-goduix-editor-chrome]'));
+      const childIndex = pathChildren.indexOf(current);
+      if (childIndex < 0) return '';
+      indices.unshift(childIndex);
       current = parent;
     }
     return current === root ? indices.join('.') : '';
