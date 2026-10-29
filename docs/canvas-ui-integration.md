@@ -1,43 +1,46 @@
 # Integração da Canvas UI no Goduix
 
-## Objetivo
+## Decisão de integração e licença
 
-Integrar os efeitos da biblioteca oficial [DavidHDev/canvas-ui](https://github.com/DavidHDev/canvas-ui) ao catálogo Goduix e ao Fusion Engine, sem substituir os componentes existentes nem introduzir efeitos simulados.
+A Canvas UI oferece 35 efeitos com variantes React e WebGL/WebGPU, distribuídos pelo registry oficial compatível com shadcn: `npx shadcn@latest add @canvas-ui/<componente>-react`.
 
-## Compatibilidade confirmada
+A licença publicada pelo autor é MIT + Commons Clause. Ela permite utilizar o software como parte de uma aplicação, mas proíbe vender, sublicenciar ou redistribuir os componentes em si, inclusive em pacote ou versão portada. Como o Goduix é um construtor de componentes e pode exportar código para terceiros, copiar esses componentes para o catálogo interno e redistribuí-los seria incompatível com essa restrição.
 
-- O Goduix utiliza React 19, TypeScript, Vite 6 e Tailwind CSS v4.
-- A Canvas UI oferece fontes por componente via registry compatível com shadcn, com variantes React e WebGL/WebGPU.
-- A instalação oficial é feita por componente, por exemplo: `npx shadcn@latest add @canvas-ui/liquid-react`.
-- A Canvas UI declara licença MIT + Commons Clause. Verificar e preservar os avisos da licença antes de redistribuir ou publicar componentes derivados.
+Por isso, a integração usa o registry oficial diretamente e **não clona nem incorpora o código-fonte Canvas UI** ao repositório Goduix. Assim, os usuários podem obter os arquivos do próprio autor no projeto React de destino, mantendo a origem e os avisos de licença.
 
-## Estratégia de integração
+## O que foi integrado
 
-1. Adicionar os componentes como código-fonte em `src/components/godui/canvasui/`, seguindo o fluxo oficial de registry. Evitar importar uma coleção inteira no bundle se só alguns efeitos forem utilizados.
-2. Integrar cada componente ao tipo `GodUIComponentType`, ao `GODUI_CATALOG` (metadados, propriedades, valores padrão e exemplo de código) e ao `ComponentRenderer.tsx`.
-3. Mapear efeitos compatíveis no `FUSION_DONORS` e em `getComponentSignatureEffect()`. Não declarar slots que o componente não suporte.
-4. Preservar interação HTML, teclado e foco; efeitos WebGL devem ser decorativos e não interceptar eventos do conteúdo.
-5. Respeitar `prefers-reduced-motion`, desmontar recursos WebGL e listeners ao desmontar, e oferecer fallback quando WebGL/WebGPU não estiver disponível.
-6. Validar o build e o typecheck após cada lote. Testar visualmente em desktop e mobile antes de considerar a integração concluída.
+- Nova aba **Canvas UI** na biblioteca do Goduix.
+- Catálogo pesquisável com os 35 slugs oficiais.
+- Comando de instalação por componente, gerado no formato oficial `@canvas-ui/<slug>-react`.
+- Ação para copiar o comando e link para a documentação oficial do efeito.
+- Nenhuma importação de código remoto em tempo de execução e nenhuma dependência nova no bundle do Goduix.
 
-## Componentes candidatos para o primeiro lote
+## Como usar
 
-| Componente | Uso recomendado |
-| --- | --- |
-| Liquid | Efeito fluido em uma seção ou superfície |
-| Glass | Superfície com distorção/refração visual |
-| Ripple | Feedback de interação por clique |
-| Displacement | Fundo em grade com distorção pelo ponteiro |
-| Decrypt Reveal | Revelação animada de texto |
-| Shatter | Transição visual de fragmentação |
-| Force Field | Campo visual interativo |
+1. Abra a aba **Canvas UI** na biblioteca.
+2. Pesquise o efeito desejado e abra sua documentação oficial para revisar props, requisitos e suporte do navegador.
+3. Copie o comando de instalação e execute-o no diretório do projeto React que receberá o componente.
+4. Revise o código e os avisos de licença instalados pelo registry oficial antes de publicar ou redistribuir o projeto.
 
-A lista acima é uma seleção inicial, não uma declaração de que os componentes já foram portados. Confirmar os nomes, APIs e comandos atuais na [documentação oficial](https://canvasui.dev/docs) antes de cada importação.
+Exemplo:
 
-## Critérios de aceite
+```bash
+npx shadcn@latest add @canvas-ui/liquid-react
+```
 
-- Componentes aparecem no catálogo e podem ser adicionados ao canvas.
-- O inspetor altera props reais e o código exportado compila com os imports correspondentes.
-- Fusão de efeitos só é oferecida para slots e triggers realmente suportados.
-- Nenhum componente depende de dados mockados ou de import remoto em tempo de execução.
-- `bun run lint` e `bun run build` passam; falhas e limitações de WebGL são registradas.
+As variantes WebGPU, quando publicadas para um efeito, usam o sufixo `-webgpu` conforme a documentação oficial.
+
+## Referências
+
+- Projeto: https://github.com/DavidHDev/canvas-ui
+- Catálogo: https://canvasui.dev/components
+- Documentação: https://canvasui.dev/docs
+- Registry: https://canvasui.dev/r/{name}.json
+- Licença: https://github.com/DavidHDev/canvas-ui/blob/main/LICENSE.md
+
+## Validação pendente
+
+- Executar `bun run lint` e `bun run build` no ambiente do projeto.
+- Validar visualmente a aba em desktop e dispositivos móveis.
+- Testar o comando copiado em um projeto React de destino com a configuração de aliases exigida pelo shadcn.
