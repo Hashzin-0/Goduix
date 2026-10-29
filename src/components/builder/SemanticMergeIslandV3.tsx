@@ -109,6 +109,7 @@ export const SemanticMergeIsland: React.FC = () => {
   const [selectedSourceProperties, setSelectedSourceProperties] = useState<string[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['border','animation','color']);
   const [scanVersion, setScanVersion] = useState(0);
+  const previewContainerRef = useRef<HTMLDivElement>(null);
 
   const refreshLayers = useCallback(() => {
     const sRoot = sourceId ? findRoot(sourceId) : null;
@@ -192,8 +193,6 @@ export const SemanticMergeIsland: React.FC = () => {
     return css;
   }, [chosenSource]);
   const previewLabel = selectedTargetLayer?.text || selectedTargetLayer?.label || 'Elemento de destino';
-  const previewContainerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const container = previewContainerRef.current;
     if (!container) return;
