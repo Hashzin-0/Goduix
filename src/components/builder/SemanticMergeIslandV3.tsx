@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRightLeft, Check, X, AlertCircle, RefreshCw, Layers, Type, Box, ChevronDown } from 'lucide-react';
 import { useBuilderStore } from '../../store/useBuilderStore';
 import { GODUI_CATALOG } from '../../data/goduiCatalog';
@@ -109,6 +109,7 @@ export const SemanticMergeIsland: React.FC = () => {
   const [selectedSourceProperties, setSelectedSourceProperties] = useState<string[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['border','animation','color']);
   const [scanVersion, setScanVersion] = useState(0);
+  const previewContainerRef = useRef<HTMLDivElement>(null);
 
   const refreshLayers = useCallback(() => {
     const sRoot = sourceId ? findRoot(sourceId) : null;
@@ -135,7 +136,11 @@ export const SemanticMergeIsland: React.FC = () => {
   useEffect(() => {
     if (!open) return;
     const frame = window.requestAnimationFrame(refreshLayers);
-    const observer = new MutationObserver(() => refreshLayers());
+    const observer = new MutationObserver((mutations) => {
+      const preview = previewContainerRef.current;
+      if (preview && mutations.every(mutation => preview.contains(mutation.target as Node))) return;
+      refreshLayers();
+    });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
     return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
   }, [open, refreshLayers]);
@@ -155,6 +160,58 @@ export const SemanticMergeIsland: React.FC = () => {
   const compatibleDestinations = targetChoices.filter(choice => isSemanticallyCompatible(sourceKind, choice.kind));
   const selectedSourceLayer = sourceLayers.find(l => l.path === sourcePath);
   const selectedTargetLayer = targetLayers.find(l => l.path === targetPath);
+  const previewStyle = useMemo<React.CSSProperties>(() => {
+    if (!chosenSource) return {};
+    const value = chosenSource.value.trim();
+    const css: React.CSSProperties = {};
+    if (chosenSource.kind === 'border' || chosenSource.kind === 'outline') {
+      css.borderColor = value || '#00d4ff';
+      css.borderStyle = 'solid';
+      css.borderWidth = '2px';
+    } else if (chosenSource.kind === 'background' || chosenSource.kind === 'fill') {
+      css.backgroundColor = value || '#164e63';
+    } else if (chosenSource.kind === 'color') {
+      css.color = value || '#67e8f9';
+    } else if (chosenSource.kind === 'shadow') {
+      css.boxShadow = value || '0 0 18px rgba(34,211,238,.55)';
+    } else if (chosenSource.kind === 'stroke') {
+      css.WebkitTextStroke = value ? `1px ${value}` : '1px #67e8f9';
+    } else if (chosenSource.kind === 'typography') {
+      if (chosenSource.cssProperty === 'fontSize' && value) css.fontSize = value;
+      if (chosenSource.cssProperty === 'fontWeight' && value) css.fontWeight = value as React.CSSProperties['fontWeight'];
+      if (chosenSource.cssProperty === 'letterSpacing' && value) css.letterSpacing = value;
+    } else if (chosenSource.kind === 'spacing' && chosenSource.cssProperty === 'padding' && value) {
+      css.padding = value;
+    } else if (chosenSource.kind === 'size') {
+      if (chosenSource.cssProperty === 'width' && value) css.width = value;
+      if (chosenSource.cssProperty === 'height' && value) css.height = value;
+    } else if (chosenSource.kind === 'opacity' && value) {
+      css.opacity = Number(value);
+    } else if (chosenSource.kind === 'transform' && value && value !== 'none') {
+      css.transform = value;
+    }
+    return css;
+  }, [chosenSource]);
+  const previewLabel = selectedTargetLayer?.text || selectedTargetLayer?.label || 'Elemento de destino';
+  useEffect(() => {
+    const container = previewContainerRef.current;
+    if (!container) return;
+    container.replaceChildren();
+    if (!targetRoot || !selectedTargetLayer) return;
+    const clone = targetRoot.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('[data-goduix-editor-chrome]').forEach(node => node.remove());
+    const destinationClone = atPath(clone, selectedTargetLayer.path);
+    if (destinationClone) Object.assign(destinationClone.style, previewStyle);
+    clone.style.maxWidth = '100%';
+    clone.style.maxHeight = '132px';
+    clone.style.boxSizing = 'border-box';
+    clone.querySelectorAll('video').forEach(video => {
+      video.pause();
+      video.removeAttribute('autoplay');
+    });
+    container.appendChild(clone);
+    return () => container.replaceChildren();
+  }, [open, targetRoot, selectedTargetLayer, previewStyle]);
 
   const close = () => { setOpen(false); setError(''); };
   const applyLayerMerge = () => {
@@ -234,8 +291,16 @@ export const SemanticMergeIsland: React.FC = () => {
         const createLabel = chosenSource.kind === 'border' ? 'Borda do elemento (criar)' : chosenSource.kind === 'stroke' ? 'Contorno do texto (criar)' : chosenSource.kind === 'background' ? 'Fundo do elemento (criar)' : chosenSource.kind === 'color' ? 'Cor do elemento (criar)' : chosenSource.kind === 'shadow' ? 'Sombra / brilho (criar)' : 'Animação (criar)';
         return <div key={layer.path || 'root'} className="rounded-xl border border-white/10 bg-black/20 p-3"><button type="button" onClick={() => setTargetPath(layer.path)} className="flex w-full items-center gap-2 text-left text-xs font-semibold text-white"><Box size={13}/><span className="truncate">{layer.label}</span><span className="ml-auto text-[9px] text-zinc-500">{layer.tag}</span></button><div className="mt-2 flex flex-wrap gap-1.5">{options.map(option => <button type="button" key={option.propertyKey} onClick={() => {setTargetPath(layer.path);setTargetProperty(option.propertyKey);}} className={`rounded-md border px-2 py-1 text-[10px] ${targetPath === layer.path && targetProperty === option.propertyKey ? 'border-violet-300/60 bg-violet-300/15 text-violet-100' : 'border-white/10 text-zinc-300'}`}>{option.label}{option.value ? ' · existente' : ' · criar'}</button>)}{canCreate && createKey && !options.some(o => o.propertyKey === createKey) && <button type="button" onClick={() => {setTargetPath(layer.path);setTargetProperty(createKey);}} className={`rounded-md border border-dashed px-2 py-1 text-[10px] ${targetPath === layer.path && targetProperty === createKey ? 'border-violet-300/60 text-violet-100' : 'border-violet-300/25 text-violet-200'}`}>{createLabel}</button>}{!options.length && !canCreate && <span className="text-[10px] text-zinc-600">Nenhuma propriedade compatível</span>}</div></div>;
       })}</div></section>}
+      {chosenSource && selectedTargetLayer && targetProperty && <section aria-live="polite" className="space-y-2 rounded-xl border border-emerald-300/25 bg-emerald-300/[0.04] p-3">
+        <div className="flex items-center justify-between gap-2"><div className="text-xs font-semibold text-emerald-200">Prévia antes do Merge</div><span className="text-[10px] text-zinc-500">Não altera o componente ainda</span></div>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <div className="min-w-0 rounded-lg border border-white/10 bg-black/20 p-2"><div className="mb-1 text-[9px] uppercase tracking-wide text-cyan-200">Origem · {chosenSource.label}</div><div className="truncate text-[10px] text-zinc-300">{formatValue(chosenSource.value || 'Valor calculado no elemento')}</div></div>
+          <ArrowRightLeft size={16} className="text-emerald-300"/>
+          <div className="min-w-0 rounded-lg border border-white/10 bg-black/20 p-2"><div className="mb-1 text-[9px] uppercase tracking-wide text-violet-200">Destino · {selectedTargetLayer.tag}</div><div ref={previewContainerRef} className="flex min-h-24 max-h-36 items-center justify-center overflow-hidden rounded-lg bg-zinc-900/80 p-2 text-center text-xs text-zinc-100 [&>*]:max-w-full">{!targetRoot && previewLabel}</div><div className="mt-1 truncate text-[9px] text-zinc-500">{selectedTargetLayer.label} · {targetProperty}</div></div>
+        </div>
+      </section>}
       {error && <p role="alert" className="text-xs text-rose-300">{error}</p>}
     </div>}
-    <footer className="flex items-center justify-between gap-2 border-t border-white/10 px-4 py-3"><span className="text-[10px] text-zinc-500">{chosenSource && targetProperty ? '1 destino selecionado' : 'Selecione uma propriedade e destino'}</span><div className="flex gap-2"><button type="button" onClick={close} className="rounded-xl px-3 py-2 text-xs text-zinc-300 hover:bg-white/5">Cancelar</button><button type="button" disabled={!chosenSource || !targetPath || !targetProperty} onClick={applyLayerMerge} className="flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2 text-xs font-semibold text-zinc-950 disabled:opacity-40"><Check size={15}/>Aplicar Merge</button></div></footer>
+    <footer className="flex items-center justify-between gap-2 border-t border-white/10 px-4 py-3"><span className="text-[10px] text-zinc-500">{chosenSource && targetProperty ? '1 destino selecionado' : 'Selecione uma propriedade e destino'}</span><div className="flex gap-2"><button type="button" onClick={close} className="rounded-xl px-3 py-2 text-xs text-zinc-300 hover:bg-white/5">Cancelar</button><button type="button" disabled={!chosenSource || !selectedTargetLayer || !targetProperty} onClick={applyLayerMerge} className="flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2 text-xs font-semibold text-zinc-950 disabled:opacity-40"><Check size={15}/>Aplicar Merge</button></div></footer>
   </aside>;
 };
